@@ -1,6 +1,0 @@
-ignoredBuiltDependencies:
-  - '@mui/x-telemetry'
-  - '@tailwindcss/oxide'
-  - canvas
-  - esbuild
-  - unrs-resolver
