@@ -38,8 +38,6 @@ build/
 dist/
 .next/
 .vite/public/build/
-vite.config.txt
-env_local_prod.txt
 
 # Exclude vite.config.js
 vite.config.js
