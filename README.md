@@ -3,8 +3,6 @@
 [![Laravel](https://img.shields.io/badge/Laravel-12.15.0-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat-square&logo=react)](https://reactjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=flat-square&logo=docker)](https://www.docker.com)
-[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)](https://github.com/features/actions)
 [![PHP](https://img.shields.io/badge/PHP-8.4.7-777BB4?style=flat-square&logo=php)](https://php.net)
 [![Node.js](https://img.shields.io/badge/Node.js-22.15.1-339933?style=flat-square&logo=node.js)](https://nodejs.org)
 
@@ -65,35 +63,33 @@ A modern, efficient internal ticketing system built with React (TypeScript) and 
   - Database migrations and seeders
 
 ### DevOps
-- **Containerization**: Docker
-- **CI/CD**: GitHub Actions
-- **Deployment**: Automated Docker builds
+- **Package Manager**: PNPM
+- **Version Control**: Git
 
 ## 📂 Project Structure
 
 ```
 .
-├── backend/  # Laravel API
-│   ├── app/
-│   ├── database/
-│   ├── routes/
-│   ├── .env
-│   ├── composer.json
+├── app/  # Application Core
+│   ├── Http/
+│   ├── Models/
+│   ├── Services/
 │   └── ...
 │
-├── frontend/  # React TypeScript App
-│   ├── src/
-│   ├── public/
-│   ├── tsconfig.json
-│   ├── package.json
-│   └── ...
+├── resources/  # Frontend Assets
+│   ├── js/
+│   ├── css/
+│   └── views/
 │
-├── docker/  # Docker Configuration
+├── routes/  # API Routes
 │
-├── .github/  # GitHub Actions Workflow
+├── database/  # Migrations & Seeders
 │
-├── docker-compose.yml
-├── README.md
+├── public/  # Public Assets
+│
+├── .env
+├── composer.json
+├── package.json
 └── ...
 ```
 
@@ -102,8 +98,8 @@ A modern, efficient internal ticketing system built with React (TypeScript) and 
 ### Prerequisites
 - Node.js >= 22.15.1
 - PHP >= 8.4.7
-- Docker (optional)
 - Composer 2.6+
+- PNPM >= 8.0
 - MySQL 8.0+
 
 ### Installation
@@ -115,36 +111,52 @@ git clone https://github.com/arnelnrose/its.git
 cd its
 ```
 
-2. **Backend Setup**
+2. **Setup Environment**
 
 ```sh
-cd backend
 cp .env.example .env
+```
+
+3. **Install Dependencies**
+
+```sh
+# INSTALL PHP DEPENDENCIES
 composer install
+
+# INSTALL NODE DEPENDENCIES
+pnpm install
+```
+
+4. **Database Setup**
+
+```sh
 php artisan key:generate
 php artisan migrate --seed
+```
+
+5. **Run Development Server**
+
+```sh
+# START LARAVEL SERVER
 php artisan serve
+
+# IN ANOTHER TERMINAL, START VITE DEV SERVER
+pnpm run dev
 ```
 
-3. **Frontend Setup**
+## 🔧 Development
+
+### Running Queue Workers
 
 ```sh
-npm install
-npm run dev
+php artisan queue:work
 ```
 
-4. **Docker Setup (Alternative)**
+### Building for Production
 
 ```sh
-docker-compose up --build -d
+pnpm run build
 ```
-
-## 🔄 CI/CD Pipeline
-
-Our GitHub Actions workflow automatically:
-- Runs tests
-- Builds Docker images
-- Deploys to production on successful merge to main
 
 ## 📚 Documentation
 
@@ -171,61 +183,4 @@ For internal support and bug reports, please contact the development team throug
 ---
 
 *Built with ❤️ by the Apsoft Team Team*
-
-# Docker Development Environment
-
-This repository contains a Docker setup for a development environment with:
-- Ubuntu (latest LTS)
-- PHP 8.4.7 with common extensions and JIT 2.0 enabled
-- Composer 2.6+
-- Node.js 22 LTS
-- PNPM 8+
-- MySQL 8.0
-- Redis 7.0+
-
-## Requirements
-- Docker Desktop for Windows (latest version)
-- WSL 2 enabled
-- At least 4GB of available RAM
-- 20GB of free disk space
-
-## How to Use
-
-1. Build and start the container:
-```bash
-docker-compose up -d --build
-```
-
-2. Enter the container:
-```bash
-docker-compose exec app bash
-```
-
-3. Verify installations:
-```bash
-# Check PHP version
-php -v
-
-# Check Composer
-composer -V
-
-# Check Node.js
-node -v
-
-# Check PNPM
-pnpm -v
-```
-
-## Working with the Container
-
-- The `/app` directory in the container is mapped to your current directory
-- You can edit files on your host machine, and they will be synchronized with the container
-- The container exposes port 8000 for web applications
-
-## Stopping the Container
-
-To stop the container:
-```bash
-docker-compose down
-```
 

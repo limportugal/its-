@@ -46,3 +46,12 @@ vite.config.js
 
 # Exclude backup directories
 config_bkup/
+
+# Exclude PDF.js library
+/public/js/lib/pdfjs-dist/
+
+# Exclude Ziggy routes file
+/resources/js/ziggy.js
+
+# Exclude .ftl files (PDF.js locale files)
+*.ftl
