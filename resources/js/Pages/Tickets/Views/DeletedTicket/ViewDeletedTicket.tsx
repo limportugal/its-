@@ -1,0 +1,874 @@
+import { Head, Link } from "@inertiajs/react";
+import { route } from "ziggy-js";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import "@css/disabled-textfield.css";
+import React, { useState } from "react";
+
+// MUI COMPONENTS
+import { useTheme, useMediaQuery, Typography, Box, Paper, Tooltip, Fade } from "@mui/material";
+import { blue } from "@mui/material/colors";
+import { alpha } from "@mui/material/styles";
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+
+// MUI ICONS
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
+import ReportGmailerrorredOutlinedIcon from '@mui/icons-material/ReportGmailerrorredOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import DevicesIcon from '@mui/icons-material/Devices';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import UndoOutlinedIcon from '@mui/icons-material/UndoOutlined';
+import RestoreIcon from '@mui/icons-material/Restore';
+import StoreIcon from '@mui/icons-material/Store';
+import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+
+// TAB ICONS
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
+
+// HOOKS, API, TYPES & UTILS, VALIDATION
+import { DetailField } from "@/Reuseable/types/ticketTypes";
+import { formatDate } from "@/Reuseable/utils/formatDate";
+import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
+
+// TICKET COMPONENTS
+import RestoreTicket from "@/Pages/Tickets/RestoreTicket";
+import IndexUserLogsByTicketNumber from "@/Pages/UserLogs/IndexUserLogsByTicketNumber";
+import useDynamicQuery from "@/Reuseable/hooks/useDynamicQuery";
+import { fetchingErrorAlert } from "@/Reuseable/helpers/fetchErrorAlert";
+import ViewPendingTicketSkeleton from "@/Pages/Tickets/Skeletons/ViewPendingTicketSkeleton";
+import AvatarUser from "@/Components/Mui/AvatarUser";
+import AvatarClient from "@/Components/Mui/AvatarClient";
+import { timeAgo } from "@/Reuseable/utils/timeAgo";
+import { fetchViewDeletedTicketData } from "@/Reuseable/api/ticket/view-deleted-ticket.api";
+import { ViewDeletedTicketResponse } from "@/Reuseable/types/ticket/view-deleted-ticket.types";
+
+// LOCAL COMPONENTS
+import TicketDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/TicketDetailsSection";
+import AssignedDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/AssignedDetailsSection";
+import ReturnedDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/ReturnedDetailsSection";
+import ReopenedDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/ReopenedDetailsSection";
+import ClosedDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/ClosedDetailsSection";
+import DeletedDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/DeletedDetailsSection";
+import ResubmissionDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/ResubmissionDetailsSection";
+import FollowUpDetailsSection from "@/Pages/Tickets/Views/DeletedTicket/FollowUpDetailsSection";
+import ReminderDetailSection from "@/Pages/Tickets/Views/DeletedTicket/ReminderDetailSection";
+import AttachmentViewer from "@/Pages/Tickets/Views/DeletedTicket/AttachmentViewer";
+
+// UPDATE TICKET COMPONENT
+const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ userRoles, uuid }) => {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const [openRestoreDialog, setOpenRestoreDialog] = useState(false);
+    const [value, setValue] = useState('1');
+
+    const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+        setValue(newValue);
+    };
+
+    // FETCHING DATA
+    const {
+        data: viewDeletedTicketData,
+        isPending: isPendingViewDeletedTicketData,
+        isError: isErrorViewDeletedTicket,
+    } = useDynamicQuery<ViewDeletedTicketResponse>(
+        ["getViewDeletedTicketData", uuid],
+        () => fetchViewDeletedTicketData(uuid)
+    );
+
+    // ERROR STATE
+    if (isErrorViewDeletedTicket) {
+        fetchingErrorAlert();
+        return null;
+    }
+
+    // RENDER LOADING STATE
+    if (isPendingViewDeletedTicketData) {
+        return (
+            <AuthenticatedLayout header={<Typography variant="h6"></Typography>}>
+                <ViewPendingTicketSkeleton />
+            </AuthenticatedLayout>
+        );
+    }
+
+    // TICKET DETAILS - USE FETCHED DATA
+    const currentTicket = viewDeletedTicketData;
+
+    // GET THE FILE NAME AND FIX THE URL
+    const baseUrl = window.location.origin;
+
+    // PRIORITIZE RESUBMISSION ATTACHMENT IF EXISTS, OTHERWISE USE ORIGINAL ATTACHMENT
+    const originalAttachment = currentTicket.attachments?.find(
+        (attachment) =>
+            attachment.category === "CREATED TICKET ATTACHMENT" &&
+            attachment.user_id === null,
+    );
+    const originalFileName = originalAttachment
+        ? originalAttachment.file_path
+        : null;
+
+    let resubmittedFileName: string | null = null;
+    if (
+        currentTicket.resubmission_reasons &&
+        currentTicket.resubmission_reasons.length > 0
+    ) {
+        const latestResubmission =
+            currentTicket.resubmission_reasons[
+            currentTicket.resubmission_reasons.length - 1
+            ];
+        if (
+            latestResubmission.attachments &&
+            latestResubmission.attachments.length > 0
+        ) {
+            resubmittedFileName = latestResubmission.attachments[0].file_path;
+        }
+    }
+
+    // Construct the correct URL for S3 attachments
+    const constructAttachmentUrl = (filePath: string) => {
+        if (!filePath) return "";
+        const pathParts = filePath.split('/');
+        if (pathParts.length >= 4 && pathParts[0] === 'attachments') {
+            const year = pathParts[1];
+            const month = pathParts[2];
+            const date = pathParts[3];
+            const filename = pathParts[4];
+            return `${baseUrl}/attachments/${year}/${month}/${date}/${filename}`;
+        } else {
+            return `${baseUrl}/${encodeURIComponent(filePath)}`;
+        }
+    };
+
+    const originalPdfUrl = originalFileName
+        ? constructAttachmentUrl(originalFileName)
+        : "";
+    const resubmittedPdfUrl = resubmittedFileName
+        ? constructAttachmentUrl(resubmittedFileName)
+        : "";
+
+
+    // TABLE STYLES - RESPONSIVE DESIGN
+    const tableCellHeaderStyle = {
+        width: { xs: '50%', sm: '35%' },
+        fontWeight: 'bold',
+        backgroundColor: alpha(theme.palette.grey[100], 0.8),
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        fontSize: { xs: '0.65rem', sm: '0.875rem' },
+        py: { xs: 0.25, sm: 2, md: 3 },
+        px: { xs: 0.5, sm: 1.5, md: 2 }
+    };
+
+    const tableCellStyle = {
+        borderBottom: `1px solid ${theme.palette.divider}`,
+        fontSize: { xs: '0.65rem', sm: '0.875rem' },
+        py: { xs: 0.25, sm: 2, md: 3 },
+        px: { xs: 0.5, sm: 1.5, md: 2 }
+    };
+
+    const ticketDetails: DetailField[] = [
+        { label: "DATE REPORTED", value: formatDate(currentTicket.created_at), icon: <CalendarTodayIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} /> },
+        { 
+            label: "REPORTED BY", 
+            value: (
+                <AvatarClient
+                    fullName={currentTicket.full_name}
+                    email={currentTicket.email}
+                    serviceCenter={currentTicket.service_center?.service_center_name}
+                    avatarSize={{ xs: 48, sm: 68 }}
+                />
+            ), 
+            icon: <PersonOutlineOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} /> 
+        },
+        {
+            label: "SYSTEM",
+            value: currentTicket.system?.system_name || "Not specified",
+            icon: <DevicesIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
+            label: "PROBLEM CATEGORY",
+            value:
+                currentTicket.categories && currentTicket.categories.length > 0
+                    ? currentTicket.categories
+                        .map((category) => category.category_name)
+                        .join(", ")
+                    : "No category Name Provided",
+            icon: <ReportGmailerrorredOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
+            label: "FSR NO.",
+            value: currentTicket.fsr_no || "Not specified",
+            icon: <ConfirmationNumberIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
+            label: "STORE DETAILS",
+            value: currentTicket.store_code || currentTicket.store_name || currentTicket.store_address
+                ? (
+                    <>
+                        {currentTicket.store_code && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Store Code:</strong> {currentTicket.store_code}
+                            </Typography>
+                        )}
+                        {currentTicket.store_name && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Store Name:</strong> {currentTicket.store_name}
+                            </Typography>
+                        )}
+                        {currentTicket.store_address && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
+                                <strong>Address:</strong> {currentTicket.store_address}
+                            </Typography>
+                        )}
+                    </>
+                )
+                : "Not specified",
+            icon: <StoreIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
+            label: "DESCRIPTION",
+            value: currentTicket.description || "",
+            multiline: true,
+            minRows: 1,
+            rows: Math.min(Math.max(currentTicket.description?.split('\n').length || 1, 1), 10),
+            icon: <DescriptionOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+    ];
+
+    // FILTER OUT ROWS WITH NO MEANINGFUL DATA
+    const filteredTicketDetails = ticketDetails.filter(field => {
+        if (typeof field.value === 'string') {
+            return field.value &&
+                field.value.trim() !== '' &&
+                field.value !== 'Not specified' &&
+                field.value !== 'No category Name Provided' &&
+                field.value !== 'No Priority Set';
+        }
+        return field.value; // KEEP NON-STRING VALUES (LIKE StatusChip, PriorityChip)
+    });
+
+    // ASSIGNED DETAILS - SHOW IF TICKET HAS ASSIGNMENT DATA (FOR DELETED TICKETS, SHOW ALL AVAILABLE DATA)
+    const assignedDetails: DetailField[] = [];
+    if (currentTicket.assigned_user || (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0)) {
+        const assignedUser = currentTicket.assigned_user as any;
+        const assignedBy = currentTicket.assigned_by as any;
+
+        if (assignedUser?.name && assignedUser.name !== "Not specified") {
+            assignedDetails.push({
+                label: "ASSIGNED TO",
+                value: (
+                    <AvatarUser
+                        full_name={assignedUser?.name || "Not specified"}
+                        avatar_url={assignedUser?.avatar_url || null}
+                        role_name={assignedUser?.roles?.length > 0 ? assignedUser?.roles[0].name : "No Role"}
+                    />
+                ),
+                icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        if (assignedBy?.name && assignedBy.name !== "Not specified") {
+            assignedDetails.push({
+                label: "ASSIGNED BY",
+                value: (
+                    <AvatarUser
+                        full_name={assignedBy?.name || "Not specified"}
+                        avatar_url={assignedBy?.avatar_url || null}
+                        role_name={assignedBy?.roles?.length > 0 ? assignedBy?.roles[0].name : "No Role"}
+                    />
+                ),
+                icon: <PersonAddIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        if ((currentTicket as any).assigned_at) {
+            assignedDetails.push({
+                label: "ASSIGNED ON",
+                value: timeAgo((currentTicket as any).assigned_at),
+                icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        // ADD ASSIGNMENT HISTORY - ONLY SHOW IF THERE'S ACTUAL ASSIGNMENT DATA
+        if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
+            currentTicket.assign_to_users.forEach((assignment, index) => {
+                // ONLY SHOW ASSIGNMENT ENTRY IF THERE'S BOTH A USER AND ASSIGNED_AT TIMESTAMP
+                if (assignment.user?.name && assignment.user.name !== "Not specified" && assignment.assigned_at) {
+                    assignedDetails.push({
+                        label: `ASSIGNMENT`,
+                        value: (
+                            <AvatarUser
+                                full_name={assignment.user?.name || "Not specified"}
+                                avatar_url={assignment.user?.avatar_url || null}
+                                role_name={assignment.user?.roles && assignment.user.roles.length > 0 ? assignment.user.roles[0].name : "No Role"}
+                            />
+                        ),
+                        icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+
+                    assignedDetails.push({
+                        label: `ASSIGNED ON`,
+                        value: timeAgo(assignment.assigned_at),
+                        icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
+            });
+        }
+    }
+
+    // RETURNED DETAILS - SHOW IF TICKET HAS RETURN DATA (FOR DELETED TICKETS, SHOW ALL AVAILABLE DATA)
+    const returnedDetails: DetailField[] = [];
+    if (currentTicket.returned_by || (currentTicket.return_reasons && currentTicket.return_reasons.length > 0)) {
+        const returnedBy = currentTicket.returned_by;
+
+        if (returnedBy?.name && returnedBy.name !== "Not specified") {
+            returnedDetails.push({
+                label: "RETURNED BY",
+                value: (
+                    <AvatarUser
+                        full_name={returnedBy?.name || "Not specified"}
+                        avatar_url={returnedBy?.avatar_url || null}
+                        role_name={returnedBy?.roles?.length > 0 ? returnedBy?.roles[0].name : "No Role"}
+                    />
+                ),
+                icon: <UndoOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+
+        // ADD RETURN REASONS HISTORY - ONLY SHOW IF THERE'S BOTH REASON TEXT AND TIMESTAMP
+        if (currentTicket.return_reasons && currentTicket.return_reasons.length > 0) {
+            currentTicket.return_reasons.forEach((reason, index) => {
+                // ONLY SHOW RETURN REASON ENTRY IF THERE'S BOTH REASON TEXT AND RETURNED_AT TIMESTAMP
+                if (reason.reason_text && reason.reason_text !== "Not specified" && reason.returned_at) {
+                    returnedDetails.push({
+                        label: `RETURN REASON`,
+                        value: reason.reason_text,
+                        multiline: true,
+                        minRows: 1,
+                        rows: Math.min(Math.max(reason.reason_text?.split('\n').length || 1, 1), 3),
+                        icon: <DescriptionOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+
+                    returnedDetails.push({
+                        label: `RETURNED ON`,
+                        value: timeAgo(reason.returned_at),
+                        icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
+            });
+        }
+    }
+
+    // REOPENED DETAILS - SHOW IF TICKET HAS REOPEN DATA (FOR DELETED TICKETS, SHOW ALL AVAILABLE DATA)
+    const reopenedDetails: DetailField[] = [];
+    if (currentTicket.reopened_by || (currentTicket.reopen_reason && currentTicket.reopen_reason.length > 0)) {
+        const reopenedBy = currentTicket.reopened_by;
+
+        if (reopenedBy?.name && reopenedBy.name !== "Not specified") {
+            reopenedDetails.push({
+                label: "REOPENED BY",
+                value: (
+                    <AvatarUser
+                        full_name={reopenedBy?.name || "Not specified"}
+                        avatar_url={reopenedBy?.avatar_url || null}
+                        role_name={reopenedBy?.roles?.length > 0 ? reopenedBy?.roles[0].name : "No Role"}
+                    />
+                ),
+                icon: <RefreshIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        // ADD REOPEN REASONS HISTORY - ONLY SHOW IF THERE'S BOTH REASON TEXT AND TIMESTAMP
+        if (currentTicket.reopen_reason && currentTicket.reopen_reason.length > 0) {
+            currentTicket.reopen_reason.forEach((reason, index) => {
+                // ONLY SHOW REOPEN REASON ENTRY IF THERE'S BOTH REASON TEXT AND REOPENED_AT TIMESTAMP
+                if (reason.reason_text && reason.reason_text !== "Not specified" && reason.reopened_at) {
+                    reopenedDetails.push({
+                        label: `REOPEN REASON`,
+                        value: reason.reason_text,
+                        multiline: true,
+                        minRows: 1,
+                        rows: Math.min(Math.max(reason.reason_text?.split('\n').length || 1, 1), 3),
+                        icon: <DescriptionOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+
+                    reopenedDetails.push({
+                        label: `REOPENED ON`,
+                        value: timeAgo(reason.reopened_at),
+                        icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
+            });
+        }
+    }
+
+    // CLOSED DETAILS - SHOW IF TICKET HAS CLOSED DATA (REGARDLESS OF CURRENT STATUS)
+    const closedDetails: DetailField[] = [];
+    if (currentTicket.closed_by) {
+        const closedBy = currentTicket.closed_by;
+
+        if (closedBy?.name && closedBy.name !== "Not specified") {
+            closedDetails.push({
+                label: "CLOSED BY",
+                value: (
+                    <AvatarUser
+                        full_name={closedBy?.name || "Not specified"}
+                        avatar_url={closedBy?.avatar_url || null}
+                        role_name={closedBy?.roles?.length > 0 ? closedBy?.roles[0].name : "No Role"}
+                    />
+                ),
+                icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+
+        // ADD CLOSE REASONS HISTORY - ONLY SHOW IF THERE'S BOTH REASON TEXT AND TIMESTAMP
+        if (currentTicket.close_reasons && currentTicket.close_reasons.length > 0) {
+            currentTicket.close_reasons.forEach((reason, index) => {
+                // ONLY SHOW CLOSE REASON ENTRY IF THERE'S BOTH REASON TEXT AND CLOSED_AT TIMESTAMP
+                if (reason.reason_text && reason.reason_text !== "Not specified" && reason.closed_at) {
+                    closedDetails.push({
+                        label: `CLOSE REASON`,
+                        value: reason.reason_text,
+                        multiline: true,
+                        minRows: 1,
+                        rows: Math.min(Math.max(reason.reason_text?.split('\n').length || 1, 1), 3),
+                        icon: <DescriptionOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+
+                    closedDetails.push({
+                        label: `CLOSED ON`,
+                        value: timeAgo(reason.closed_at),
+                        icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
+            });
+        }
+    }
+
+    // RESUBMISSION DETAILS - SHOW IF TICKET HAS RESUBMISSION DATA
+    const resubmissionDetails: DetailField[] = [];
+    if (currentTicket.resubmission_reasons && currentTicket.resubmission_reasons.length > 0) {
+        const latestResubmissionReason = currentTicket.resubmission_reasons[currentTicket.resubmission_reasons.length - 1];
+
+        // ADD RESUBMISSION REASON ROW
+        if (latestResubmissionReason.reason_text && latestResubmissionReason.reason_text !== "Not specified") {
+            resubmissionDetails.push({
+                label: "RESUBMISSION REASON",
+                value: latestResubmissionReason.reason_text,
+                multiline: true,
+                minRows: 1,
+                rows: Math.min(Math.max(latestResubmissionReason.reason_text?.split('\n').length || 1, 1), 5),
+                icon: <RefreshIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        // ADD RESUBMITTED ON ROW
+        if (latestResubmissionReason.resubmitted_at) {
+            resubmissionDetails.push({
+                label: "RESUBMITTED ON",
+                value: timeAgo(latestResubmissionReason.resubmitted_at),
+                icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+    }
+
+    // FOLLOW-UP DETAILS - SHOW IF TICKET HAS FOLLOW-UP DATA
+    const followUpDetails: DetailField[] = [];
+    if (currentTicket.follow_up_reasons && currentTicket.follow_up_reasons.length > 0) {
+        const latestFollowUpReason = currentTicket.follow_up_reasons[currentTicket.follow_up_reasons.length - 1];
+
+        // ADD FOLLOW-UP REASON ROW
+        if (latestFollowUpReason.reason_text && latestFollowUpReason.reason_text !== "Not specified") {
+            followUpDetails.push({
+                label: "FOLLOW-UP REASON",
+                value: latestFollowUpReason.reason_text,
+                multiline: true,
+                minRows: 1,
+                rows: Math.min(Math.max(latestFollowUpReason.reason_text?.split('\n').length || 1, 1), 5),
+                icon: <RefreshIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        // ADD FOLLOW-UP ON ROW
+        if (latestFollowUpReason.follow_up_at) {
+            followUpDetails.push({
+                label: "FOLLOW-UP ON",
+                value: timeAgo(latestFollowUpReason.follow_up_at),
+                icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+    }
+
+    // REMINDER DETAILS - SHOW IF TICKET HAS REMINDER DATA
+    const reminderDetails: DetailField[] = [];
+    if (currentTicket.reminder_reasons && currentTicket.reminder_reasons.length > 0) {
+        const latestReminderReason = currentTicket.reminder_reasons[currentTicket.reminder_reasons.length - 1];
+
+        // ADD REMINDER REASON ROW
+        if (latestReminderReason.reason_text && latestReminderReason.reason_text !== "Not specified") {
+            reminderDetails.push({
+                label: "REMINDER REASON",
+                value: latestReminderReason.reason_text,
+                multiline: true,
+                minRows: 1,
+                rows: Math.min(Math.max(latestReminderReason.reason_text?.split('\n').length || 1, 1), 5),
+                icon: <RefreshIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+
+        // ADD REMINDED ON ROW
+        if (latestReminderReason.reminded_at) {
+            reminderDetails.push({
+                label: "REMINDED ON",
+                value: timeAgo(latestReminderReason.reminded_at),
+                icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+            });
+        }
+    }
+
+    // RENDER MAIN COMPONENT
+    return (
+        <AuthenticatedLayout header={<Typography variant="h6"></Typography>}>
+            <Head title="Update Ticket" />
+            <Fade in={true} timeout={500}>
+                <Box sx={{ mx: { xs: -1, sm: 0 } }}>
+                    <Box sx={{
+                        mt: { xs: -2, sm: 1 },
+                        p: { xs: 0.125, sm: 0.5 },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: { xs: 'auto', sm: 'hidden' },
+                        border: `1px solid ${theme.palette.grey[300]}`,
+                        borderRadius: { xs: 1, sm: 2 },
+                        backgroundColor: theme.palette.background.default,
+                        boxShadow: `0 2px 8px rgba(0, 0, 0, 0.08)`,
+                        height: { xs: 'calc(100vh - 40px)', sm: 'calc(100vh - 100px)' },
+                        maxHeight: { xs: 'calc(100vh - 40px)', sm: 'calc(100vh - 100px)' },
+                        mx: { xs: 0.25, sm: 0 },
+                        mb: { xs: 0, sm: 0 }
+                    }}>
+                        {/* TICKET HEADER CARD */}
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                marginBottom: 0,
+                                borderRadius: "12px",
+                                background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`,
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: 'hidden',
+                                minHeight: 0,
+                                height: '100%'
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    flexDirection: { xs: "column", sm: "row" },
+                                    justifyContent: "space-between",
+                                    alignItems: { xs: "center", sm: "center" },
+                                    mb: 0,
+                                    gap: { xs: 2, sm: 0 },
+                                }}
+                            >
+                            </Box>
+
+                            {/* TICKET DETAILS TABS */}
+                            <Box sx={{
+                                width: '100%',
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                overflow: { xs: 'auto', sm: 'hidden' },
+                                height: '100%'
+                            }}>
+                                <TabContext value={value}>
+                                    <Box sx={{
+                                        borderBottom: 1,
+                                        borderColor: 'divider',
+                                        mb: { xs: 0.25, sm: 0.5 },
+                                        display: 'flex',
+                                        flexDirection: { xs: 'column', sm: 'row' },
+                                        justifyContent: 'space-between',
+                                        alignItems: { xs: 'stretch', sm: 'center' },
+                                        py: { xs: 0.25, sm: 0.5 },
+                                        minHeight: { xs: 'auto', sm: '48px' },
+                                        flexShrink: 0,
+                                        gap: { xs: 0.75, sm: 0 }
+                                    }}>
+                                        <TabList
+                                            onChange={handleChange}
+                                            aria-label="ticket details tabs"
+                                            sx={{
+                                                flex: { xs: 1, sm: 'none' },
+                                                '& .MuiTabs-indicator': {
+                                                    backgroundColor: theme.palette.primary.main,
+                                                    height: 3,
+                                                    borderRadius: '3px 3px 0 0',
+                                                    mb: { xs: 2, sm: 0 },
+                                                },
+                                                '& .MuiTab-root': {
+                                                    textTransform: 'none',
+                                                    fontWeight: 500,
+                                                    fontSize: { xs: '0.75rem', sm: '0.8rem', md: '0.9rem' },
+                                                    minHeight: { xs: 36, sm: 48 },
+                                                    transition: 'all 0.2s ease-in-out',
+                                                    px: { xs: 0.75, sm: 2 },
+                                                    '&.Mui-selected': {
+                                                        color: theme.palette.primary.main,
+                                                    },
+                                                },
+                                            }}
+                                        >
+                                            <Tab
+                                                label={isMobile ? "Details" : "Reported Details"}
+                                                value="1"
+                                                icon={<BadgeOutlinedIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />}
+                                                iconPosition="start"
+                                            />
+                                            {/* <Tab
+                                                label={isMobile ? "History" : "Ticket Number History"}
+                                                value="2"
+                                                icon={<WorkHistoryOutlinedIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />}
+                                                iconPosition="start"
+                                            /> */}
+                                        </TabList>
+
+                                        {/* ACTION BUTTONS - RESPONSIVE LAYOUT */}
+                                        <Box sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: { xs: 0.125, sm: 1 },
+                                            mt: { xs: -2, sm: 0 },
+                                            mb: { xs: 0.5, sm: 1 },
+                                            mr: { xs: 0, sm: 1 },
+                                            height: { xs: 'auto', sm: '48px' },
+                                            justifyContent: { xs: 'space-between', sm: 'flex-end' },
+                                            flexShrink: 0,
+                                            flexWrap: 'wrap',
+                                            px: { xs: 0.5, sm: 0 }
+                                        }}>
+                                            <Tooltip title="Restore Ticket">
+                                                <Box
+                                                    component="div"
+                                                    sx={{
+                                                        display: 'inline-flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        p: { xs: 0.5, sm: 1 },
+                                                        borderRadius: 1,
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        color: 'text.secondary',
+                                                        backgroundColor: 'action.hover',
+                                                        '&:hover': {
+                                                            backgroundColor: blue[50],
+                                                            transform: 'translateY(-2px)',
+                                                            color: 'primary.main',
+                                                        },
+                                                    }}
+                                                    onClick={() => setOpenRestoreDialog(true)}
+                                                >
+                                                    <RestoreIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
+                                                </Box>
+                                            </Tooltip>
+                                            <Tooltip title="Back to Deleted List">
+                                                <Link href={route('tickets.indexDeletedTickets')}>
+                                                    <Box
+                                                        component="div"
+                                                        sx={{
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            p: { xs: 0.5, sm: 1 },
+                                                            borderRadius: 1,
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.2s ease',
+                                                            color: 'text.secondary',
+                                                            backgroundColor: 'action.hover',
+                                                            '&:hover': {
+                                                                backgroundColor: blue[50],
+                                                                transform: 'translateY(-2px)',
+                                                                color: 'primary.main',
+                                                            },
+                                                        }}
+                                                    >
+                                                        <ArrowBackIcon sx={{ fontSize: { xs: 16, sm: 20 } }} />
+                                                    </Box>
+                                                </Link>
+                                            </Tooltip>
+                                        </Box>
+                                    </Box>
+                                    {/* <TabPanel value="2" sx={{
+                                        p: 0,
+                                        m: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        '& .MuiDataGrid-root': {
+                                            border: 'none',
+                                            p: 0,
+                                            m: 0
+                                        },
+                                        '& .MuiPaper-root': {
+                                            boxShadow: 'none',
+                                            p: 0,
+                                            m: 0
+                                        }
+                                    }}>
+                                        <IndexUserLogsByTicketNumber ticketNumber={currentTicket.ticket_number} />
+                                    </TabPanel> */}
+                                    <TabPanel value="1" sx={{
+                                        p: 0,
+                                        flex: 1,
+                                        overflow: { xs: 'auto', sm: 'hidden' },
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        height: '100%',
+                                        pb: { xs: 0, sm: 0 },
+                                        mb: { xs: 0, sm: 0 }
+                                    }}>
+                                        <Box
+                                            sx={{
+                                                display: 'grid',
+                                                gridTemplateColumns: {
+                                                    xs: '1fr',
+                                                    sm: '1fr',
+                                                    md: '1fr 1fr'
+                                                },
+                                                gap: { xs: 0.75, sm: 1.5, md: 1.5 },
+                                                flex: 1,
+                                                overflow: { xs: 'visible', sm: 'hidden' },
+                                                minHeight: { xs: 'auto', sm: 0 },
+                                                height: { xs: 'auto', sm: '100%' },
+                                                px: { xs: 0.25, sm: 0 },
+                                                pb: { xs: 0, sm: 0 }
+                                            }}
+                                        >
+                                            {/* LEFT SIDE - TICKET DETAILS AND ASSIGNED DETAILS */}
+                                            <Box sx={{
+                                                flex: { xs: 'none', md: 1 },
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                height: { xs: 'auto', md: '100%' },
+                                                overflow: { xs: 'visible', md: 'auto' },
+                                                gap: { xs: 1, sm: 2 },
+                                                minHeight: { xs: 'auto', md: 0 },
+                                                mx: { xs: 0.5, sm: 0 },
+                                                ml: { xs: 0.5, sm: 1 }
+                                            }}>
+                                                {/* TICKET DETAILS SECTION */}
+                                                <TicketDetailsSection
+                                                    ticketDetails={filteredTicketDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    ticketNumber={currentTicket.ticket_number}
+                                                    priority={currentTicket.priority}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* RESUBMISSION DETAILS SECTION */}
+                                                <ResubmissionDetailsSection
+                                                    resubmissionDetails={resubmissionDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* FOLLOW-UP DETAILS SECTION */}
+                                                <FollowUpDetailsSection
+                                                    followUpDetails={followUpDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* REMINDER DETAILS SECTION */}
+                                                <ReminderDetailSection
+                                                    reminderDetails={reminderDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* ASSIGNED DETAILS SECTION */}
+                                                <AssignedDetailsSection
+                                                    assignedDetails={assignedDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* RETURNED DETAILS SECTION */}
+                                                <ReturnedDetailsSection
+                                                    returnedDetails={returnedDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                    attachments={viewDeletedTicketData?.attachments || []}
+                                                />
+
+                                                {/* REOPENED DETAILS SECTION */}
+                                                <ReopenedDetailsSection
+                                                    reopenedDetails={reopenedDetails}
+                                                    status={currentTicket?.status || 'deleted'}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+
+                                                {/* CLOSED DETAILS SECTION */}
+                                                <ClosedDetailsSection
+                                                    closedDetails={closedDetails}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+
+                                                {/* DELETED DETAILS SECTION */}
+                                                <DeletedDetailsSection
+                                                    deletedBy={currentTicket.deleted_by}
+                                                    deletedAt={currentTicket.deleted_at || ""}
+                                                    tableCellHeaderStyle={tableCellHeaderStyle}
+                                                    tableCellStyle={tableCellStyle}
+                                                />
+                                            </Box>
+
+                                            {/* RIGHT SIDE - ATTACHMENT VIEWER */}
+                                            <AttachmentViewer
+                                                pdfUrl={resubmittedPdfUrl || originalPdfUrl}
+                                                fileName={resubmittedFileName || originalFileName || ""}
+                                                attachmentSource={resubmittedFileName ? 'resubmission' : 'original'}
+                                            />
+                                        </Box>
+                                    </TabPanel>
+                                </TabContext>
+                            </Box>
+                        </Paper>
+                    </Box>
+                </Box>
+            </Fade>
+
+            {/* RESTORE TICKET DIALOG */}
+            <RestoreTicket
+                open={openRestoreDialog}
+                onClose={() => setOpenRestoreDialog(false)}
+                ticket_number={currentTicket.ticket_number}
+                uuid={currentTicket.uuid}
+                onRestore={() => setOpenRestoreDialog(false)}
+            />
+        </AuthenticatedLayout>
+    );
+};
+
+export default ViewDeletedTicket;

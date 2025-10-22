@@ -1,0 +1,714 @@
+import { Box, Typography, Container, Button, Grid } from "@mui/material";
+import { IoTicket } from "react-icons/io5";
+import { Head } from "@inertiajs/react";
+import { useRef } from "react";
+import "@/../../public/css/floatAnimation.css";
+import SignInForm from "@/Pages/Tickets/TicketComponents/HeaderSignInForm";
+import CreateTicket from "@/Pages/Tickets/CreateTicket";
+import { useCreateTicketStore } from "@/stores/useCreateTicketStore";
+import ReCaptcha, { ReCaptchaRef } from "@/Pages/Tickets/TicketComponents/ReCaptcha";
+
+export default function Welcome() {
+    const { isDialogOpen, openDialog, closeDialog } = useCreateTicketStore();
+    
+    // INVISIBLE RECAPTCHA FOR WELCOME PAGE
+    const recaptchaRef = useRef<ReCaptchaRef>(null);
+    const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+    // DIALOG HANDLERS
+    const handleOpenCreateTicketDialog = () => {
+        openDialog();
+    };
+
+    const handleCloseCreateTicketDialog = () => {
+        closeDialog();
+    };
+
+    return (
+        <Box
+            sx={{
+                height: "100vh",
+                position: "relative",
+                background: "linear-gradient(135deg, #1a237e 0%, #000051 100%)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                overflow: "hidden",
+                opacity: 1,
+                transition: "opacity 0.2s ease-in-out",
+                "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    inset: 0,
+                    background: `
+                        radial-gradient(circle at 20% 30%, rgba(41, 98, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(66, 165, 245, 0.1) 0%, transparent 50%)
+                    `,
+                    zIndex: 1,
+                },
+            }}
+        >
+            <Head title="Welcome">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+            </Head>
+
+            {/* FLOATING ELEMENTS */}
+            <Box
+                sx={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 1,
+                    perspective: "1000px",
+                    "& > div": {
+                        position: "absolute",
+                        borderRadius: "50%",
+                        background: "rgba(255, 255, 255, 0.03)",
+                        backdropFilter: "blur(5px)",
+                        animation: "float 15s infinite ease-in-out",
+                    },
+                    "& > div:nth-of-type(1)": {
+                        width: { xs: 80, sm: 100, md: 150 },
+                        height: { xs: 80, sm: 100, md: 150 },
+                        top: { xs: "8%", sm: "8%", md: "10%" },
+                        left: { xs: "8%", sm: "8%", md: "10%" }
+                    },
+                    "& > div:nth-of-type(2)": {
+                        width: { xs: 60, sm: 60, md: 100 },
+                        height: { xs: 60, sm: 60, md: 100 },
+                        top: { xs: "75%", sm: "65%", md: "62%" },
+                        right: { xs: "10%", sm: "12%", md: "15%" }
+                    },
+                    "& > div:nth-of-type(3)": {
+                        width: { xs: 70, sm: 80, md: 120 },
+                        height: { xs: 70, sm: 80, md: 120 },
+                        bottom: { xs: "12%", sm: "12%", md: "15%" },
+                        left: { xs: "12%", sm: "15%", md: "20%" }
+                    },
+                }}
+            >
+                <Box />
+                <Box />
+                <Box />
+            </Box>
+
+            {/* Main Content Container */}
+            <Container
+                maxWidth="lg"
+                sx={{
+                    position: "relative",
+                    zIndex: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                    width: "100%",
+                    px: { xs: 2, sm: 3, md: 4 },
+                    // iPhone 14 Pro Max specific optimizations
+                    "@media (max-width: 430px)": {
+                        px: 1.5,
+                    },
+                    // Safe area handling for notched devices
+                    paddingTop: { xs: "env(safe-area-inset-top)", sm: 0 },
+                    paddingBottom: { xs: "env(safe-area-inset-bottom)", sm: 0 },
+                }}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    {/* MOBILE VIEW - OPTIMIZED FOR IPHONE 14 PRO MAX */}
+                    <Box
+                        sx={{
+                            display: { xs: "flex", md: "none" },
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "100%",
+                            height: "100vh",
+                            py: { xs: 1, sm: 2 },
+                            mt: { xs: 4, sm: 0 },
+                            px: { xs: 1.5, sm: 3 },
+                            gap: { xs: 3, sm: 2 },
+                            // Specific adjustments for different mobile sizes
+                            "@media (max-height: 667px)": {
+                                // iPhone SE, iPhone 8 and smaller screens
+                                mt: 2,
+                                gap: 2,
+                                py: 0.5,
+                            },
+                            "@media (min-height: 800px) and (max-width: 430px)": {
+                                // iPhone 14 Pro Max and similar tall phones
+                                mt: 6,
+                                gap: 4,
+                            },
+                            position: "relative",
+                            "&::after": {
+                                content: '""',
+                                position: "absolute",
+                                top: "50%",
+                                left: "10%",
+                                right: "10%",
+                                height: "1px",
+                                background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(66,165,245,0.5) 50%, rgba(255,255,255,0.3) 80%, transparent 100%)",
+                                transform: "translateY(-50%)",
+                                zIndex: 1,
+                            },
+                        }}
+                    >
+                        {/* TOP SECTION - TEXT CONTENT */}
+                        <Box
+                            sx={{
+                                textAlign: "center",
+                                color: "white",
+                                px: { xs: 1, sm: 2 },
+                                mt: { xs: 1, sm: 2 },
+                                flex: 0.6,
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "flex-end",
+                                position: "relative",
+                                zIndex: 2,
+                            }}
+                        >
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: 24, sm: 32 },
+                                    fontWeight: "800",
+                                    mb: { xs: 0.5, sm: 1.5 },
+                                    color: "rgba(255,255,255,0.98)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: { xs: "1px", sm: "2px" },
+                                    lineHeight: 1.1,
+                                    textShadow: "0 0 20px rgba(255,255,255,0.3)",
+                                    // Responsive font sizes for different mobile screens
+                                    "@media (max-width: 375px)": {
+                                        // iPhone SE and smaller
+                                        fontSize: 22,
+                                        letterSpacing: "0.8px",
+                                    },
+                                    "@media (min-width: 376px) and (max-width: 414px)": {
+                                        // iPhone 12, 13, 14 standard
+                                        fontSize: 26,
+                                        letterSpacing: "1.2px",
+                                    },
+                                    "@media (min-width: 415px)": {
+                                        // iPhone 14 Pro Max and larger
+                                        fontSize: 28,
+                                        letterSpacing: "1.5px",
+                                    },
+                                }}
+                            >
+                                Internal Ticketing System
+                            </Typography>
+                            
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: 16, sm: 20 },
+                                    fontWeight: "600",
+                                    mb: { xs: 0.5, sm: 1.5 },
+                                    color: "rgba(255,255,255,0.95)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: { xs: "0.8px", sm: "1.5px" },
+                                    textShadow: "0 0 15px rgba(255,255,255,0.2)",
+                                    "@media (max-width: 375px)": {
+                                        fontSize: 14,
+                                        letterSpacing: "0.6px",
+                                    },
+                                    "@media (min-width: 415px)": {
+                                        fontSize: 18,
+                                        letterSpacing: "1px",
+                                    },
+                                }}
+                            >
+                                Streamline Your Support Process
+                            </Typography>
+                            
+                            <Typography
+                                sx={{
+                                    fontSize: { xs: 13, sm: 16 },
+                                    fontWeight: "400",
+                                    color: "rgba(255,255,255,0.85)",
+                                    lineHeight: 1.5,
+                                    mb: { xs: 0.5, sm: 1.5 },
+                                    maxWidth: { xs: "95%", sm: "100%" },
+                                    mx: "auto",
+                                    "@media (max-width: 375px)": {
+                                        fontSize: 12,
+                                        lineHeight: 1.4,
+                                        maxWidth: "98%",
+                                    },
+                                    "@media (min-width: 415px)": {
+                                        fontSize: 15,
+                                        lineHeight: 1.6,
+                                        maxWidth: "90%",
+                                    },
+                                }}
+                            >
+                                Enhance support efficiency with a ticketing solution. Optimize issue tracking, streamline support workflows, and improve collaboration across service centers with a scalable and next-generation ticketing system.
+                            </Typography>
+                        </Box>
+
+                        {/* MIDDLE SECTION - WHITE CARD WITH LOGO AND BUTTONS */}
+                        <Box
+                            sx={{
+                                flex: 0.6,
+                                display: "flex",
+                                alignItems: "flex-start",
+                                justifyContent: "center",
+                                width: "100%",
+                                px: { xs: 2, sm: 3 },
+                                position: "relative",
+                                zIndex: 2,
+                                pt: { xs: 1, sm: 2 },
+                            }}
+                        >
+                            {/* WHITE CARD CONTAINER */}
+                            <Box
+                                sx={{
+                                    backgroundColor: "white",
+                                    borderRadius: { xs: 2.5, sm: 4 },
+                                    p: { xs: 1.5, sm: 3 },
+                                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    gap: { xs: 1, sm: 2 },
+                                    width: "100%",
+                                    maxWidth: { xs: 300, sm: 360 },
+                                    height: "auto",
+                                    "@media (max-width: 375px)": {
+                                        // iPhone SE and smaller
+                                        maxWidth: 280,
+                                        p: 1.2,
+                                        gap: 0.8,
+                                        borderRadius: 2,
+                                    },
+                                    "@media (min-width: 415px)": {
+                                        // iPhone 14 Pro Max and larger
+                                        maxWidth: 340,
+                                        p: 2,
+                                        gap: 1.2,
+                                    },
+                                }}
+                            >
+                                {/* LOGO AT TOP */}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "100%",
+                                        mb: { xs: 0.5, sm: 1 },
+                                    }}
+                                >
+                                    <Box
+                                        component="img"
+                                        src="/img/logo.png"
+                                        alt="Company Logo"
+                                        loading="eager"
+                                        decoding="sync"
+                                        sx={{
+                                            maxHeight: { xs: 40, sm: 50 },
+                                            maxWidth: "100%",
+                                            height: "auto",
+                                            width: "auto",
+                                            objectFit: "contain",
+                                            "@media (max-width: 375px)": {
+                                                maxHeight: 35,
+                                            },
+                                            "@media (min-width: 415px)": {
+                                                maxHeight: 45,
+                                            },
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* BUTTONS BELOW LOGO */}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        gap: { xs: 1, sm: 1.5 },
+                                        width: "100%",
+                                    }}
+                                >
+                                    {/* CREATE TICKET BUTTON */}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="large"
+                                        onClick={handleOpenCreateTicketDialog}
+                                        fullWidth
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            fontWeight: "500",
+                                            textTransform: "uppercase",
+                                            py: { xs: 1, sm: 1.5 },
+                                            px: { xs: 2, sm: 3 },
+                                            minHeight: { xs: 36, sm: 42 },
+                                            boxShadow: "0 4px 16px rgba(25, 118, 210, 0.3)",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: { xs: 1, sm: 1.5 },
+                                            "&:hover": {
+                                                boxShadow: "0 6px 20px rgba(25, 118, 210, 0.4)",
+                                                transform: "translateY(-2px)",
+                                            },
+                                            transition: "all 0.3s ease",
+                                            "@media (max-width: 375px)": {
+                                                fontSize: 13,
+                                                py: 0.8,
+                                                px: 1.5,
+                                                minHeight: 32,
+                                                gap: 0.8,
+                                            },
+                                            "@media (min-width: 415px)": {
+                                                fontSize: 15,
+                                                py: 1.2,
+                                                px: 2.5,
+                                                minHeight: 38,
+                                                gap: 1.2,
+                                            },
+                                        }}
+                                    >
+                                        <IoTicket size={20} />
+                                        CREATE TICKET
+                                    </Button>
+
+                                </Box>
+                            </Box>
+                        </Box>
+
+                    </Box>
+
+                    {/* DESKTOP VIEW - LEFT-RIGHT SPLIT LAYOUT */}
+                    <Box
+                        sx={{
+                            display: { xs: "none", md: "flex" },
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "100%",
+                            maxWidth: "1400px",
+                            mx: "auto",
+                            gap: 8,
+                            position: "relative",
+                            "&::after": {
+                                content: '""',
+                                position: "absolute",
+                                left: "50%",
+                                top: "10%",
+                                bottom: "10%",
+                                width: "1px",
+                                background: "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(66,165,245,0.5) 50%, rgba(255,255,255,0.3) 80%, transparent 100%)",
+                                transform: "translateX(-50%)",
+                            },
+                        }}
+                    >
+                        {/* LEFT SIDE - TEXT CONTENT */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                textAlign: "left",
+                                color: "white",
+                                flex: 1,
+                                pr: 4,
+                            }}
+                        >
+                            {/* INTERNAL TICKETING SYSTEM TEXT */}
+                            <Typography
+                                sx={{
+                                    fontSize: { md: 50 },
+                                    fontWeight: "800",
+                                    mb: 3,
+                                    color: "rgba(255,255,255,0.98)",
+                                    letterSpacing: { md: "3px" },
+                                    textShadow: "0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(66,165,245,0.2)",
+                                    fontFamily: "'Roboto', 'Arial', sans-serif",
+                                    opacity: 1,
+                                    transform: "translateY(0)",
+                                    transition: "all 0.3s ease",
+                                    lineHeight: { md: 1.2 },
+                                    textAlign: "left",
+                                    width: "100%",
+                                }}
+                            >
+                                Internal<br /> Ticketing System
+                            </Typography>
+
+                            {/* MIDDLE CONTENT */}
+                            <Typography
+                                sx={{
+                                    fontSize: { md: 21 },
+                                    fontWeight: "600",
+                                    mb: 2,
+                                    color: "rgba(255,255,255,0.95)",
+                                    textTransform: "uppercase",
+                                    letterSpacing: { md: "2px" },
+                                    textShadow: "0 0 15px rgba(255,255,255,0.3)",
+                                    fontFamily: "'Roboto', 'Arial', sans-serif",
+                                    opacity: 1,
+                                    transform: "translateY(0)",
+                                    transition: "all 0.3s ease",
+                                    lineHeight: { md: 1.4 },
+                                    textAlign: "left",
+                                    width: "100%",
+                                }}
+                            >
+                                Streamline Your Support Process
+                            </Typography>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    color: "rgba(255,255,255,0.85)",
+                                    maxWidth: { md: 600 },
+                                    lineHeight: { md: 1.6 },
+                                    mb: 5,
+                                    fontSize: { md: 18 },
+                                    fontWeight: "300",
+                                    textShadow: "0 0 8px rgba(255,255,255,0.15)",
+                                    fontFamily: "'Roboto', 'Arial', sans-serif",
+                                    textAlign: "left",
+                                    opacity: 1,
+                                    transform: "translateY(0)",
+                                    transition: "all 0.3s ease",
+                                }}
+                            >
+                                Enhance support efficiency with a ticketing solution. Optimize issue tracking, streamline support workflows, and improve collaboration across service centers with a scalable and next-generation ticketing system.
+                            </Typography>
+                        </Box>
+
+                        {/* RIGHT SIDE - COMPANY LOGOS AND BUTTONS CARD */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                justifyContent: "center",
+                                flex: 1,
+                                height: "100%",
+                                pl: 4,
+                            }}
+                        >
+                            {/* WHITE CARD CONTAINER */}
+                            <Box
+                                sx={{
+                                    backgroundColor: "white",
+                                    borderRadius: 3,
+                                    p: 4,
+                                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    gap: 2,
+                                    width: { md: 320 },
+                                }}
+                            >
+                                {/* LOGO SECTION */}
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "100%",
+                                        maxWidth: "280px",
+                                    }}
+                                >
+                                    {/* MAIN LOGO */}
+                                    <Box
+                                        component="img"
+                                        src="/img/logo.png"
+                                        alt="Company Logo"
+                                        loading="eager"
+                                        decoding="sync"
+                                        sx={{
+                                            maxHeight: 45,
+                                            maxWidth: "100%",
+                                            height: "auto",
+                                            width: "auto",
+                                            objectFit: "contain",
+                                        }}
+                                    />
+                                </Box>
+
+                                {/* BUTTONS GRID */}
+                                <Grid container spacing={1} sx={{ maxWidth: "280px", width: "100%" }}>
+                                    {/* CREATE TICKET BUTTON */}
+                                    <Grid size={{xs: 12}}>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            size="large"
+                                            onClick={handleOpenCreateTicketDialog}
+                                            fullWidth
+                                            sx={{
+                                                width: "100%",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: 1.5,
+                                                textTransform: "uppercase",
+                                                fontWeight: "500",
+                                                py: 1.3,
+                                                px: 2,
+                                                minHeight: 44,
+                                                fontSize: 14,
+                                                boxShadow: "0 4px 16px rgba(25, 118, 210, 0.3)",
+                                                "&:hover": {
+                                                    boxShadow: "0 6px 20px rgba(25, 118, 210, 0.4)",
+                                                    transform: "translateY(-2px)",
+                                                },
+                                                transition: "all 0.3s ease",
+                                            }}
+                                        >
+                                            <IoTicket size={20} />
+                                            CREATE NEW TICKET
+                                        </Button>
+                                    </Grid>
+
+                                </Grid>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
+            </Container>
+
+            {/* BACKGROUND GRADIENT GRID EFFECT */}
+            <Box
+                component="div"
+                sx={{
+                    position: "absolute",
+                    top: "2%",
+                    left: "50%",
+                    width: "100%",
+                    height: "185%",
+                    background: `
+                        linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px),
+                        linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px)
+                    `,
+                    backgroundSize: { xs: "25px 20px", sm: "40px 32px", md: "50px 40px" },
+                    transform: "translate(-50%, -50%) perspective(1000px) rotateX(60deg)",
+                    transformOrigin: "center center",
+                    zIndex: 1,
+                }}
+            />
+
+            {/* SIGN-IN FORM BUTTON */}
+            <SignInForm />
+
+            {/* CREATE TICKET DIALOG */}
+            <CreateTicket
+                open={isDialogOpen}
+                handleClose={handleCloseCreateTicketDialog}
+                ticket={undefined}
+            />
+
+            {/* INVISIBLE RECAPTCHA BADGE */}
+            <Box
+                sx={{
+                    position: "fixed",
+                    bottom: 16,
+                    right: 16,
+                    zIndex: 1000,
+                }}
+            >
+                <ReCaptcha
+                    ref={recaptchaRef}
+                    siteKey={recaptchaSiteKey}
+                    onChange={() => {}} 
+                    onExpired={() => {}}
+                    onError={() => {}}
+                    theme="light"
+                    size="invisible"
+                />
+            </Box>
+
+            {/* FOOTER */}
+            <Box
+                sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    width: "100%",
+                    textAlign: "center",
+                    color: "rgba(255, 255, 255, 0.7)",
+                    py: { xs: 1.5, sm: 2, md: 2 },
+                    px: { xs: 2, sm: 0, md: 0 },
+                    zIndex: 2,
+                }}
+            >
+                <Typography 
+                    variant="body2" 
+                    sx={{ 
+                        fontSize: { xs: "0.75rem", sm: "0.85rem", md: "0.9rem" }, 
+                        color: "rgba(255, 255, 255, 0.3)",
+                        lineHeight: { xs: 1.3, sm: 1.4, md: 1.5 },
+                    }}
+                >
+                    © {new Date().getFullYear()}{" "}
+                    <Box component="span" sx={{ display: "inline" }}>
+                        <Box
+                            component="a"
+                            href="https://apsoft.com.ph/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                                color: "rgba(255, 255, 255, 0.5)",
+                                textDecoration: "none",
+                                transition: "color 0.3s ease",
+                                "&:hover": {
+                                    color: "rgba(255, 255, 255, 0.8)",
+                                    textDecoration: "underline",
+                                },
+                            }}
+                        >
+                            Apsoft Inc.
+                        </Box>{" "}
+                        |{" "}
+                        <Box
+                            component="a"
+                            href="https://phillogix.site/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                                color: "rgba(255, 255, 255, 0.5)",
+                                textDecoration: "none",
+                                transition: "color 0.3s ease",
+                                "&:hover": {
+                                    color: "rgba(255, 255, 255, 0.8)",
+                                    textDecoration: "underline",
+                                },
+                            }}
+                        >
+                            Phillogix Systems, Inc.
+                        </Box>{" "}
+                        |{" "}
+                        <Box
+                            component="a"
+                            href="https://ideaserv.site/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            sx={{
+                                color: "rgba(255, 255, 255, 0.5)",
+                                textDecoration: "none",
+                                transition: "color 0.3s ease",
+                                "&:hover": {
+                                    color: "rgba(255, 255, 255, 0.8)",
+                                    textDecoration: "underline",
+                                },
+                            }}
+                        >
+                            Ideaserv Systems, Inc.
+                        </Box>
+                    </Box>{" "}
+                    | All Rights Reserved.
+                </Typography>
+            </Box>
+
+        </Box>
+    );
+}

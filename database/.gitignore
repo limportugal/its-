@@ -1,0 +1,3 @@
+*.sqlite*
+database/factories/
+database/seeders/

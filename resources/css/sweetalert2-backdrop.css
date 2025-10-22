@@ -1,0 +1,126 @@
+/* OVERRIDE SWEETALERT2 STYLES */
+.swal2-container {
+    z-index: 9999 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MODERN LIGHT-THEMED BACKDROP */
+.swal2-backdrop {
+    background-color: rgba(240, 240, 240, 0.9) !important;
+    backdrop-filter: blur(5px);
+    z-index: 9998 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease-in-out !important;
+}
+
+/* POPUP CONTAINER */
+.swal2-popup {
+    background-color: #ffffff !important;
+    border-radius: 15px !important;
+    padding: 2rem !important;
+    color: #333333 !important;
+    font-family: "Roboto", sans-serif !important;
+    font-size: 16px !important;
+    text-align: center;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15) !important;
+    animation: fadeIn 0.3s ease-out !important;
+    width: 640px !important;
+    max-width: 640px !important;
+}
+
+/* CONFIRM BUTTON (PRIMARY ACTION) */
+.swal2-confirm {
+    background-color: #1976d2 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0px 4px 10px rgba(25, 118, 210, 0.2) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #125ea2 !important;
+}
+
+/* CANCEL BUTTON (NEUTRAL ACTION) */
+.swal2-cancel {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0px 4px 10px rgba(108, 117, 125, 0.2) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.swal2-cancel:hover {
+    background-color: #5a6268 !important;
+}
+
+/* DELETE BUTTON */
+.swal2-delete {
+    background-color: #e57373 !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 10px 24px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+    box-shadow: 0px 4px 10px rgba(211, 47, 47, 0.2) !important;
+    transition: all 0.3s ease-in-out !important;
+}
+
+.swal2-delete:hover {
+    background-color: #d32f2f !important;
+}
+
+/* MODERN CLOSE BUTTON */
+.swal2-close {
+    color: #333333 !important;
+    font-size: 24px !important;
+    top: 10px !important;
+    right: 10px !important;
+    transition: transform 0.3s ease !important;
+}
+
+.swal2-close:hover {
+    transform: rotate(90deg) !important;
+}
+
+/* PROGRESS BAR STYLING */
+.swal2-timer-progress-bar {
+    background-color: #1976d2 !important;
+    height: 5px !important;
+    border-radius: 4px !important;
+}
+
+/* FADE-IN ANIMATION */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

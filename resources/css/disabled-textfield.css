@@ -1,0 +1,9 @@
+.MuiInputLabel-root {
+    color: #1976d2 !important;
+}
+
+.MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-input {
+    opacity: 1 !important;
+    color: #000 !important;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.9) !important;
+}

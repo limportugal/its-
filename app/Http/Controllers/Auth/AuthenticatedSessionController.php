@@ -1,0 +1,168 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use App\Models\UserLogs;
+use Illuminate\Support\Facades\Route;
+
+class AuthenticatedSessionController extends Controller
+{
+    // LOGIN PAGE
+    public function create(): Response
+    {
+
+        return Inertia::render('Auth/Login', [
+            'canResetPassword' => Route::has('password.request'),
+        ]);
+    }
+
+    // LOGIN REQUEST
+    public function store(LoginRequest $request): RedirectResponse|JsonResponse
+    {
+        // SET MAX ATTEMPTS AND LOCKOUT TIME
+        $maxAttempts = 5;
+        $lockoutTime = 15 * 60;
+        $rateKey = 'login:' . strtolower($request->email);
+
+        // GET USER BY EMAIL FIRST
+        $user = User::where('email', $request->email)->first();
+
+        if (!session()->has('active_role') && $user) {
+            $firstRole = $user->roles->first();
+            if ($firstRole) {
+                session(['active_role' => $firstRole->name]);
+            }
+        }
+
+        // CHECK IF USER IS ACTIVE
+        if ($user && strtolower($user->status) !== 'active') {
+            return back()->withErrors([
+                'auth' => 'Your account is not active. Please contact the administrator.'
+            ]);
+        }
+
+        // CHECK IF RATE LIMITER IS ATTEMPTED
+        if (RateLimiter::remaining($rateKey, $maxAttempts) < $maxAttempts) {
+            $lastAttemptTime = RateLimiter::availableIn($rateKey);
+
+            // IF 10 MINUTES HAS PASSED, CLEAR THE RATE LIMITER
+            if ($lastAttemptTime <= ($lockoutTime - (10 * 60))) {
+                RateLimiter::clear($rateKey);
+            }
+        }
+
+        // CHECK IF RATE LIMITER IS ATTEMPTED
+        if (RateLimiter::tooManyAttempts($rateKey, $maxAttempts)) {
+            $minutesUntilUnlock = ceil(RateLimiter::availableIn($rateKey) / 60);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => "Too many login attempts. Try again in {$minutesUntilUnlock} minutes."
+                ], 429);
+            }
+
+            return back()->withErrors([
+                'auth' => "Too many login attempts. Try again in {$minutesUntilUnlock} minutes."
+            ]);
+        }
+
+        // CHECK CREDENTIALS - User was already queried above, reuse it
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            RateLimiter::hit($rateKey, $lockoutTime);
+
+            // GET REMAINING ATTEMPTS
+            $remainingAttempts = RateLimiter::remaining($rateKey, $maxAttempts);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => "Invalid credentials. You have {$remainingAttempts} attempts left before lockout."
+                ], 401);
+            }
+
+            return back()->withErrors([
+                'auth' => "Invalid credentials. You have {$remainingAttempts} attempts left before lockout."
+            ]);
+        }
+
+        // CLEAR RATE LIMITER
+        RateLimiter::clear($rateKey);
+
+        $request->authenticate();
+        $request->session()->regenerate();
+
+        UserLogs::logActivity("{$user->name}, has successfully logged in.", $user->id);
+        session()->flash('success', 'Welcome back! You have successfully logged in.');
+
+        // CLEAR ALL CACHE AND COOKIES ON BACKEND
+        // Clear any existing cache tags if using cache
+        if (method_exists(app('cache'), 'tags')) {
+            app('cache')->tags(['user', 'tickets', 'dashboard'])->flush();
+        }
+        
+        // Clear application cache
+        app('cache')->flush();
+
+        // Handle JSON API response
+        if ($request->wantsJson()) {
+            $response = response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data' => []
+            ]);
+        } else {
+            // HANDLE WEB RESPONSE
+            $response = redirect()->intended(route('tickets.indexPendingTickets', absolute: false))->with([
+                'refresh' => true,
+            ]);
+        }
+        
+        // ADD HEADERS TO CLEAR CACHED DATA BUT PRESERVE SESSION
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        // ONLY CLEAR CACHE AND STORAGE, NOT COOKIES (TO PRESERVE SESSION)
+        $response->headers->set('Clear-Site-Data', '"cache", "storage"');
+        return $response;
+    }
+
+    // LOGOUT REQUEST 
+    public function destroy(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        // LOG ACTIVITY
+        if ($user) {
+            UserLogs::logActivity("{$user->name}, has successfully logged out.", $user->id);
+        }
+
+        // Logout the user
+        Auth::guard('web')->logout();
+        
+        // Invalidate the session and regenerate CSRF token
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // CLEAR BROWSER CACHE
+        $response = redirect('/');
+        
+        // ADD HEADERS TO CLEAR ALL CACHED DATA
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        // Clear all data types on logout
+        $response->headers->set('Clear-Site-Data', '"cache", "cookies", "storage"');
+
+        return $response;
+    }
+}
