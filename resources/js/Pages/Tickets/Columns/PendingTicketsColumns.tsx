@@ -40,7 +40,7 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "full_name",
         headerName: "REPORTED BY",
-        minWidth: 230,
+        minWidth: 300,
         flex: 1,
         filterable: true,
         renderCell: (params) => {
