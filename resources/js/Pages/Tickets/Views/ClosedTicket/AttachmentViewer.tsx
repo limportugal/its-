@@ -38,7 +38,7 @@ const AttachmentViewer: React.FC<AttachmentViewerProps> = ({
                     sm: '50vh',
                     md: '65vh',
                     lg: '69vh',
-                    xl: '81vh'
+                    xl: '79vh'
                 },
                 maxHeight: { xs: 'none', sm: '100%' },
                 overflow: 'auto',
