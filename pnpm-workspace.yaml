@@ -1,0 +1,5 @@
+ignoredBuiltDependencies:
+  - '@mui/x-telemetry'
+  - canvas
+  - esbuild
+  - unrs-resolver

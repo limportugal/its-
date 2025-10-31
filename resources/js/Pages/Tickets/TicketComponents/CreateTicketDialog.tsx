@@ -87,24 +87,40 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     }) as `${number}`[] | undefined;
 
     // DETERMINE IF STORE FIELDS SHOULD BE SHOWN
-    const showStoreFields = systemName === "Customer Not Found";
+    // SHOW WHEN "Customer Not Found" SYSTEM IS SELECTED
+    // OR WHEN "FSR Online" IS SELECTED AND "Customer Not Found" CATEGORY IS SELECTED
+    const showStoreFields = useMemo(() => {
+        if (systemName === "Customer Not Found") return true;
+        
+        if (systemName === "FSR Online") {
+            // GET "Customer Not Found" CATEGORY ID
+            const customerNotFoundCategoryId = categoryOptions
+                .find((cat: any) => cat.label === "Customer Not Found")?.value;
+            
+            // CHECK IF "Customer Not Found" CATEGORY IS SELECTED
+            return selectedCategories?.includes(customerNotFoundCategoryId) || false;
+        }
+        
+        return false;
+    }, [systemName, selectedCategories, categoryOptions]);
     
     // DETERMINE IF FSR NO FIELD SHOULD BE SHOWN
     // Show when FSR Online is selected AND one of the specific categories is selected
     const showFsrNoField = useMemo(() => {
         if (systemName !== "FSR Online") return false;
         
-        // Get category labels that should trigger FSR NO field
+        // GET CATEGORY LABELS THAT SHOULD TRIGGER FSR NO FIELD
         const triggerCategoryIds = categoryOptions
             .filter((cat: any) => 
                 cat.label === "Wrong client input" || 
                 cat.label === "Wrong service input" || 
                 cat.label === "Wrong FSR Number Input" || 
-                cat.label === "Wrong Ticket Number input"
+                cat.label === "Wrong Ticket Number input" ||
+                cat.label === "Delete FSR"
             )
             .map((cat: any) => cat.value);
         
-        // Check if any selected category matches the trigger categories
+        // CHECK IF ANY SELECTED CATEGORY MATCHES THE TRIGGER CATEGORIES
         return selectedCategories?.some((catId: string) => triggerCategoryIds.includes(catId)) || false;
     }, [systemName, selectedCategories, categoryOptions]);
 
@@ -379,7 +395,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             {...field}
                                             control={control}
                                             label="REPORT DESCRIPTION"
-                                            placeholder="Enter report description..."
+                                            placeholder="Please provide a detailed report description..."
                                             fullWidth
                                             multiline
                                             maxRows={10}

@@ -199,22 +199,6 @@ const IndexUserLogs = (): React.ReactElement => {
     return (
         <AuthenticatedLayout header={<Typography variant="h6" />}>
             <Head title="User Logs" />
-            {isFilterChanging && (
-                <div style={{
-                    position: 'fixed',
-                    top: '10px',
-                    right: '10px',
-                    background: '#1976d2',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    zIndex: 9999,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                }}>
-                    🔍 Filtering data...
-                </div>
-            )}
             <DataGrid
                 key={`datagrid-${paginationModel.page}-${paginationModel.pageSize}`} // Only re-render on pagination change
                 rows={userLogs}

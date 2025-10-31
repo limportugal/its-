@@ -37,8 +37,14 @@ export const formSchema = z
         category_labels: z.array(z.string()).optional(),
     })
     .superRefine((data, ctx) => {
-        // If system is "Customer Not Found", make store fields required
-        if (data.system_name === "Customer Not Found") {
+        // DETERMINE IF STORE FIELDS SHOULD BE REQUIRED
+        const shouldRequireStoreFields = 
+            data.system_name === "Customer Not Found" ||
+            (data.system_name === "FSR Online" && 
+             data.category_labels?.includes("Customer Not Found"));
+
+        // IF STORE FIELDS ARE REQUIRED, VALIDATE THEM
+        if (shouldRequireStoreFields) {
             if (!data.store_code || data.store_code.trim() === "") {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
@@ -108,7 +114,8 @@ export const formSchema = z
                     label === "Wrong client input" ||
                     label === "Wrong service input" ||
                     label === "Wrong FSR Number Input" ||
-                    label === "Wrong Ticket Number input"
+                    label === "Wrong Ticket Number input" ||
+                    label === "Delete FSR"
             );
 
             if (requiresFsrValidation) {

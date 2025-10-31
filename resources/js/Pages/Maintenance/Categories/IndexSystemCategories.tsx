@@ -102,7 +102,7 @@ const IndexSystemCategories: React.FC<{
                     loading={isPendingCategories}
                     sx={{
                         ...dataGridHeaderStyles(theme),
-                        border: "none",
+                        borderRadius: 2,
                     }}
                     pageSizeOptions={[10, 25, 50, 75, 100]}
                     initialState={{

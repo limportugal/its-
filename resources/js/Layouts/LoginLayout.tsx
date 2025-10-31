@@ -47,7 +47,7 @@ export default function LoginLayout({ children }: PropsWithChildren<{ isLoading?
                                 xs: "100%",
                                 sm: "350px",
                                 md: "400px",
-                                lg: "450px"
+                                lg: "480px"
                             },
                             maxWidth: "100%",
                             borderRadius: {

@@ -46,6 +46,15 @@ class StoreTicketRequest extends FormRequest
                 if ($requiresFsrValidation) {
                     $rules['fsr_no'] = ['required', 'string', 'min:10', 'max:255'];
                 }
+
+                // CHECK IF "Customer Not Found" CATEGORY IS SELECTED
+                $requiresStoreFields = $this->checkIfRequiresStoreFields();
+                
+                if ($requiresStoreFields) {
+                    $rules['store_code'] = ['required', 'string', 'min:3', 'max:50'];
+                    $rules['store_name'] = ['required', 'string', 'min:3', 'max:100'];
+                    $rules['store_address'] = ['required', 'string', 'min:10', 'max:510'];
+                }
             }
         }
 
@@ -68,7 +77,8 @@ class StoreTicketRequest extends FormRequest
             'Wrong client input',
             'Wrong service input', 
             'Wrong FSR Number Input',
-            'Wrong Ticket Number input'
+            'Wrong Ticket Number input',
+            'Delete FSR'
         ];
 
         // GET SELECTED CATEGORIES FROM DATABASE
@@ -78,6 +88,26 @@ class StoreTicketRequest extends FormRequest
 
         // CHECK IF ANY SELECTED CATEGORY MATCHES THE REQUIRED ONES
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
+    }
+
+    /**
+     * CHECK IF "Customer Not Found" CATEGORY IS SELECTED (FOR FSR ONLINE)
+     */
+    private function checkIfRequiresStoreFields(): bool
+    {
+        $categories = $this->input('categories', []);
+        
+        if (empty($categories)) {
+            return false;
+        }
+
+        // GET SELECTED CATEGORIES FROM DATABASE
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->toArray();
+
+        // CHECK IF "Customer Not Found" CATEGORY IS SELECTED
+        return in_array('Customer Not Found', $selectedCategories);
     }
 
     public function messages(): array

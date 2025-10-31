@@ -42,7 +42,6 @@ const IndexClosedTickets = (): React.ReactElement => {
         return { items: [] };
     });
     const [debouncedFilterModel, setDebouncedFilterModel] = React.useState<GridFilterModel>(() => {
-        // Initialize debounced filter model with URL search parameter
         if (urlSearch) {
             return {
                 items: [],
@@ -59,7 +58,6 @@ const IndexClosedTickets = (): React.ReactElement => {
     const [sortModel, setSortModel] = React.useState<any[]>([]);
     const [isFilterChanging, setIsFilterChanging] = React.useState(false);
 
-    // DEBOUNCE FILTER CHANGES (BUT NOT PAGINATION) - OPTIMIZED
     React.useEffect(() => {
         setIsFilterChanging(true);
         
@@ -68,24 +66,20 @@ const IndexClosedTickets = (): React.ReactElement => {
                 setDebouncedFilterModel(filterModel);
                 setIsFilterChanging(false);
             });
-        }, 300); // Optimized debounce time
+        }, 300);
 
         return () => clearTimeout(timeoutId);
     }, [filterModel]);
 
-    // SYNC PAGINATION MODEL WITH URL ON INITIAL LOAD
     React.useEffect(() => {
-        // Sync pagination with URL on initial load only
         if (urlPage !== paginationModel.page) {
             setPaginationModel(prev => ({ ...prev, page: urlPage }));
         }
     }, []);
 
-    // Update URL when pagination changes
     const updateURL = React.useCallback((newPaginationModel: any, newFilterModel: any = filterModel) => {
         const params = new URLSearchParams();
         
-        // Convert page from 0-based to 1-based
         params.set('page', (newPaginationModel.page + 1).toString());
         params.set('pageSize', newPaginationModel.pageSize.toString());
         
@@ -100,10 +94,6 @@ const IndexClosedTickets = (): React.ReactElement => {
         window.history.pushState({}, '', newURL);
     }, [filterModel]);
 
-    // REMOVED: Old debounced filter update that was causing pagination issues
-
-
-    // TANSTACK USEQUERY TO FETCH CLOSED TICKETS - PERFORMANCE OPTIMIZED
     const {
         data: closedTicketsResponse,
         isError: isErrorClosedTickets,
@@ -181,24 +171,8 @@ const IndexClosedTickets = (): React.ReactElement => {
     return (
         <AuthenticatedLayout header={<Typography variant="h6" />}>
             <Head title="Tickets" />
-            {isFilterChanging && (
-                <div style={{
-                    position: 'fixed',
-                    top: '10px',
-                    right: '10px',
-                    background: '#1976d2',
-                    color: 'white',
-                    padding: '8px 16px',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    zIndex: 9999,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                }}>
-                    🔍 Filtering data...
-                </div>
-            )}
             <DataGrid
-                key={`datagrid-${paginationModel.page}-${paginationModel.pageSize}`} // Only re-render on pagination change
+                key={`datagrid-${paginationModel.page}-${paginationModel.pageSize}`}
                 rows={closedTickets}
                 columns={columns}
                 disableColumnResize

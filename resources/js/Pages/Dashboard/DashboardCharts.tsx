@@ -26,22 +26,6 @@ const DashboardCharts: React.FC<DashboardChartsProps> = ({
                 backgroundColor: "#f8f9fa",
             }}
         >
-            {/* Header */}
-            {/* <Typography
-                variant="h5"
-                component="h1"
-                sx={{
-                    mb: { xs: 2, sm: 2 },
-                    color: "primary.main",
-                    fontWeight: 600,
-                    textAlign: "center",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                    fontSize: { xs: "1.2rem", sm: "1.4rem", md: "1.6rem" },
-                }}
-            >
-                Dashboard Analytics
-            </Typography> */}
 
             {/* Top Row - Two Charts */}
             <Grid

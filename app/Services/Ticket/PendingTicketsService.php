@@ -75,25 +75,37 @@ class PendingTicketsService
                     $query->where('user_id', $user->id)
                           ->orWhere('assign_to_user_id', $user->id);
                 }
-            }))
-            ->orderBy('updated_at', 'desc')
-            ->orderBy('submitted_at', 'desc')
-            ->orderBy('returned_at', 'desc')
-            ->orderBy('assigned_at', 'desc')
-            ->orderBy('created_at', 'desc');
+            }));
 
-        $tickets = $query->get();
+        // DEFINE STATUS PRIORITY ORDER
+        $statusPriority = [
+            'new_ticket' => 1,
+            'assigned' => 2,
+            'returned' => 3,
+            'resubmitted' => 4,
+            'reminder' => 5,
+            'follow-up' => 6,
+            're-open' => 7,
+        ];
+
+        // FETCH AND SORT TICKETS USING ELOQUENT COLLECTIONS
+        $tickets = $query->get()
+            ->sortBy([
+                fn($a, $b) => ($statusPriority[$a->status] ?? 999) <=> ($statusPriority[$b->status] ?? 999),
+                fn($a, $b) => $b->created_at <=> $a->created_at,
+            ])
+            ->values();
 
         $summary = $tickets->groupBy('status')
             ->map(fn($group) => $group->count())
             ->pipe(fn($counts) => [
                 'new_ticket_count' => $counts->get('new_ticket', 0),
-                're_open_count' => $counts->get('re-open', 0),
+                'assigned_count' => $counts->get('assigned', 0),
                 'returned_count' => $counts->get('returned', 0),
                 'resubmitted_count' => $counts->get('resubmitted', 0),
-                'assigned_count' => $counts->get('assigned', 0),
                 'reminder_count' => $counts->get('reminder', 0),
                 'follow_up_count' => $counts->get('follow-up', 0),
+                're_open_count' => $counts->get('re-open', 0),
             ]);
 
         $pendingTickets = $tickets->map(function ($ticket) {
