@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import CustomDialog from "@/Components/Mui/CustomDialog";
 import DialogTitleInfo from "@/Components/Mui/DialogTitleInfo";
+import StatusChip from "@/Pages/Tickets/TicketComponents/StatusChip";
 import {
     DialogContent,
     Typography,
@@ -79,12 +80,8 @@ const ViewUserLogs: React.FC<ViewUserLogsProps> = ({
     }, [userLog?.activity]);
 
     return (
-        <CustomDialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-            <DialogTitleInfo
-                title="User Log Details"
-                subtitle="View details of the selected log entry."
-            />
-
+        <CustomDialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitleInfo title="User Log Details"/>
             <DialogContent 
                 sx={{ 
                     px: isMobile ? 2 : 4,
@@ -147,6 +144,26 @@ const ViewUserLogs: React.FC<ViewUserLogsProps> = ({
                                 {userLog?.user?.name || "Ticket Creator"}
                             </Typography>
                         </Typography>
+
+                        {userLog?.ticket_number && (
+                            <>
+                                <Divider />
+                                <Typography 
+                                    color="text.secondary" 
+                                    fontSize={isMobile ? "0.875rem" : "1rem"}
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    Ticket Number:{' '}
+                                    <Stack direction="row" alignItems="center" sx={{ ml: 1 }}>
+                                        <StatusChip
+                                            label={userLog.ticket_number}
+                                            status="new_ticket"
+                                            isTicketNumber
+                                        />
+                                    </Stack>
+                                </Typography>
+                            </>
+                        )}
                     </Stack>
 
                     {/* ACTIVITY DESCRIPTION SECTION */}
