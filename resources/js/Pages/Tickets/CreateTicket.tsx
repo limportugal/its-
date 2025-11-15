@@ -25,6 +25,15 @@ import { Ticket } from "@/Reuseable/types/ticketTypes";
 import CreateTicketDialog from "@/Pages/Tickets/TicketComponents/CreateTicketDialog";
 import { ReCaptchaRef } from "@/Pages/Tickets/TicketComponents/ReCaptcha";
 
+const normalizeSystemName = (value?: string | null) =>
+    value ? value.toLowerCase().replace(/\s+/g, " ").trim() : "";
+
+const powerFormCategoryTriggers = new Set(["forgot password", "reset password"]);
+
+const requiresPowerFormFields = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "power form" &&
+    !!labels?.some((label) => powerFormCategoryTriggers.has(label.toLowerCase().trim()));
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -81,6 +90,11 @@ const CreateTicket = forwardRef<
         fsr_no: "",
         system_name: "",
         category_labels: [],
+        powerform_full_name: "",
+        powerform_employee_id: "",
+        powerform_email: "",
+        powerform_company_number: "",
+        powerform_imei: "",
     };
 
     // ZOD RESOLVER FOR VALIDATION
@@ -156,6 +170,11 @@ const CreateTicket = forwardRef<
             fsr_no: "",
             system_name: "",
             category_labels: [],
+            powerform_full_name: "",
+            powerform_employee_id: "",
+            powerform_email: "",
+            powerform_company_number: "",
+            powerform_imei: "",
         });
 
         // ENSURE RHF-CONTROLLED FIELDS ARE EXPLICITLY CLEARED
@@ -169,6 +188,11 @@ const CreateTicket = forwardRef<
         setValue('fsr_no', "");
         setValue('system_name', "");
         setValue('category_labels', []);
+        setValue('powerform_full_name', "");
+        setValue('powerform_employee_id', "");
+        setValue('powerform_email', "");
+        setValue('powerform_company_number', "");
+        setValue('powerform_imei', "");
         resetField('attachment');
 
         // BUMP KEY TO FORCEFULLY RE-MOUNT AUTOCOMPLETE COMPONENTS AND CLEAR ANY INTERNAL INPUT TEXT
@@ -288,6 +312,14 @@ const CreateTicket = forwardRef<
                 submitData.append('fsr_no', data.fsr_no || "");
             }
 
+            if (requiresPowerFormFields(data.system_name, data.category_labels)) {
+                submitData.append('powerform_full_name', data.powerform_full_name || "");
+                submitData.append('powerform_employee_id', data.powerform_employee_id || "");
+                submitData.append('powerform_email', data.powerform_email || "");
+                submitData.append('powerform_company_number', data.powerform_company_number || "");
+                submitData.append('powerform_imei', data.powerform_imei || "");
+            }
+
             // HANDLE FILE ATTACHMENT
             if (data.attachment && data.attachment instanceof File) {
                 submitData.append('attachment', data.attachment);
@@ -358,6 +390,14 @@ const CreateTicket = forwardRef<
         // CLEAR FSR NO FIELD IF CHANGING FROM "FSR Online"
         if (newValue?.label !== "FSR Online") {
             setValue('fsr_no', "");
+        }
+
+        if (normalizeSystemName(newValue?.label) !== "power form") {
+            setValue('powerform_full_name', "");
+            setValue('powerform_employee_id', "");
+            setValue('powerform_email', "");
+            setValue('powerform_company_number', "");
+            setValue('powerform_imei', "");
         }
     };
 

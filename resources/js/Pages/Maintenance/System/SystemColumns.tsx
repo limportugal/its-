@@ -27,7 +27,8 @@ export const SystemColumns = (
         {
             field: "created_at",
             headerName: "DATE ADDED",
-            minWidth: 220,
+            minWidth: 200,
+            flex: 1,
             filterable: true,
             sortable: false,
             disableColumnMenu: true,
@@ -43,7 +44,8 @@ export const SystemColumns = (
         {
             field: "system_name",
             headerName: "SYSTEM NAME",
-            width: 350,
+            minWidth: 350,
+            flex: 1,
             filterable: true,
             sortable: false,
             disableColumnMenu: true,
@@ -75,7 +77,7 @@ export const SystemColumns = (
         {
             field: "category",
             headerName: "PROBLEM ENCOUNTERED",
-            minWidth: 500,
+            minWidth: 400,
             flex: 1,
             filterable: true,
             sortable: false,
@@ -114,7 +116,8 @@ export const SystemColumns = (
         {
             field: "status",
             headerName: "STATUS",
-            width: 180,
+            minWidth: 100,
+            flex: 1,
             headerAlign: "center",
             align: "center",
             renderCell: (params) => (
@@ -131,7 +134,8 @@ export const SystemColumns = (
             headerName: "ACTION",
             headerAlign: "center" as GridAlignment,
             align: "center" as GridAlignment,
-            minWidth: 150,
+            minWidth: 100,
+            flex: 1,
             filterable: true,
             sortable: false,
             disableColumnMenu: true,

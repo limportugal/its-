@@ -26,6 +26,11 @@ class ViewCancelledTicketService
             'store_code',
             'store_name',
             'store_address',
+            'powerform_full_name',
+            'powerform_employee_id',
+            'powerform_email',
+            'powerform_company_number',
+            'powerform_imei',
             'description',
             'status',
 

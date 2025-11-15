@@ -20,6 +20,8 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import TagIcon from '@mui/icons-material/Tag';
+import BadgeIcon from '@mui/icons-material/Badge';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 
 // CREATE TICKET COMPONENTS
 import FileUploadField from "@/Pages/Tickets/TicketComponents/FileUploadField";
@@ -73,6 +75,11 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 }) => {
     const showSkeleton = isPendingPriorities || isPendingServiceCenters || isPendingSystems;
 
+    const normalizeText = (value?: string | number | null) => {
+        if (value === undefined || value === null) return "";
+        return String(value).trim().toLowerCase();
+    };
+
     // WATCH system_name TO CONDITIONALLY SHOW STORE FIELDS
     const systemName = useWatch({
         control,
@@ -84,44 +91,67 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     const selectedCategories = useWatch({
         control,
         name: "categories",
-    }) as `${number}`[] | undefined;
+    }) as (string | number)[] | undefined;
 
     // DETERMINE IF STORE FIELDS SHOULD BE SHOWN
     // SHOW WHEN "Customer Not Found" SYSTEM IS SELECTED
     // OR WHEN "FSR Online" IS SELECTED AND "Customer Not Found" CATEGORY IS SELECTED
     const showStoreFields = useMemo(() => {
-        if (systemName === "Customer Not Found") return true;
-        
-        if (systemName === "FSR Online") {
+        const normalizedSystemName = normalizeText(systemName);
+        if (normalizedSystemName === "customer not found") return true;
+
+        if (normalizedSystemName === "fsr online") {
             // GET "Customer Not Found" CATEGORY ID
             const customerNotFoundCategoryId = categoryOptions
-                .find((cat: any) => cat.label === "Customer Not Found")?.value;
-            
+                .find((cat: any) => normalizeText(cat.label) === "customer not found")?.value;
+
             // CHECK IF "Customer Not Found" CATEGORY IS SELECTED
-            return selectedCategories?.includes(customerNotFoundCategoryId) || false;
+            return selectedCategories?.some(
+                (categoryId) => normalizeText(categoryId) === normalizeText(customerNotFoundCategoryId)
+            ) || false;
         }
-        
+
         return false;
     }, [systemName, selectedCategories, categoryOptions]);
     
     // DETERMINE IF FSR NO FIELD SHOULD BE SHOWN
     // Show when FSR Online is selected AND one of the specific categories is selected
     const showFsrNoField = useMemo(() => {
-        if (systemName !== "FSR Online") return false;
+        if (normalizeText(systemName) !== "fsr online") return false;
         
         // GET CATEGORY LABELS THAT SHOULD TRIGGER FSR NO FIELD
         const triggerCategoryIds = categoryOptions
-            .filter((cat: any) => 
-                cat.label === "Wrong client input" || 
-                cat.label === "Wrong service input" || 
-                cat.label === "Wrong FSR Number Input" || 
-                cat.label === "Wrong Ticket Number input" ||
-                cat.label === "Delete FSR"
-            )
+            .filter((cat: any) => {
+                const label = normalizeText(cat.label);
+                return (
+                    label === "wrong client input" ||
+                    label === "wrong service input" ||
+                    label === "wrong fsr number input" ||
+                    label === "wrong ticket number input" ||
+                    label === "delete fsr"
+                );
+            })
             .map((cat: any) => cat.value);
         
         // CHECK IF ANY SELECTED CATEGORY MATCHES THE TRIGGER CATEGORIES
-        return selectedCategories?.some((catId: string) => triggerCategoryIds.includes(catId)) || false;
+        return selectedCategories?.some((catId) =>
+            triggerCategoryIds.some((triggerId: string) => normalizeText(triggerId) === normalizeText(catId))
+        ) || false;
+    }, [systemName, selectedCategories, categoryOptions]);
+
+    // DETERMINE IF POWERFORM FIELDS SHOULD BE SHOWN
+    const showPowerFormFields = useMemo(() => {
+        if (normalizeText(systemName) !== "power form") return false;
+
+        const triggerLabels = new Set(["forgot password", "reset password"]);
+        const triggerCategoryIds = categoryOptions
+            .filter((cat: { label: string }) => triggerLabels.has(normalizeText(cat.label)))
+            .map((cat: { value: string | number }) => String(cat.value));
+
+        const normalizedSelectedCategories = selectedCategories?.map((categoryId) => normalizeText(categoryId)) || [];
+        return normalizedSelectedCategories.some((categoryId) =>
+            triggerCategoryIds.some((triggerId) => normalizeText(triggerId) === categoryId)
+        );
     }, [systemName, selectedCategories, categoryOptions]);
 
     return (
@@ -383,6 +413,72 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                         icon={<TagIcon />}
                                     />
                                 </Grid>
+                            )}
+
+                            {/* CONDITIONAL POWERFORM FIELDS */}
+                            {showPowerFormFields && (
+                                <>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_full_name"
+                                            label="FULL NAME"
+                                            placeholder="Enter full name"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PersonIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_employee_id"
+                                            label="EMPLOYEE ID"
+                                            placeholder="Enter employee ID"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<BadgeIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_email"
+                                            label="EMAIL"
+                                            placeholder="Enter employee email"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<EmailIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_company_number"
+                                            label="COMPANY MOBILE NUMBER"
+                                            placeholder="Enter company mobile number"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12}} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_imei"
+                                            label="IMEI"
+                                            placeholder="You can find it by dialing *#06# on your phone's keypad"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                </>
                             )}
 
                             {/* TEXT AREA FIELD */}

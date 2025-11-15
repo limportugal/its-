@@ -26,11 +26,11 @@ export const useDynamicMutation = <
         mutationFn,
         onSuccess: async (data) => {
             if (invalidateQueries) {
-                const queryKeys = Array.isArray(mutationKey) ? mutationKey : [mutationKey];
+                const queryKeys: string[] = Array.isArray(mutationKey) ? mutationKey : [mutationKey];
                 await Promise.all(
-                    queryKeys.map(key => 
+                    queryKeys.map((key) =>
                         queryClient.invalidateQueries({
-                            queryKey: Array.isArray(key) ? key : [key],
+                            queryKey: [key],
                         })
                     )
                 );

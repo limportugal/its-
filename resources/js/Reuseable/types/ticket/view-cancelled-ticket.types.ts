@@ -9,6 +9,11 @@ export interface ViewCancelledTicketResponse {
     store_code: string;
     store_name: string;
     store_address: string;
+    powerform_full_name: string | null;
+    powerform_employee_id: string | null;
+    powerform_email: string | null;
+    powerform_company_number: string | null;
+    powerform_imei: string | null;
     description: string;
     status: string;
     assigned_at: string | null;

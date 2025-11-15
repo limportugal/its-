@@ -31,6 +31,13 @@ class Ticket extends Model
         // FSR FIELD (FOR FSR ONLINE)
         'fsr_no',
 
+        // POWERFORM FIELDS (FOR POWERFORM)
+        'powerform_full_name',
+        'powerform_employee_id',
+        'powerform_email',
+        'powerform_company_number',
+        'powerform_imei',
+
         //TIMESTAMP
         'closed_at',
         'expired_at',

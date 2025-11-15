@@ -31,6 +31,7 @@ class StoreTicketRequest extends FormRequest
         // CHECK IF SYSTEM IS "Customer Not Found"
         if ($this->has('system_id')) {
             $system = System::find($this->input('system_id'));
+            $normalizedSystemName = $this->normalizeSystemName($system->system_name ?? null);
             
             if ($system && $system->system_name === 'Customer Not Found') {
                 $rules['store_code'] = ['required', 'string', 'min:3', 'max:50'];
@@ -54,6 +55,16 @@ class StoreTicketRequest extends FormRequest
                     $rules['store_code'] = ['required', 'string', 'min:3', 'max:50'];
                     $rules['store_name'] = ['required', 'string', 'min:3', 'max:100'];
                     $rules['store_address'] = ['required', 'string', 'min:10', 'max:510'];
+                }
+            }
+
+            if ($system && $normalizedSystemName === 'powerform') {
+                if ($this->checkIfRequiresPowerFormFields()) {
+                    $rules['powerform_full_name'] = ['required', 'string', 'min:6', 'max:100'];
+                    $rules['powerform_employee_id'] = ['required', 'string', 'min:3', 'max:30'];
+                    $rules['powerform_email'] = ['required', 'email:rfc,dns', 'min:8', 'max:100'];
+                    $rules['powerform_company_number'] = ['required', 'string', 'min:5', 'max:25'];
+                    $rules['powerform_imei'] = ['required', 'string', 'min:10', 'max:32'];
                 }
             }
         }
@@ -110,6 +121,42 @@ class StoreTicketRequest extends FormRequest
         return in_array('Customer Not Found', $selectedCategories);
     }
 
+    /**
+     * CHECK IF POWER FORM FIELDS ARE REQUIRED
+     */
+    private function checkIfRequiresPowerFormFields(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        $requiredCategoryNames = [
+            'forgot password',
+            'reset password',
+        ];
+
+        return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
+    }
+
+    /**
+     * NORMALIZE SYSTEM NAME FOR CONSISTENCY
+     */
+    private function normalizeSystemName(?string $value): string
+    {
+        if (!$value) {
+            return '';
+        }
+
+        return strtolower(preg_replace('/\s+/', '', trim($value)));
+    }
+
     public function messages(): array
     {
         return [
@@ -125,6 +172,22 @@ class StoreTicketRequest extends FormRequest
             'fsr_no.required' => 'The FSR number is required for the selected categories.',
             'fsr_no.min' => 'The FSR number must be at least 10 characters long.',
             'fsr_no.max' => 'The FSR number must not exceed 255 characters.',
+            'powerform_full_name.required' => 'The full name is required for Power Form tickets.',
+            'powerform_full_name.min' => 'The full name must be at least 6 characters long.',
+            'powerform_full_name.max' => 'The full name must not exceed 100 characters.',
+            'powerform_employee_id.required' => 'The employee ID is required for Power Form tickets.',
+            'powerform_employee_id.min' => 'The employee ID must be at least 3 characters long.',
+            'powerform_employee_id.max' => 'The employee ID must not exceed 30 characters.',
+            'powerform_email.required' => 'The Power Form email is required.',
+            'powerform_email.email' => 'The Power Form email must be a valid email address.',
+            'powerform_email.min' => 'The Power Form email must be at least 8 characters long.',
+            'powerform_email.max' => 'The Power Form email must not exceed 100 characters.',
+            'powerform_company_number.required' => 'The company number is required for Power Form tickets.',
+            'powerform_company_number.min' => 'The company number must be at least 5 characters long.',
+            'powerform_company_number.max' => 'The company number must not exceed 25 characters.',
+            'powerform_imei.required' => 'The IMEI is required for Power Form tickets.',
+            'powerform_imei.min' => 'The IMEI must be at least 10 characters long.',
+            'powerform_imei.max' => 'The IMEI must not exceed 32 characters.',
         ];
     }
 }

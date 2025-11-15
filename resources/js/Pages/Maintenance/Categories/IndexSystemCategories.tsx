@@ -6,7 +6,7 @@ import { route } from "ziggy-js";
 // MUI COMPONENTS
 import { DataGrid } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material/styles";
-import { useMediaQuery, Box } from "@mui/material";
+import { useMediaQuery } from "@mui/material";
 import GlobalSnackbar from "@/Components/Mui/GlobalSnackbar";
 
 // HOOKS, API, TYPE, HELPERS & UTILS
@@ -24,6 +24,9 @@ import Create from "@/Pages/Maintenance/Categories/CreateCategory";
 import Edit from "@/Pages/Maintenance/Categories/EditCategory";
 import { useCategoryStore } from "@/stores/maintenance/useCategoryStore";
 import { handleDeleteCategory } from "@/Pages/Maintenance/Categories/deleteCategoryHandler";
+import { handleActivateCategory } from "@/Pages/Maintenance/Categories/activateCategoryHandler";
+import { handleInactivateCategory } from "@/Pages/Maintenance/Categories/inactivateCategoryHandler";
+import { SystemCategory } from "@/Reuseable/types/system-categories.types";
 
 // INDEX SYSTEM CATEGORIES COMPONENT
 const IndexSystemCategories: React.FC<{
@@ -66,19 +69,31 @@ const IndexSystemCategories: React.FC<{
     }
 
     // HANDLE DELETE
-    const handleDelete = async (row: any) => {
+    const handleDelete = async (row: SystemCategory) => {
         await handleDeleteCategory(row, refetch);
+    };
+
+    // HANDLE ACTIVATE
+    const handleActivate = async (row: SystemCategory) => {
+        await handleActivateCategory(row, refetch);
+    };
+
+    // HANDLE INACTIVATE
+    const handleInactivate = async (row: SystemCategory) => {
+        await handleInactivateCategory(row, refetch);
     };
 
     // KEBAB MENU HANDLER
     const onKebabMenuSelect = (
         option: { text: string } | string,
-        row: any,
+        row: SystemCategory,
         closeMenu: () => void
     ) => {
         const optionText = typeof option === "object" ? option.text : option;
         if (optionText === "Edit") handleOpenDialog(row);
         if (optionText === "Delete") handleDelete(row);
+        if (optionText === "Inactivate") handleInactivate(row);
+        if (optionText === "Activate") handleActivate(row);
         closeMenu();
     };
 

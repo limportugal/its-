@@ -319,6 +319,43 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
             icon: <StoreIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
         },
         {
+            label: "POWER FORM DETAILS",
+            value: currentTicket.powerform_full_name ||
+                currentTicket.powerform_employee_id ||
+                currentTicket.powerform_email ||
+                currentTicket.powerform_company_number ||
+                currentTicket.powerform_imei ? (
+                    <>
+                        {currentTicket.powerform_full_name && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Full Name:</strong> {currentTicket.powerform_full_name}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_employee_id && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Employee ID:</strong> {currentTicket.powerform_employee_id}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_email && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Email:</strong> {currentTicket.powerform_email}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_company_number && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Company Mobile Number:</strong> {currentTicket.powerform_company_number}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_imei && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
+                                <strong>IMEI:</strong> {currentTicket.powerform_imei}
+                            </Typography>
+                        )}
+                    </>
+                ) : "Not specified",
+            icon: <BadgeOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
             label: "DESCRIPTION",
             value: currentTicket.description || "",
             multiline: true,

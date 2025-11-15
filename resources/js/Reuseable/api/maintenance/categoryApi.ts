@@ -49,3 +49,15 @@ export const deleteCategoryData = async (id: number): Promise<void> => {
     const url = route('maintenance.categories.delete', { id });
     return apiRequest(categoryApiClient, "delete", url);
 };
+
+// ACTIVATE CATEGORY
+export const activateCategoryData = async (id: number): Promise<void> => {
+    const url = route('maintenance.categories.activate', { id });
+    await apiRequest(categoryApiClient, "patch", url);
+};
+
+// INACTIVATE CATEGORY
+export const inactivateCategoryData = async (id: number): Promise<void> => {
+    const url = route('maintenance.categories.inactivate', { id });
+    await apiRequest(categoryApiClient, "patch", url);
+};

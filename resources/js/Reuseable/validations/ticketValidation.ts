@@ -35,8 +35,18 @@ export const formSchema = z
         fsr_no: z.string().optional(),
         system_name: z.string().optional(),
         category_labels: z.array(z.string()).optional(),
+        powerform_full_name: z.string().optional(),
+        powerform_employee_id: z.string().optional(),
+        powerform_email: z.string().optional(),
+        powerform_company_number: z.string().optional(),
+        powerform_imei: z.string().optional(),
     })
     .superRefine((data, ctx) => {
+        const normalizeSystemName = (value?: string | null) =>
+            value ? value.toLowerCase().replace(/\s+/g, " ").trim() : "";
+        const normalize = (value?: string | null) =>
+            value ? value.toLowerCase().trim() : "";
+
         // DETERMINE IF STORE FIELDS SHOULD BE REQUIRED
         const shouldRequireStoreFields = 
             data.system_name === "Customer Not Found" ||
@@ -139,6 +149,116 @@ export const formSchema = z
                         path: ["fsr_no"],
                     });
                 }
+            }
+        }
+
+        // VALIDATE POWERFORM FIELDS ONLY WHEN REQUIRED
+        const requiresPowerFormFields =
+            normalizeSystemName(data.system_name) === "power form" &&
+            data.category_labels?.some((label) => {
+                const normalizedLabel = normalize(label);
+                return normalizedLabel === "forgot password" || normalizedLabel === "reset password";
+            });
+
+        if (requiresPowerFormFields) {
+            if (!data.powerform_full_name || data.powerform_full_name.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name is required for Power Form requests.",
+                    path: ["powerform_full_name"],
+                });
+            } else if (data.powerform_full_name.length < 6) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name must be at least 6 characters long.",
+                    path: ["powerform_full_name"],
+                });
+            } else if (data.powerform_full_name.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name must not exceed 100 characters.",
+                    path: ["powerform_full_name"],
+                });
+            }
+
+            if (!data.powerform_employee_id || data.powerform_employee_id.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID is required for Power Form requests.",
+                    path: ["powerform_employee_id"],
+                });
+            } else if (data.powerform_employee_id.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID must be at least 3 characters long.",
+                    path: ["powerform_employee_id"],
+                });
+            } else if (data.powerform_employee_id.length > 30) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID must not exceed 30 characters.",
+                    path: ["powerform_employee_id"],
+                });
+            }
+
+            if (!data.powerform_email || data.powerform_email.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee email is required for Power Form requests.",
+                    path: ["powerform_email"],
+                });
+            } else if (!/^\S+@\S+\.\S+$/.test(data.powerform_email)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee email must be a valid email address.",
+                    path: ["powerform_email"],
+                });
+            } else if (data.powerform_email.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee email must not exceed 100 characters.",
+                    path: ["powerform_email"],
+                });
+            }
+
+            if (!data.powerform_company_number || data.powerform_company_number.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company number is required for Power Form requests.",
+                    path: ["powerform_company_number"],
+                });
+            } else if (data.powerform_company_number.length < 5) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company number must be at least 11 characters long.",
+                    path: ["powerform_company_number"],
+                });
+            } else if (data.powerform_company_number.length > 25) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company number must not exceed 25 characters.",
+                    path: ["powerform_company_number"],
+                });
+            }
+
+            if (!data.powerform_imei || data.powerform_imei.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI is required for Power Form requests.",
+                    path: ["powerform_imei"],
+                });
+            } else if (data.powerform_imei.length < 10) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI must be at least 15 characters long.",
+                    path: ["powerform_imei"],
+                });
+            } else if (data.powerform_imei.length > 32) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI must not exceed 32 characters.",
+                    path: ["powerform_imei"],
+                });
             }
         }
     });

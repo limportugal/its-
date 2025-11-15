@@ -9,6 +9,11 @@ export interface ViewPendingTicketResponse {
     store_code: string | null;
     store_name: string | null;
     store_address: string | null;
+    powerform_full_name: string | null;
+    powerform_employee_id: string | null;
+    powerform_email: string | null;
+    powerform_company_number: string | null;
+    powerform_imei: string | null;
     description: string;
     action_taken: string | null;
     status: string;
