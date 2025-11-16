@@ -143,7 +143,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     const showPowerFormFields = useMemo(() => {
         if (normalizeText(systemName) !== "power form") return false;
 
-        const triggerLabels = new Set(["forgot password", "reset password"]);
+        const triggerLabels = new Set(["forgot password", "reset password", "unable to login"]);
         const triggerCategoryIds = categoryOptions
             .filter((cat: { label: string }) => triggerLabels.has(normalizeText(cat.label)))
             .map((cat: { value: string | number }) => String(cat.value));

@@ -34,6 +34,9 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
+        "@fontsource-variable/inter": "^5.2.8",
+        "@fontsource/geist-sans": "^5.2.5",
+        "@fontsource/inter": "^5.2.8",
         "@hookform/resolvers": "^5.2.2",
         "@inertiajs/core": "^2.2.17",
         "@inertiajs/inertia": "^0.11.1",
@@ -57,6 +60,7 @@
         "apexcharts": "^3.54.1",
         "date-fns": "^4.1.0",
         "dayjs": "^1.11.19",
+        "geist": "^1.5.1",
         "pdfjs-dist": "3.11.174",
         "react-apexcharts": "1.4.1",
         "react-draggable": "4.5.0",

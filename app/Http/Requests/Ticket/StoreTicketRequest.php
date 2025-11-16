@@ -72,9 +72,7 @@ class StoreTicketRequest extends FormRequest
         return $rules;
     }
 
-    /**
-     * CHECK IF ANY SELECTED CATEGORY REQUIRES FSR VALIDATION
-     */
+    // CHECK IF ANY SELECTED CATEGORY REQUIRES FSR VALIDATION
     private function checkIfRequiresFsrValidation(): bool
     {
         $categories = $this->input('categories', []);
@@ -101,9 +99,7 @@ class StoreTicketRequest extends FormRequest
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
     }
 
-    /**
-     * CHECK IF "Customer Not Found" CATEGORY IS SELECTED (FOR FSR ONLINE)
-     */
+    // CHECK IF "Customer Not Found" CATEGORY IS SELECTED (FOR FSR ONLINE)
     private function checkIfRequiresStoreFields(): bool
     {
         $categories = $this->input('categories', []);
@@ -121,9 +117,7 @@ class StoreTicketRequest extends FormRequest
         return in_array('Customer Not Found', $selectedCategories);
     }
 
-    /**
-     * CHECK IF POWER FORM FIELDS ARE REQUIRED
-     */
+    // CHECK IF POWER FORM FIELDS ARE REQUIRED
     private function checkIfRequiresPowerFormFields(): bool
     {
         $categories = $this->input('categories', []);
@@ -140,14 +134,13 @@ class StoreTicketRequest extends FormRequest
         $requiredCategoryNames = [
             'forgot password',
             'reset password',
+            'unable to login',
         ];
 
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
     }
 
-    /**
-     * NORMALIZE SYSTEM NAME FOR CONSISTENCY
-     */
+    // NORMALIZE SYSTEM NAME FOR CONSISTENCY
     private function normalizeSystemName(?string $value): string
     {
         if (!$value) {
