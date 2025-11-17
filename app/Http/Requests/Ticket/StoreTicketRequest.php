@@ -59,7 +59,13 @@ class StoreTicketRequest extends FormRequest
             }
 
             if ($system && $normalizedSystemName === 'powerform') {
-                if ($this->checkIfRequiresPowerFormFields()) {
+                // CHECK IF ACCOUNT LOCKED IS SELECTED (ONLY REQUIRES USERNAME/EMAIL AND COMPANY NUMBER)
+                if ($this->checkIfRequiresAccountLockedFields()) {
+                    $rules['powerform_email'] = ['required', 'string', 'min:3', 'max:100'];
+                    $rules['powerform_company_number'] = ['required', 'string', 'min:5', 'max:25'];
+                } 
+                // CHECK IF OTHER POWERFORM CATEGORIES ARE SELECTED (REQUIRES ALL FIELDS)
+                else if ($this->checkIfRequiresPowerFormFields()) {
                     $rules['powerform_full_name'] = ['required', 'string', 'min:6', 'max:100'];
                     $rules['powerform_employee_id'] = ['required', 'string', 'min:3', 'max:30'];
                     $rules['powerform_email'] = ['required', 'email:rfc,dns', 'min:8', 'max:100'];
@@ -141,6 +147,37 @@ class StoreTicketRequest extends FormRequest
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
     }
 
+    // CHECK IF ACCOUNT LOCKED FIELDS ARE REQUIRED
+    // ONLY RETURNS TRUE IF ACCOUNT LOCKED IS SELECTED AND NO OTHER POWERFORM CATEGORIES ARE SELECTED
+    private function checkIfRequiresAccountLockedFields(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        $hasAccountLocked = in_array('account locked', $selectedCategories);
+        
+        // CHECK IF OTHER POWERFORM CATEGORIES ARE SELECTED
+        $otherPowerFormCategories = [
+            'forgot password',
+            'reset password',
+            'unable to login',
+            'unable to access',
+        ];
+        
+        $hasOtherPowerFormCategories = !empty(array_intersect($selectedCategories, $otherPowerFormCategories));
+
+        // ONLY REQUIRE ACCOUNT LOCKED FIELDS IF ACCOUNT LOCKED IS SELECTED AND NO OTHER POWERFORM CATEGORIES
+        return $hasAccountLocked && !$hasOtherPowerFormCategories;
+    }
+
     // NORMALIZE SYSTEM NAME FOR CONSISTENCY
     private function normalizeSystemName(?string $value): string
     {
@@ -172,10 +209,10 @@ class StoreTicketRequest extends FormRequest
             'powerform_employee_id.required' => 'The employee ID is required for Power Form tickets.',
             'powerform_employee_id.min' => 'The employee ID must be at least 3 characters long.',
             'powerform_employee_id.max' => 'The employee ID must not exceed 30 characters.',
-            'powerform_email.required' => 'The Power Form email is required.',
+            'powerform_email.required' => 'The username or email is required.',
             'powerform_email.email' => 'The Power Form email must be a valid email address.',
-            'powerform_email.min' => 'The Power Form email must be at least 8 characters long.',
-            'powerform_email.max' => 'The Power Form email must not exceed 100 characters.',
+            'powerform_email.min' => 'The username or email must be at least :min characters long.',
+            'powerform_email.max' => 'The username or email must not exceed 100 characters.',
             'powerform_company_number.required' => 'The company number is required for Power Form tickets.',
             'powerform_company_number.min' => 'The company number must be at least 5 characters long.',
             'powerform_company_number.max' => 'The company number must not exceed 25 characters.',

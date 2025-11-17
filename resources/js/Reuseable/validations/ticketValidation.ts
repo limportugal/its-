@@ -160,6 +160,15 @@ export const formSchema = z
                 return normalizedLabel === "forgot password" || normalizedLabel === "reset password" || normalizedLabel === "unable to login" || normalizedLabel === "unable to access";
             });
 
+        // CHECK IF ACCOUNT LOCKED IS SELECTED (ONLY REQUIRES EMAIL AND COMPANY NUMBER)
+        const requiresAccountLockedFields =
+            normalizeSystemName(data.system_name) === "power form" &&
+            data.category_labels?.some((label) => {
+                const normalizedLabel = normalize(label);
+                return normalizedLabel === "account locked";
+            }) &&
+            !requiresPowerFormFields; // ONLY VALIDATE ACCOUNT LOCKED IF NO OTHER POWERFORM CATEGORIES ARE SELECTED
+
         if (requiresPowerFormFields) {
             if (!data.powerform_full_name || data.powerform_full_name.trim() === "") {
                 ctx.addIssue({
@@ -258,6 +267,51 @@ export const formSchema = z
                     code: z.ZodIssueCode.custom,
                     message: "IMEI must not exceed 32 characters.",
                     path: ["powerform_imei"],
+                });
+            }
+        }
+
+        // VALIDATE ACCOUNT LOCKED FIELDS ONLY WHEN REQUIRED
+        // ACCOUNT LOCKED USES powerform_email AND powerform_company_number BUT ONLY REQUIRES THESE TWO FIELDS
+        // powerform_email CAN BE USERNAME OR EMAIL
+        if (requiresAccountLockedFields) {
+            if (!data.powerform_email || data.powerform_email.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Username or email is required for Account Locked requests.",
+                    path: ["powerform_email"],
+                });
+            } else if (data.powerform_email.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Username or email must be at least 3 characters long.",
+                    path: ["powerform_email"],
+                });
+            } else if (data.powerform_email.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Username or email must not exceed 100 characters.",
+                    path: ["powerform_email"],
+                });
+            }
+
+            if (!data.powerform_company_number || data.powerform_company_number.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company phone number is required for Account Locked requests.",
+                    path: ["powerform_company_number"],
+                });
+            } else if (data.powerform_company_number.length < 11) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company phone number must be at least 11 characters long.",
+                    path: ["powerform_company_number"],
+                });
+            } else if (data.powerform_company_number.length > 255) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company phone number must not exceed 255 characters.",
+                    path: ["powerform_company_number"],
                 });
             }
         }

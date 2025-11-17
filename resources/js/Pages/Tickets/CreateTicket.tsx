@@ -34,6 +34,10 @@ const requiresPowerFormFields = (systemName?: string | null, labels?: string[]) 
     normalizeSystemName(systemName) === "power form" &&
     !!labels?.some((label) => powerFormCategoryTriggers.has(label.toLowerCase().trim()));
 
+const requiresAccountLockedFields = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "power form" &&
+    !!labels?.some((label) => label.toLowerCase().trim() === "account locked");
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -318,6 +322,11 @@ const CreateTicket = forwardRef<
                 submitData.append('powerform_email', data.powerform_email || "");
                 submitData.append('powerform_company_number', data.powerform_company_number || "");
                 submitData.append('powerform_imei', data.powerform_imei || "");
+            }
+
+            if (requiresAccountLockedFields(data.system_name, data.category_labels)) {
+                submitData.append('powerform_email', data.powerform_email || "");
+                submitData.append('powerform_company_number', data.powerform_company_number || "");
             }
 
             // HANDLE FILE ATTACHMENT

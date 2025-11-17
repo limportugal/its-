@@ -154,6 +154,23 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
         );
     }, [systemName, selectedCategories, categoryOptions]);
 
+    // DETERMINE IF ACCOUNT LOCKED FIELDS SHOULD BE SHOWN
+    // ONLY SHOW IF ACCOUNT LOCKED IS SELECTED AND NO OTHER POWERFORM CATEGORIES ARE SELECTED
+    const showAccountLockedFields = useMemo(() => {
+        if (normalizeText(systemName) !== "power form") return false;
+        if (showPowerFormFields) return false; // DON'T SHOW IF OTHER POWERFORM CATEGORIES ARE SELECTED
+
+        const triggerLabel = "account locked";
+        const triggerCategoryIds = categoryOptions
+            .filter((cat: { label: string }) => normalizeText(cat.label) === triggerLabel)
+            .map((cat: { value: string | number }) => String(cat.value));
+
+        const normalizedSelectedCategories = selectedCategories?.map((categoryId) => normalizeText(categoryId)) || [];
+        return normalizedSelectedCategories.some((categoryId) =>
+            triggerCategoryIds.some((triggerId) => normalizeText(triggerId) === categoryId)
+        );
+    }, [systemName, selectedCategories, categoryOptions, showPowerFormFields]);
+
     return (
         <Dialog
             open={open}
@@ -471,6 +488,36 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             name="powerform_imei"
                                             label="IMEI"
                                             placeholder="You can find it by dialing *#06# on your phone's keypad"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {/* CONDITIONAL ACCOUNT LOCKED FIELDS */}
+                            {showAccountLockedFields && (
+                                <>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_email"
+                                            label="USERNAME / EMAIL"
+                                            placeholder="Enter username or email"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<EmailIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_company_number"
+                                            label="COMPANY PHONE NUMBER"
+                                            placeholder="Enter company phone number"
                                             control={control}
                                             errors={errors}
                                             disabled={ticketIsPending}
