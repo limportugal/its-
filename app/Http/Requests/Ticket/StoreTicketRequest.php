@@ -135,6 +135,7 @@ class StoreTicketRequest extends FormRequest
             'forgot password',
             'reset password',
             'unable to login',
+            'unable to access',
         ];
 
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));

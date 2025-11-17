@@ -192,9 +192,17 @@ export default function Welcome() {
                                     color: "rgba(255,255,255,0.98)",
                                     textTransform: "capitalize",
                                     letterSpacing: { xs: "1px", sm: "2px" },
-                                    lineHeight: 1.1,
+                                    lineHeight: 0.95,
                                     textShadow:
                                         "0 0 20px rgba(255,255,255,0.3)",
+                                    "& h1": {
+                                        lineHeight: 0.95,
+                                        "& br": {
+                                            lineHeight: 0.5,
+                                            display: "block",
+                                            margin: "-0.15em 0",
+                                        },
+                                    },
                                     // Responsive font sizes for different mobile screens
                                     "@media (max-width: 375px)": {
                                         // iPhone SE and smaller
@@ -455,9 +463,17 @@ export default function Welcome() {
                                     opacity: 1,
                                     transform: "translateY(0)",
                                     transition: "all 0.3s ease",
-                                    lineHeight: { md: 1.2 },
+                                    lineHeight: { md: 0.95 },
                                     textAlign: "left",
                                     width: "100%",
+                                    "& h1": {
+                                        lineHeight: 0.95,
+                                        "& br": {
+                                            lineHeight: 0.5,
+                                            display: "block",
+                                            margin: "-0.15em 0",
+                                        },
+                                    },
                                 }}
                             >
                                 <h1 className="font-['Geist'] font-black tracking-tight">

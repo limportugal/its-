@@ -157,7 +157,7 @@ export const formSchema = z
             normalizeSystemName(data.system_name) === "power form" &&
             data.category_labels?.some((label) => {
                 const normalizedLabel = normalize(label);
-                return normalizedLabel === "forgot password" || normalizedLabel === "reset password" || normalizedLabel === "unable to login";
+                return normalizedLabel === "forgot password" || normalizedLabel === "reset password" || normalizedLabel === "unable to login" || normalizedLabel === "unable to access";
             });
 
         if (requiresPowerFormFields) {

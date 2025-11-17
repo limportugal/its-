@@ -28,7 +28,7 @@ import { ReCaptchaRef } from "@/Pages/Tickets/TicketComponents/ReCaptcha";
 const normalizeSystemName = (value?: string | null) =>
     value ? value.toLowerCase().replace(/\s+/g, " ").trim() : "";
 
-const powerFormCategoryTriggers = new Set(["forgot password", "reset password", "unable to login"]);
+const powerFormCategoryTriggers = new Set(["forgot password", "reset password", "unable to login", "unable to access"]);
 
 const requiresPowerFormFields = (systemName?: string | null, labels?: string[]) =>
     normalizeSystemName(systemName) === "power form" &&
