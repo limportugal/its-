@@ -62,15 +62,25 @@ class StoreTicketRequest extends FormRequest
                 // CHECK IF ACCOUNT LOCKED IS SELECTED (ONLY REQUIRES USERNAME/EMAIL AND COMPANY NUMBER)
                 if ($this->checkIfRequiresAccountLockedFields()) {
                     $rules['powerform_email'] = ['required', 'string', 'min:3', 'max:100'];
-                    $rules['powerform_company_number'] = ['required', 'string', 'min:5', 'max:25'];
+                    $rules['powerform_company_number'] = ['required', 'string', 'min:11', 'max:255'];
                 } 
                 // CHECK IF OTHER POWERFORM CATEGORIES ARE SELECTED (REQUIRES ALL FIELDS)
                 else if ($this->checkIfRequiresPowerFormFields()) {
                     $rules['powerform_full_name'] = ['required', 'string', 'min:6', 'max:100'];
                     $rules['powerform_employee_id'] = ['required', 'string', 'min:3', 'max:30'];
                     $rules['powerform_email'] = ['required', 'email:rfc,dns', 'min:8', 'max:100'];
-                    $rules['powerform_company_number'] = ['required', 'string', 'min:5', 'max:25'];
-                    $rules['powerform_imei'] = ['required', 'string', 'min:10', 'max:32'];
+                    $rules['powerform_company_number'] = ['required', 'string', 'min:11', 'max:255'];
+                    $rules['powerform_imei'] = ['required', 'string', 'min:15', 'max:255'];
+                }
+            }
+
+            // CHECK IF SYSTEM IS "Service Logs System" AND HAS "Location Error" CATEGORY
+            if ($system && $normalizedSystemName === 'servicelogssystem') {
+                if ($this->checkIfRequiresServiceLogsFields()) {
+                    $rules['service_logs_mobile_no'] = ['required', 'string', 'min:10', 'max:25'];
+                    $rules['service_logs_mobile_model'] = ['required', 'string', 'min:3', 'max:100'];
+                    $rules['service_logs_mobile_serial_no'] = ['required', 'string', 'min:5', 'max:100'];
+                    $rules['service_logs_imei'] = ['required', 'string', 'min:15', 'max:255'];
                 }
             }
         }
@@ -178,6 +188,23 @@ class StoreTicketRequest extends FormRequest
         return $hasAccountLocked && !$hasOtherPowerFormCategories;
     }
 
+    // CHECK IF SERVICE LOGS FIELDS ARE REQUIRED
+    private function checkIfRequiresServiceLogsFields(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        return in_array('location error', $selectedCategories);
+    }
+
     // NORMALIZE SYSTEM NAME FOR CONSISTENCY
     private function normalizeSystemName(?string $value): string
     {
@@ -214,11 +241,23 @@ class StoreTicketRequest extends FormRequest
             'powerform_email.min' => 'The username or email must be at least :min characters long.',
             'powerform_email.max' => 'The username or email must not exceed 100 characters.',
             'powerform_company_number.required' => 'The company number is required for Power Form tickets.',
-            'powerform_company_number.min' => 'The company number must be at least 5 characters long.',
-            'powerform_company_number.max' => 'The company number must not exceed 25 characters.',
+            'powerform_company_number.min' => 'The company number must be at least 11 characters long.',
+            'powerform_company_number.max' => 'The company number must not exceed 255 characters.',
             'powerform_imei.required' => 'The IMEI is required for Power Form tickets.',
-            'powerform_imei.min' => 'The IMEI must be at least 10 characters long.',
-            'powerform_imei.max' => 'The IMEI must not exceed 32 characters.',
+            'powerform_imei.min' => 'The IMEI must be at least 15 characters long.',
+            'powerform_imei.max' => 'The IMEI must not exceed 255 characters.',
+            'service_logs_mobile_no.required' => 'The mobile number is required for Location Error requests.',
+            'service_logs_mobile_no.min' => 'The mobile number must be at least 11 characters long.',
+            'service_logs_mobile_no.max' => 'The mobile number must not exceed 25 characters.',
+            'service_logs_mobile_model.required' => 'The mobile model is required for Location Error requests.',
+            'service_logs_mobile_model.min' => 'The mobile model must be at least 2 characters long.',
+            'service_logs_mobile_model.max' => 'The mobile model must not exceed 100 characters.',
+            'service_logs_mobile_serial_no.required' => 'The mobile serial number is required for Location Error requests.',
+            'service_logs_mobile_serial_no.min' => 'The mobile serial number must be at least 5 characters long.',
+            'service_logs_mobile_serial_no.max' => 'The mobile serial number must not exceed 100 characters.',
+            'service_logs_imei.required' => 'The IMEI is required for Location Error requests.',
+            'service_logs_imei.min' => 'The IMEI must be at least 15 characters long.',
+            'service_logs_imei.max' => 'The IMEI must not exceed 255 characters.',
         ];
     }
 }

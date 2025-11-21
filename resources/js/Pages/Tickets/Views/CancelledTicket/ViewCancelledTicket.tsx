@@ -30,6 +30,7 @@ import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import StoreIcon from '@mui/icons-material/Store';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 
 // TAB ICONS
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
@@ -354,6 +355,37 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
                     </>
                 ) : "Not specified",
             icon: <BadgeOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
+            label: "SERVICE LOGS SYSTEM DETAILS",
+            value: currentTicket.service_logs_mobile_no ||
+                currentTicket.service_logs_mobile_model ||
+                currentTicket.service_logs_mobile_serial_no ||
+                currentTicket.service_logs_imei ? (
+                    <>
+                        {currentTicket.service_logs_mobile_no && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Mobile Number:</strong> {currentTicket.service_logs_mobile_no}
+                            </Typography>
+                        )}
+                        {currentTicket.service_logs_mobile_model && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Mobile Model:</strong> {currentTicket.service_logs_mobile_model}
+                            </Typography>
+                        )}
+                        {currentTicket.service_logs_mobile_serial_no && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Mobile Serial Number:</strong> {currentTicket.service_logs_mobile_serial_no}
+                            </Typography>
+                        )}
+                        {currentTicket.service_logs_imei && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
+                                <strong>IMEI:</strong> {currentTicket.service_logs_imei}
+                            </Typography>
+                        )}
+                    </>
+                ) : "Not specified",
+            icon: <PhoneAndroidIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
         },
         {
             label: "DESCRIPTION",

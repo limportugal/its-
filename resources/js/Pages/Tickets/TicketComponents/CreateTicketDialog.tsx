@@ -171,6 +171,22 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
         );
     }, [systemName, selectedCategories, categoryOptions, showPowerFormFields]);
 
+    // DETERMINE IF SERVICE LOGS FIELDS SHOULD BE SHOWN
+    // SHOW WHEN "Service Logs System" IS SELECTED AND "Location Error" CATEGORY IS SELECTED
+    const showServiceLogsFields = useMemo(() => {
+        if (normalizeText(systemName) !== "service logs system") return false;
+
+        const triggerLabel = "location error";
+        const triggerCategoryIds = categoryOptions
+            .filter((cat: { label: string }) => normalizeText(cat.label) === triggerLabel)
+            .map((cat: { value: string | number }) => String(cat.value));
+
+        const normalizedSelectedCategories = selectedCategories?.map((categoryId) => normalizeText(categoryId)) || [];
+        return normalizedSelectedCategories.some((categoryId) =>
+            triggerCategoryIds.some((triggerId) => normalizeText(triggerId) === categoryId)
+        );
+    }, [systemName, selectedCategories, categoryOptions]);
+
     return (
         <Dialog
             open={open}
@@ -348,6 +364,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                                 disableCloseOnSelect={true}
                                                 fullWidth={true}
                                                 error={errors.categories}
+                                                limitTags={1}
                                                 getOptionLabel={(option) =>
                                                     typeof option === 'string' ? option : option.label
                                                 }
@@ -356,6 +373,61 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                                     return option.value === value.value;
                                                 }}
                                                 icon={<ReportIcon />}
+                                                placeholder={selectedCategoryObjects.length > 0 ? "" : "Select a problem category"}
+                                                renderTags={(value, getTagProps) => {
+                                                    return value.map((option, index) => {
+                                                        const { key, ...tagProps } = getTagProps({ index });
+                                                        return (
+                                                            <Chip
+                                                                key={key}
+                                                                {...tagProps}
+                                                                label={option.label}
+                                                                deleteIcon={
+                                                                    <Box
+                                                                        component="span"
+                                                                        sx={{
+                                                                            width: '18px',
+                                                                            height: '18px',
+                                                                            borderRadius: '50%',
+                                                                            backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                                                                            display: 'flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontSize: '12px',
+                                                                            color: 'rgba(0, 0, 0, 0.54)',
+                                                                        }}
+                                                                    >
+                                                                        ×
+                                                                    </Box>
+                                                                }
+                                                                sx={{
+                                                                    height: '28px',
+                                                                    maxWidth: '180px',
+                                                                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                                                                    color: 'rgba(0, 0, 0, 0.87)',
+                                                                    fontSize: '0.875rem',
+                                                                    fontWeight: 400,
+                                                                    '& .MuiChip-label': {
+                                                                        overflow: 'hidden',
+                                                                        textOverflow: 'ellipsis',
+                                                                        whiteSpace: 'nowrap',
+                                                                        maxWidth: '140px',
+                                                                        paddingLeft: '8px',
+                                                                        paddingRight: '4px',
+                                                                    },
+                                                                    '& .MuiChip-deleteIcon': {
+                                                                        marginLeft: '4px',
+                                                                        marginRight: '4px',
+                                                                        fontSize: '16px',
+                                                                    },
+                                                                    '&:hover': {
+                                                                        backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                                                                    },
+                                                                }}
+                                                            />
+                                                        );
+                                                    });
+                                                }}
                                                 renderOption={(props, option, { selected }) => {
                                                     const { key, ...otherProps } = props as any;
                                                     return (
@@ -367,7 +439,6 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                                         </li>
                                                     );
                                                 }}
-                                                placeholder="Select a problem category"
                                             />
                                         );
                                     }}
@@ -518,6 +589,60 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             name="powerform_company_number"
                                             label="COMPANY PHONE NUMBER"
                                             placeholder="Enter company phone number"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {/* CONDITIONAL SERVICE LOGS FIELDS */}
+                            {showServiceLogsFields && (
+                                <>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="service_logs_mobile_no"
+                                            label="MOBILE NO."
+                                            placeholder="Enter mobile number"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="service_logs_mobile_model"
+                                            label="MOBILE MODEL"
+                                            placeholder="Enter mobile model or dial *#1234#"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<DevicesIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="service_logs_mobile_serial_no"
+                                            label="MOBILE SERIAL NO."
+                                            placeholder="Enter mobile serial number or dial *#06#"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<QrCode2Icon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="service_logs_imei"
+                                            label="IMEI"
+                                            placeholder="You can find it by dialing *#06# on your phone's keypad"
                                             control={control}
                                             errors={errors}
                                             disabled={ticketIsPending}

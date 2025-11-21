@@ -38,6 +38,10 @@ const requiresAccountLockedFields = (systemName?: string | null, labels?: string
     normalizeSystemName(systemName) === "power form" &&
     !!labels?.some((label) => label.toLowerCase().trim() === "account locked");
 
+const requiresServiceLogsFields = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "service logs system" &&
+    !!labels?.some((label) => label.toLowerCase().trim() === "location error");
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -99,6 +103,10 @@ const CreateTicket = forwardRef<
         powerform_email: "",
         powerform_company_number: "",
         powerform_imei: "",
+        service_logs_mobile_no: "",
+        service_logs_mobile_model: "",
+        service_logs_mobile_serial_no: "",
+        service_logs_imei: "",
     };
 
     // ZOD RESOLVER FOR VALIDATION
@@ -179,6 +187,10 @@ const CreateTicket = forwardRef<
             powerform_email: "",
             powerform_company_number: "",
             powerform_imei: "",
+            service_logs_mobile_no: "",
+            service_logs_mobile_model: "",
+            service_logs_mobile_serial_no: "",
+            service_logs_imei: "",
         });
 
         // ENSURE RHF-CONTROLLED FIELDS ARE EXPLICITLY CLEARED
@@ -197,6 +209,10 @@ const CreateTicket = forwardRef<
         setValue('powerform_email', "");
         setValue('powerform_company_number', "");
         setValue('powerform_imei', "");
+        setValue('service_logs_mobile_no', "");
+        setValue('service_logs_mobile_model', "");
+        setValue('service_logs_mobile_serial_no', "");
+        setValue('service_logs_imei', "");
         resetField('attachment');
 
         // BUMP KEY TO FORCEFULLY RE-MOUNT AUTOCOMPLETE COMPONENTS AND CLEAR ANY INTERNAL INPUT TEXT
@@ -329,6 +345,13 @@ const CreateTicket = forwardRef<
                 submitData.append('powerform_company_number', data.powerform_company_number || "");
             }
 
+            if (requiresServiceLogsFields(data.system_name, data.category_labels)) {
+                submitData.append('service_logs_mobile_no', data.service_logs_mobile_no || "");
+                submitData.append('service_logs_mobile_model', data.service_logs_mobile_model || "");
+                submitData.append('service_logs_mobile_serial_no', data.service_logs_mobile_serial_no || "");
+                submitData.append('service_logs_imei', data.service_logs_imei || "");
+            }
+
             // HANDLE FILE ATTACHMENT
             if (data.attachment && data.attachment instanceof File) {
                 submitData.append('attachment', data.attachment);
@@ -407,6 +430,13 @@ const CreateTicket = forwardRef<
             setValue('powerform_email', "");
             setValue('powerform_company_number', "");
             setValue('powerform_imei', "");
+        }
+
+        if (normalizeSystemName(newValue?.label) !== "service logs system") {
+            setValue('service_logs_mobile_no', "");
+            setValue('service_logs_mobile_model', "");
+            setValue('service_logs_mobile_serial_no', "");
+            setValue('service_logs_imei', "");
         }
     };
 

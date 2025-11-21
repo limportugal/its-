@@ -40,6 +40,10 @@ export const formSchema = z
         powerform_email: z.string().optional(),
         powerform_company_number: z.string().optional(),
         powerform_imei: z.string().optional(),
+        service_logs_mobile_no: z.string().optional(),
+        service_logs_mobile_model: z.string().optional(),
+        service_logs_mobile_serial_no: z.string().optional(),
+        service_logs_imei: z.string().optional(),
     })
     .superRefine((data, ctx) => {
         const normalizeSystemName = (value?: string | null) =>
@@ -236,16 +240,16 @@ export const formSchema = z
                     message: "Company number is required for Power Form requests.",
                     path: ["powerform_company_number"],
                 });
-            } else if (data.powerform_company_number.length < 5) {
+            } else if (data.powerform_company_number.length < 11) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Company number must be at least 11 characters long.",
                     path: ["powerform_company_number"],
                 });
-            } else if (data.powerform_company_number.length > 25) {
+            } else if (data.powerform_company_number.length > 255) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "Company number must not exceed 25 characters.",
+                    message: "Company number must not exceed 255 characters.",
                     path: ["powerform_company_number"],
                 });
             }
@@ -256,16 +260,16 @@ export const formSchema = z
                     message: "IMEI is required for Power Form requests.",
                     path: ["powerform_imei"],
                 });
-            } else if (data.powerform_imei.length < 10) {
+            } else if (data.powerform_imei.length < 15) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "IMEI must be at least 15 characters long.",
                     path: ["powerform_imei"],
                 });
-            } else if (data.powerform_imei.length > 32) {
+            } else if (data.powerform_imei.length > 255) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "IMEI must not exceed 32 characters.",
+                    message: "IMEI must not exceed 255 characters.",
                     path: ["powerform_imei"],
                 });
             }
@@ -312,6 +316,96 @@ export const formSchema = z
                     code: z.ZodIssueCode.custom,
                     message: "Company phone number must not exceed 255 characters.",
                     path: ["powerform_company_number"],
+                });
+            }
+        }
+
+        // VALIDATE SERVICE LOGS SYSTEM FIELDS FOR LOCATION ERROR CATEGORY
+        const requiresServiceLogsFields =
+            normalizeSystemName(data.system_name) === "service logs system" &&
+            data.category_labels?.some((label) => {
+                const normalizedLabel = normalize(label);
+                return normalizedLabel === "location error";
+            });
+
+        if (requiresServiceLogsFields) {
+            if (!data.service_logs_mobile_no || data.service_logs_mobile_no.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile number is required for Location Error requests.",
+                    path: ["service_logs_mobile_no"],
+                });
+            } else if (data.service_logs_mobile_no.length < 11) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile number must be at least 11 characters long.",
+                    path: ["service_logs_mobile_no"],
+                });
+            } else if (data.service_logs_mobile_no.length > 25) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile number must not exceed 25 characters.",
+                    path: ["service_logs_mobile_no"],
+                });
+            }
+
+            if (!data.service_logs_mobile_model || data.service_logs_mobile_model.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile model is required for Location Error requests.",
+                    path: ["service_logs_mobile_model"],
+                });
+            } else if (data.service_logs_mobile_model.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile model must be at least 3 characters long.",
+                    path: ["service_logs_mobile_model"],
+                });
+            } else if (data.service_logs_mobile_model.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile model must not exceed 100 characters.",
+                    path: ["service_logs_mobile_model"],
+                });
+            }
+
+            if (!data.service_logs_mobile_serial_no || data.service_logs_mobile_serial_no.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile serial number is required for Location Error requests.",
+                    path: ["service_logs_mobile_serial_no"],
+                });
+            } else if (data.service_logs_mobile_serial_no.length < 5) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile serial number must be at least 5 characters long.",
+                    path: ["service_logs_mobile_serial_no"],
+                });
+            } else if (data.service_logs_mobile_serial_no.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile serial number must not exceed 100 characters.",
+                    path: ["service_logs_mobile_serial_no"],
+                });
+            }
+
+            if (!data.service_logs_imei || data.service_logs_imei.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI is required for Location Error requests.",
+                    path: ["service_logs_imei"],
+                });
+            } else if (data.service_logs_imei.length < 15) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI must be at least 15 characters long.",
+                    path: ["service_logs_imei"],
+                });
+            } else if (data.service_logs_imei.length > 255) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "IMEI must not exceed 255 characters.",
+                    path: ["service_logs_imei"],
                 });
             }
         }

@@ -31,6 +31,10 @@ class ViewPendingTicketNumberService
             'powerform_email',
             'powerform_company_number',
             'powerform_imei',
+            'service_logs_mobile_no',
+            'service_logs_mobile_model',
+            'service_logs_mobile_serial_no',
+            'service_logs_imei',
             'description',
             'status',
 

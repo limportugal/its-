@@ -38,6 +38,12 @@ class Ticket extends Model
         'powerform_company_number',
         'powerform_imei',
 
+        // SERVICE LOGS FIELDS (FOR SERVICE LOGS SYSTEM + LOCATION ERROR)
+        'service_logs_mobile_no',
+        'service_logs_mobile_model',
+        'service_logs_mobile_serial_no',
+        'service_logs_imei',
+
         //TIMESTAMP
         'closed_at',
         'expired_at',

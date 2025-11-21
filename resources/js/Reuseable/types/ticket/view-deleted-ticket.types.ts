@@ -14,6 +14,10 @@ export interface ViewDeletedTicketResponse {
     powerform_email: string | null;
     powerform_company_number: string | null;
     powerform_imei: string | null;
+    service_logs_mobile_no: string | null;
+    service_logs_mobile_model: string | null;
+    service_logs_mobile_serial_no: string | null;
+    service_logs_imei: string | null;
     description: string;
     status: string;
     assigned_at: string | null;

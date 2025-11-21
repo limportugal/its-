@@ -53,6 +53,7 @@ interface AutoCompleteProps {
     icon?: React.ReactNode;
     clearable?: boolean;
     renderTags?: (value: AutoCompleteOption[], getTagProps: any) => React.ReactNode;
+    sx?: any;
 }
 
 const AutoComplete: React.FC<AutoCompleteProps> = ({
@@ -81,6 +82,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
     icon,
     clearable = true,
     renderTags,
+    sx,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -148,6 +150,7 @@ const AutoComplete: React.FC<AutoCompleteProps> = ({
                                 borderColor: '#1976d2',
                             },
                         },
+                        ...sx,
                     }}
                     InputProps={{
                         ...params.InputProps,
