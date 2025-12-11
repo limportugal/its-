@@ -1,7 +1,8 @@
 import { Box, Typography, Container, Button, Grid } from "@mui/material";
 import { IoTicket } from "react-icons/io5";
 import { Head } from "@inertiajs/react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { motion } from "motion/react";
 import "@/../../public/css/floatAnimation.css";
 import SignInForm from "@/Pages/Tickets/TicketComponents/HeaderSignInForm";
 import CreateTicket from "@/Pages/Tickets/CreateTicket";
@@ -13,12 +14,140 @@ import ReCaptcha, {
 import "@fontsource/geist-sans/800.css";
 import "@fontsource-variable/inter";
 
+const MotionBox = motion.create(Box);
+const MotionSpan = motion.create("span");
+
 export default function Welcome() {
     const { isDialogOpen, openDialog, closeDialog } = useCreateTicketStore();
 
     // INVISIBLE RECAPTCHA FOR WELCOME PAGE
     const recaptchaRef = useRef<ReCaptchaRef>(null);
     const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+    // ANIMATION STATE - TRIGGER ON MOUNT
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        // TRIGGER ANIMATION AFTER MOUNT
+        const timer = setTimeout(() => {
+            setIsVisible(true);
+        }, 50);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // MOTION VARIANTS - SMOOTH PORTFOLIO-STYLE ANIMATIONS (STAGGER FROM LEFT)
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+                delayChildren: 0.1,
+            },
+        },
+    };
+
+    const heroTextVariants = {
+        hidden: { 
+            opacity: 0, 
+            x: -30,
+        },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+            },
+        },
+    };
+
+    const textItemVariants = {
+        hidden: { 
+            opacity: 0, 
+            x: -30,
+        },
+        visible: {
+            opacity: 1,
+            x: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+            },
+        },
+    };
+
+    const cardVariants = {
+        hidden: { 
+            opacity: 0, 
+            x: 50,
+            scale: 0.96,
+        },
+        visible: {
+            opacity: 1,
+            x: 0,
+            scale: 1,
+            transition: {
+                duration: 0.8,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+                delay: 0.1,
+            },
+        },
+    };
+
+    const verticalLineVariants = {
+        hidden: {
+            scaleY: 0,
+            opacity: 0,
+        },
+        visible: {
+            scaleY: 1,
+            opacity: 1,
+            transition: {
+                scaleY: {
+                    duration: 1.2,
+                    ease: [0.25, 0.1, 0.25, 1] as const,
+                },
+                opacity: {
+                    duration: 0.8,
+                    ease: [0.25, 0.1, 0.25, 1] as const,
+                },
+            },
+        },
+    };
+
+    const footerVariants = {
+        hidden: {
+            opacity: 0,
+            y: 15,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+                delay: 0.2,
+            },
+        },
+    };
+
+
+    const signInFormVariants = {
+        hidden: {
+            opacity: 0,
+            y: -50,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+                delay: 0.1,
+            },
+        },
+    };
 
     // DIALOG HANDLERS
     const handleOpenCreateTicketDialog = () => {
@@ -170,7 +299,10 @@ export default function Welcome() {
                         }}
                     >
                         {/* TOP SECTION - TEXT CONTENT */}
-                        <Box
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={heroTextVariants}
                             sx={{
                                 textAlign: "center",
                                 color: "white",
@@ -185,46 +317,37 @@ export default function Welcome() {
                             }}
                         >
                             <Typography
+                                variant="h2"
+                                component="h2"
                                 sx={{
-                                    fontSize: { xs: 24, sm: 32 },
-                                    fontWeight: "800",
-                                    mb: { xs: 2, sm: 1.5 },
-                                    color: "rgba(255,255,255,0.98)",
-                                    textTransform: "capitalize",
-                                    letterSpacing: { xs: "1px", sm: "2px" },
-                                    lineHeight: 0.95,
+                                    fontWeight: 700,
+                                    color: "#ffffff",
+                                    fontSize: {
+                                        xs: "1.75rem",
+                                        sm: "2.25rem",
+                                    },
+                                    lineHeight: 1.1,
+                                    letterSpacing: "-0.02em",
+                                    textAlign: "center",
                                     textShadow:
-                                        "0 0 20px rgba(255,255,255,0.3)",
-                                    "& h1": {
-                                        lineHeight: 0.95,
-                                        "& br": {
-                                            lineHeight: 0.5,
-                                            display: "block",
-                                            margin: "-0.15em 0",
-                                        },
-                                    },
-                                    // Responsive font sizes for different mobile screens
+                                        "0 4px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1)",
+                                    mb: { xs: 2, sm: 1.5 },
+                                    filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))",
                                     "@media (max-width: 375px)": {
-                                        // iPhone SE and smaller
-                                        fontSize: 22,
-                                        letterSpacing: "0.8px",
-                                    },
-                                    "@media (min-width: 376px) and (max-width: 414px)":
-                                        {
-                                            // iPhone 12, 13, 14 standard
-                                            fontSize: 26,
-                                            letterSpacing: "1.2px",
-                                        },
-                                    "@media (min-width: 415px)": {
-                                        // iPhone 14 Pro Max and larger
-                                        fontSize: 28,
-                                        letterSpacing: "1.5px",
+                                        fontSize: "1.5rem",
+                                        lineHeight: 1.2,
                                     },
                                 }}
                             >
-                                <h1 className="font-['Geist'] font-black tracking-tight">
-                                    Internal <br /> Ticketing <br /> System
-                                </h1>
+                                <Box component="span" sx={{ display: "block" }}>
+                                    Internal
+                                </Box>
+                                <Box component="span" sx={{ display: "block" }}>
+                                    Ticketing
+                                </Box>
+                                <Box component="span" sx={{ display: "block" }}>
+                                    System
+                                </Box>
                             </Typography>
 
                             <Typography
@@ -277,10 +400,13 @@ export default function Welcome() {
                                 across service centers with a scalable and
                                 next-generation ticketing system.
                             </Typography>
-                        </Box>
+                        </MotionBox>
 
                         {/* MIDDLE SECTION - WHITE CARD WITH LOGO AND BUTTONS */}
-                        <Box
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={cardVariants}
                             sx={{
                                 flex: 0.6,
                                 display: "flex",
@@ -409,7 +535,7 @@ export default function Welcome() {
                                     </Button>
                                 </Box>
                             </Box>
-                        </Box>
+                        </MotionBox>
                     </Box>
 
                     {/* DESKTOP VIEW - LEFT-RIGHT SPLIT LAYOUT */}
@@ -424,8 +550,17 @@ export default function Welcome() {
                             mx: "auto",
                             gap: 8,
                             position: "relative",
-                            "&::after": {
-                                content: '""',
+                        }}
+                    >
+                        {/* ANIMATED VERTICAL LINE */}
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={verticalLineVariants}
+                            style={{
+                                originY: 0.5,
+                            }}
+                            sx={{
                                 position: "absolute",
                                 left: "50%",
                                 top: "10%",
@@ -434,11 +569,14 @@ export default function Welcome() {
                                 background:
                                     "linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(66,165,245,0.5) 50%, rgba(255,255,255,0.3) 80%, transparent 100%)",
                                 transform: "translateX(-50%)",
-                            },
-                        }}
-                    >
+                                transformOrigin: "center center",
+                            }}
+                        />
                         {/* LEFT SIDE - TEXT CONTENT */}
-                        <Box
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={containerVariants}
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -449,90 +587,105 @@ export default function Welcome() {
                                 pr: 4,
                             }}
                         >
-                            {/* INTERNAL TICKETING SYSTEM TEXT */}
-                            <Typography
-                                sx={{
-                                    fontSize: { md: 32 },
-                                    fontWeight: "800",
-                                    mb: 3,
-                                    color: "rgba(255,255,255,0.98)",
-                                    letterSpacing: { md: "3px" },
-                                    textShadow:
-                                        "0 0 20px rgba(255,255,255,0.3), 0 0 40px rgba(66,165,245,0.2)",
-                                    fontFamily: "'Roboto', 'Arial', sans-serif",
-                                    opacity: 1,
-                                    transform: "translateY(0)",
-                                    transition: "all 0.3s ease",
-                                    lineHeight: { md: 0.95 },
-                                    textAlign: "left",
-                                    width: "100%",
-                                    "& h1": {
-                                        lineHeight: 0.95,
-                                        "& br": {
-                                            lineHeight: 0.5,
-                                            display: "block",
-                                            margin: "-0.15em 0",
-                                        },
-                                    },
-                                }}
+                            {/* INTERNAL TICKETING SYSTEM TEXT - STAGGER ANIMATION */}
+                            <MotionBox
+                                variants={textItemVariants}
+                                sx={{ width: "100%", mb: 1 }}
                             >
-                                <h1 className="font-['Geist'] font-black tracking-tight">
+                                <Typography
+                                    variant="h2"
+                                    component="h2"
+                                    sx={{
+                                        fontWeight: 700,
+                                        color: "#ffffff",
+                                        fontSize: { md: "3.5rem" },
+                                        lineHeight: 1.1,
+                                        textAlign: "left",
+                                        textShadow:
+                                            "0 4px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1)",
+                                        filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))",
+                                    }}
+                                >
                                     Internal
-                                    <br /> Ticketing
-                                    <br /> System
-                                </h1>
-                            </Typography>
+                                </Typography>
+                            </MotionBox>
+                            <MotionBox
+                                variants={textItemVariants}
+                                sx={{ width: "100%", mb: 3 }}
+                            >
+                                <Typography
+                                    variant="h2"
+                                    component="h2"
+                                    sx={{
+                                        fontWeight: 700,
+                                        color: "#ffffff",
+                                        fontSize: { md: "3.5rem" },
+                                        lineHeight: 1.1,
+                                        textAlign: "left",
+                                        textShadow:
+                                            "0 4px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1)",
+                                        filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))",
+                                    }}
+                                >
+                                    Ticketing System
+                                </Typography>
+                            </MotionBox>
 
-                            {/* MIDDLE CONTENT */}
-                            <Typography
-                                sx={{
-                                    fontSize: { md: 21 },
-                                    fontWeight: "600",
-                                    mb: 2,
-                                    color: "rgba(255,255,255,0.95)",
-                                    textTransform: "uppercase",
-                                    letterSpacing: { md: "2px" },
-                                    textShadow:
-                                        "0 0 15px rgba(255,255,255,0.3)",
-                                    fontFamily: "'Roboto', 'Arial', sans-serif",
-                                    opacity: 1,
-                                    transform: "translateY(0)",
-                                    transition: "all 0.3s ease",
-                                    lineHeight: { md: 1.4 },
-                                    textAlign: "left",
-                                    width: "100%",
-                                }}
+                            {/* MIDDLE CONTENT - STAGGER ANIMATION */}
+                            <MotionBox
+                                variants={textItemVariants}
+                                sx={{ width: "100%", mb: 2 }}
                             >
-                                Streamline Your Support Process
-                            </Typography>
-                            <Typography
-                                variant="body1"
-                                sx={{
-                                    color: "rgba(255,255,255,0.85)",
-                                    maxWidth: { md: 600 },
-                                    lineHeight: { md: 1.6 },
-                                    mb: 5,
-                                    fontSize: { md: 18 },
-                                    fontWeight: "300",
-                                    textShadow:
-                                        "0 0 8px rgba(255,255,255,0.15)",
-                                    fontFamily: "'Roboto', 'Arial', sans-serif",
-                                    textAlign: "left",
-                                    opacity: 1,
-                                    transform: "translateY(0)",
-                                    transition: "all 0.3s ease",
-                                }}
+                                <Typography
+                                    sx={{
+                                        fontSize: { md: 21 },
+                                        fontWeight: "600",
+                                        color: "rgba(255,255,255,0.95)",
+                                        textTransform: "uppercase",
+                                        letterSpacing: { md: "2px" },
+                                        textShadow:
+                                            "0 0 15px rgba(255,255,255,0.3)",
+                                        fontFamily: "'Roboto', 'Arial', sans-serif",
+                                        lineHeight: { md: 1.4 },
+                                        textAlign: "left",
+                                        width: "100%",
+                                    }}
+                                >
+                                    Streamline Your Support Process
+                                </Typography>
+                            </MotionBox>
+                            <MotionBox
+                                variants={textItemVariants}
+                                sx={{ width: "100%", mb: 5 }}
                             >
-                                Enhance support efficiency with a ticketing
-                                solution. Optimize issue tracking, streamline
-                                support workflows, and improve collaboration
-                                across service centers with a scalable and
-                                next-generation ticketing system.
-                            </Typography>
-                        </Box>
+                                <Typography
+                                    variant="body1"
+                                    sx={{
+                                        color: "rgba(255,255,255,0.85)",
+                                        maxWidth: { md: 600 },
+                                        lineHeight: { md: 1.6 },
+                                        fontSize: { md: 18 },
+                                        fontWeight: "300",
+                                        textShadow:
+                                            "0 0 8px rgba(255,255,255,0.15)",
+                                        fontFamily: "'Roboto', 'Arial', sans-serif",
+                                        textAlign: "left",
+                                    }}
+                                >
+                                    Enhance support efficiency with a ticketing
+                                    solution. Optimize issue tracking, streamline
+                                    support workflows, and improve collaboration
+                                    across service centers with a scalable and
+                                    next-generation ticketing system.
+                                </Typography>
+                            </MotionBox>
+                        </MotionBox>
 
                         {/* RIGHT SIDE - COMPANY LOGOS AND BUTTONS CARD */}
-                        <Box
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={cardVariants}
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
@@ -628,7 +781,7 @@ export default function Welcome() {
                                     </Grid>
                                 </Grid>
                             </Box>
-                        </Box>
+                        </MotionBox>
                     </Box>
                 </Box>
             </Container>
@@ -659,7 +812,20 @@ export default function Welcome() {
             />
 
             {/* SIGN-IN FORM BUTTON */}
-            <SignInForm />
+            <MotionBox
+                initial="hidden"
+                animate={isVisible ? "visible" : "hidden"}
+                variants={signInFormVariants}
+                sx={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 10,
+                }}
+            >
+                <SignInForm />
+            </MotionBox>
 
             {/* CREATE TICKET DIALOG */}
             <CreateTicket
@@ -689,7 +855,10 @@ export default function Welcome() {
             </Box>
 
             {/* FOOTER */}
-            <Box
+            <MotionBox
+                initial="hidden"
+                animate={isVisible ? "visible" : "hidden"}
+                variants={footerVariants}
                 sx={{
                     position: "absolute",
                     bottom: 0,
@@ -771,7 +940,7 @@ export default function Welcome() {
                     </Box>{" "}
                     | All Rights Reserved.
                 </Typography>
-            </Box>
+            </MotionBox>
         </Box>
     );
 }

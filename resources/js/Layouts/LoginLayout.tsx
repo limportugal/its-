@@ -19,21 +19,22 @@ export default function LoginLayout({ children }: PropsWithChildren<{ isLoading?
                     justifyContent: "center",
                     position: "relative",
                     zIndex: 1,
-                    px: { xs: 1, sm: 2, md: 4 },
-                    py: { xs: 2, sm: 3, md: 4 },
+                    px: { xs: 2, sm: 3, md: 4 },
+                    py: { xs: 3, sm: 4, md: 5 },
                     mt: { xs: 0, sm: -1, md: -2 }
                 }}
             >
                 <Container
-                    maxWidth="sm"
+                    maxWidth={false}
                     sx={{
                         display: "flex",
                         justifyContent: "center",
                         maxWidth: {
                             xs: "100%",
-                            sm: "500px",
-                            md: "550px",
-                            lg: "600px"
+                            sm: "480px",
+                            md: "520px",
+                            lg: "540px",
+                            xl: "560px"
                         },
                         width: "100%",
                         px: { xs: 2, sm: 3, md: 4 }
@@ -45,33 +46,37 @@ export default function LoginLayout({ children }: PropsWithChildren<{ isLoading?
                         sx={{
                             width: {
                                 xs: "100%",
-                                sm: "350px",
-                                md: "400px",
-                                lg: "480px"
+                                sm: "420px",
+                                md: "480px",
+                                lg: "520px",
+                                xl: "540px"
                             },
                             maxWidth: "100%",
                             borderRadius: {
-                                xs: 1,
-                                sm: 2,
-                                md: 3
-                            },
-                            p: {
-                                xs: 2.5,
-                                sm: 3.5,
-                                md: 4,
-                                lg: 5
-                            },
-                            px: {
                                 xs: 2,
                                 sm: 3,
-                                md: 4,
-                                lg: 5
+                                md: 4
                             },
-                            py: {
+                            p: {
                                 xs: 3,
                                 sm: 4,
                                 md: 4.5,
-                                lg: 5
+                                lg: 5,
+                                xl: 5.5
+                            },
+                            px: {
+                                xs: 3,
+                                sm: 4,
+                                md: 5,
+                                lg: 6,
+                                xl: 6
+                            },
+                            py: {
+                                xs: 3.5,
+                                sm: 4.5,
+                                md: 5,
+                                lg: 5.5,
+                                xl: 6
                             }
                         }}
                     >
