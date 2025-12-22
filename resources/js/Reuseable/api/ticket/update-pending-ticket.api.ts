@@ -5,6 +5,8 @@ import { route } from "ziggy-js";
 
 const updatePendingTicketApiClient = axios.create({
     withCredentials: true,
+    // Closing a ticket may include attachment upload; allow more time to avoid false failures on slow networks.
+    timeout: 60000,
 });
 
 export const updatePendingTicketData = async (
@@ -17,7 +19,9 @@ export const updatePendingTicketData = async (
         updatePendingTicketApiClient,
         "post",
         url,
-        data
+        data,
+        undefined,
+        60000
     );
     return response;
 };

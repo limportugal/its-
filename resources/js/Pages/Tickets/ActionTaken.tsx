@@ -20,6 +20,53 @@ import { snakeCaseToTitleCase } from "@/Reuseable/utils/capitalize";
 import FileUploadField from "@/Pages/Tickets/TicketComponents/FileUploadField";
 import SubmitButton from "@/Components/Mui/SubmitButton";
 
+const getCloseTicketErrorCopy = (error: any) => {
+    const rawMessage = String(error?.message || "").toLowerCase();
+    const status = error?.status ?? error?.response?.status;
+
+    const isTimeout =
+        rawMessage.includes("timeout") ||
+        rawMessage.includes("timed out") ||
+        error?.code === "ECONNABORTED";
+
+    const isNetwork =
+        isTimeout ||
+        rawMessage.includes("network error") ||
+        rawMessage.includes("failed to fetch") ||
+        rawMessage.includes("network");
+
+    if (isNetwork) {
+        return {
+            title: "Connection Issue",
+            message:
+                "Request timed out / network error. Please check your internet connection and try again.",
+            useServerMessage: false,
+        };
+    }
+
+    if (status === 401) {
+        return {
+            title: "Session Expired",
+            message: "Your session expired. Please refresh the page and try again.",
+            useServerMessage: true,
+        };
+    }
+
+    if (status === 403) {
+        return {
+            title: "Not Allowed",
+            message: "You don't have permission to close this ticket.",
+            useServerMessage: true,
+        };
+    }
+
+    return {
+        title: "Action Failed",
+        message: "Failed to close ticket. Please try again.",
+        useServerMessage: true,
+    };
+};
+
 // ACTION TAKEN COMPONENT
 const ActionTaken: React.FC<ActionTakenProps> = ({ open, onClose, ticket, setShowSnackBarAlert }) => {
     const theme = useTheme();
@@ -97,22 +144,20 @@ const ActionTaken: React.FC<ActionTakenProps> = ({ open, onClose, ticket, setSho
                 }, 1500);
             },
             onError: (error: any) => {
-                // Extract error message from the response
-                let errorMessage = "Failed to close ticket. Please try again.";
+                const serverMessage =
+                    error?.response?.data?.message ||
+                    error?.data?.message ||
+                    error?.message;
 
-                if (error?.response?.data?.message) {
-                    errorMessage = error.response.data.message;
-                } else if (error?.message) {
-                    errorMessage = error.message;
-                }
+                const { title, message, useServerMessage } = getCloseTicketErrorCopy(error);
+                const displayMessage = (useServerMessage ? serverMessage : undefined) || message;
 
                 const errorHtml = `
                     <div style="text-align: center; padding: 1rem;">
-                        <strong style="color: #d32f2f;">${errorMessage}</strong><br><br>
-                        Please check your permissions and try again.
+                        <strong style="color: #d32f2f;">${displayMessage}</strong>
                     </div>`;
 
-                showActionTakenErrorAlert(undefined, errorHtml);
+                showActionTakenErrorAlert(undefined, errorHtml, title);
             },
         });
 

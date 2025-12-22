@@ -8,6 +8,7 @@ use App\Models\UserLogs;
 use App\Models\CloseReason;
 use App\Models\Attachment;
 use App\Jobs\SendTicketClosedEmail;
+use App\Jobs\UploadClosedTicketAttachmentToS3;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,8 +55,27 @@ class UpdateTicketService
                     'closed_at' => $closedAt,
                 ]);
 
-                // SAVE ATTACHMENT IF PROVIDED
-                $this->saveAttachment($request, $ticket);
+                // STAGE ATTACHMENT LOCALLY AND UPLOAD TO S3 ASYNC AFTER COMMIT (prevents request timeouts)
+                if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+                    $file = $request->file('attachment');
+
+                    $datePath = Carbon::now()->format('Y/m/d');
+                    $extension = $file->getClientOriginalExtension();
+                    $randomName = Str::random(20) . '.' . $extension;
+
+                    // Store in local disk quickly; queued job will upload to S3.
+                    $tempPath = $file->storeAs("tmp/closed-ticket-attachments/{$datePath}", $randomName, 'local');
+
+                    UploadClosedTicketAttachmentToS3::dispatch(
+                        $ticket->id,
+                        $userId,
+                        $tempPath,
+                        $file->getClientOriginalName(),
+                        $file->getMimeType(),
+                        $datePath,
+                        $randomName,
+                    )->afterCommit();
+                }
             } else {
                 // CHECK IF TRYING TO CLOSE TICKET WITH INVALID STATUS
                 if ($request->has('action_taken') && !empty($request->action_taken)) {
@@ -80,7 +100,7 @@ class UpdateTicketService
 
             // SEND EMAIL NOTIFICATION ASYNC (outside transaction to avoid rollback on email failure)
             if (!empty($ticket->email)) {
-                SendTicketClosedEmail::dispatch($ticket);
+                SendTicketClosedEmail::dispatch($ticket)->afterCommit();
             }
 
             // RETURN RESPONSE

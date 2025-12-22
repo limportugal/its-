@@ -27,10 +27,11 @@ export const showActionTakenAlert = async (
 
 export const showActionTakenErrorAlert = async (
     text?: string,
-    html?: string
+    html?: string,
+    title: string = "Action Failed"
 ): Promise<void> => {
     await Swal.fire({
-        title: "Action Failed",
+        title,
         text: html ? undefined : text,
         html: html || undefined,
         icon: "error",
