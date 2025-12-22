@@ -1,12 +1,12 @@
 import ForgotPasswordLayout from '@/Layouts/ForgotPasswordLayout';
-import { Head, router, useForm as useInertiaForm } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useForm } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Swal from 'sweetalert2';
 
 // MUI COMPONENTS
-import { InputAdornment, useTheme, useMediaQuery, Box, Stack, CircularProgress, Typography, Divider, Button } from "@mui/material";
+import { useTheme, useMediaQuery, Box, Stack, CircularProgress, Typography, Button } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import EmailIcon from '@mui/icons-material/Email';
 import SendIcon from '@mui/icons-material/Send';
@@ -21,7 +21,6 @@ import { forgotPasswordSchema, ForgotPasswordFormValues } from '@/Reuseable/vali
 export default function ForgotPassword() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const { post, processing } = useInertiaForm();
     const [isLoading, setIsLoading] = useState(false);
 
     // ZOD VALIDATION
