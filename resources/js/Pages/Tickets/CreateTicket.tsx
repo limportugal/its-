@@ -42,6 +42,10 @@ const requiresServiceLogsFields = (systemName?: string | null, labels?: string[]
     normalizeSystemName(systemName) === "service logs system" &&
     !!labels?.some((label) => label.toLowerCase().trim() === "location error");
 
+const requiresStoreFields = (systemName?: string | null, labels?: string[]) =>
+    systemName === "Customer Not Found" ||
+    (systemName === "FSR Online" && !!labels?.includes("Customer Not Found"));
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -321,15 +325,27 @@ const CreateTicket = forwardRef<
             submitData.append('recaptcha_token', recaptchaToken);
 
             // APPEND STORE FIELDS IF CUSTOMER NOT FOUND IS SELECTED
-            if (data.system_name === "Customer Not Found") {
+            // OR IF FSR ONLINE IS SELECTED WITH CUSTOMER NOT FOUND CATEGORY
+            if (requiresStoreFields(data.system_name, data.category_labels)) {
                 submitData.append('store_code', data.store_code || "");
                 submitData.append('store_name', data.store_name || "");
                 submitData.append('store_address', data.store_address || "");
             }
             
-            // APPEND FSR NO FIELD IF FSR ONLINE IS SELECTED
+            // APPEND FSR NO FIELD IF FSR ONLINE IS SELECTED AND REQUIRES FSR VALIDATION
             if (data.system_name === "FSR Online") {
-                submitData.append('fsr_no', data.fsr_no || "");
+                const requiresFsrValidation = data.category_labels?.some(
+                    (label) =>
+                        label === "Wrong client input" ||
+                        label === "Wrong service input" ||
+                        label === "Wrong FSR Number Input" ||
+                        label === "Wrong Ticket Number input" ||
+                        label === "Delete FSR"
+                );
+                
+                if (requiresFsrValidation) {
+                    submitData.append('fsr_no', data.fsr_no || "");
+                }
             }
 
             if (requiresPowerFormFields(data.system_name, data.category_labels)) {
