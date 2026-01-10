@@ -105,6 +105,21 @@ export interface TicketsResponse {
             name: string;
         };
     }[];
+    assign_to_users?: {
+        id: number;
+        ticket_id: number;
+        user_id: number;
+        assigned_at: string;
+        user: {
+            id: number;
+            name: string;
+            avatar_url?: string;
+            roles: {
+                id: number;
+                name: string;
+            }[];
+        };
+    }[];
     closed_by?: {
         id: number;
         name: string;

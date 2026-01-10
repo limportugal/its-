@@ -721,35 +721,27 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                 sx={{
                     display: "flex",
                     flexDirection: { xs: "column", sm: "row" },
-                    justifyContent: "center",
+                    justifyContent: "space-between",
                     alignItems: { xs: "stretch", sm: "center" },
-                    gap: { xs: 2, sm: 0 },
-                    my: 1,
-                    px: { xs: 3, sm: 9 }
+                    px: 9,
                 }}
             >
-                <Box sx={{
-                    display: 'flex',
-                    gap: '8px',
-                    width: { xs: '100%', sm: 'auto' }
-                }}>
-                    <ClearButton
-                        fullWidth={isMobile}
-                        onClick={() => {
-                            resetForm();
-                            // Also reset locally controlled Autocomplete states
-                            setServiceCenter(null);
-                            setSystem(null);
-                        }}
-                        disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
-                    />
-                    <SubmitButton
-                        fullWidth={isMobile}
-                        onClick={() => handleSubmit(submitForm)()}
-                        disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
-                        loading={ticketIsPending}
-                    />
-                </Box>
+                <ClearButton
+                    fullWidth={isMobile}
+                    onClick={() => {
+                        resetForm();
+                        // Also reset locally controlled Autocomplete states
+                        setServiceCenter(null);
+                        setSystem(null);
+                    }}
+                    disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
+                />
+                <SubmitButton
+                    fullWidth={isMobile}
+                    onClick={() => handleSubmit(submitForm)()}
+                    disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
+                    loading={ticketIsPending}
+                />
             </DialogActions>
         </Dialog>
     );

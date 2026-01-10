@@ -4,11 +4,16 @@ export interface DeletedTicketResponse {
         uuid: string;
         full_name: string;
         email: string;
-        company: string;
         ticket_number: string;
+        fsr_no: string | null;
+        store_code: string | null;
+        store_name: string | null;
+        store_address: string | null;
         description: string;
         status: string;
         deleted_at: string;
+        created_at: string;
+        latest_reminder_reason: any;
         categories: {
             id: number;
             category_name: string;
@@ -21,6 +26,47 @@ export interface DeletedTicketResponse {
             id: number;
             system_name: string;
         };
+        priority: {
+            id: number;
+            priority_name: string;
+        };
+        assigned_user: {
+            id: number;
+            name: string;
+            avatar_url: string;
+            roles: {
+                id: number;
+                name: string;
+            }[];
+        } | null;
+        assignToUsers?: {
+            id: number;
+            ticket_id: number;
+            user_id: number;
+            user: {
+                id: number;
+                name: string;
+                roles: {
+                    id: number;
+                    name: string;
+                }[];
+            };
+        }[];
+        assign_to_users?: {
+            id: number;
+            ticket_id: number;
+            user_id: number;
+            assigned_at: string;
+            user: {
+                id: number;
+                name: string;
+                avatar_url?: string;
+                roles: {
+                    id: number;
+                    name: string;
+                }[];
+            };
+        }[];
         deleted_by: {
             id: number;
             name: string;
@@ -30,6 +76,21 @@ export interface DeletedTicketResponse {
                 name: string;
             }[];
         };
+        assign_to_users?: {
+            id: number;
+            ticket_id: number;
+            user_id: number;
+            assigned_at: string;
+            user: {
+                id: number;
+                name: string;
+                avatar_url?: string;
+                roles: {
+                    id: number;
+                    name: string;
+                }[];
+            };
+        }[];
     }[];
 }
 

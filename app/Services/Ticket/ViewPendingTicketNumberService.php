@@ -176,12 +176,13 @@ class ViewPendingTicketNumberService
            });
        }
 
-       // HIDE PIVOT DATA FROM ASSIGNMENT HISTORY USERS
-       if ($viewPendingTicketNumber->assignToUsers) {
-           $viewPendingTicketNumber->assignToUsers->each(function ($assignment) {
-                $assignment->makeHidden('user');
-           });
-       }
+       // NOTE: Keeping user data visible for frontend display of multiple assigned users
+       // HIDE PIVOT DATA FROM ASSIGNMENT HISTORY USERS - Commented out to show user info
+       // if ($viewPendingTicketNumber->assignToUsers) {
+       //     $viewPendingTicketNumber->assignToUsers->each(function ($assignment) {
+       //          $assignment->makeHidden('user');
+       //     });
+       // }
 
        // HIDE PIVOT DATA FROM CLOSE REASONS' CLOSED BY USERS
        if ($viewPendingTicketNumber->closeReasons) {

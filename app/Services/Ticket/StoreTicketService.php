@@ -109,7 +109,18 @@ class StoreTicketService
     // SAVE ATTACHMENT
     private function saveAttachment(Request $request, Ticket $ticket): bool
     {
-        if (!$request->hasFile('attachment') || !$request->file('attachment')->isValid()) {
+        if (!$request->hasFile('attachment')) {
+            return false;
+        }
+
+        $file = $request->file('attachment');
+
+        if (!$file || !$file->isValid()) {
+            // Log the specific error for debugging
+            \Log::error('File upload failed', [
+                'error' => $file ? $file->getError() : 'No file object',
+                'error_message' => $file ? $file->getErrorMessage() : 'Unknown error'
+            ]);
             return false;
         }
 

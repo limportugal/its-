@@ -39,6 +39,37 @@ export interface PendingTicketResponse {
                 name: string;
             }[];
         } | null;
+        assignToUsers?: {
+            id: number;
+            ticket_id: number;
+            user_id: number;
+            user: {
+                id: number;
+                name: string;
+                roles: {
+                    id: number;
+                    name: string;
+                }[];
+            };
+        }[];
+        assign_to_users?: {
+            id: number;
+            ticket_id: number;
+            user_id: number;
+            user: {
+                id: number;
+                name: string;
+                avatar_url: string;
+                roles: {
+                    id: number;
+                    name: string;
+                    pivot: {
+                        model_id: number;
+                        role_id: number;
+                    };
+                }[];
+            };
+        }[];
         assigned_by: {
             id: number;
             name: string;

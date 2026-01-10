@@ -12,21 +12,33 @@ class CancelledTicketsService
     public function getCancelledTickets()
     {
         $query = Ticket::select(
-            'id', 
-            'uuid', 
+            'id',
+            'uuid',
             'full_name',
             'email',
             'ticket_number',
-            'description', 
+            'fsr_no',
+            'store_code',
+            'store_name',
+            'store_address',
+            'description',
+            'created_at',
             'cancelled_at',
             'cancelled_ticket_by_id',
             'status',
+            'priority_id',
             'service_center_id',
             'system_id',
         )
         ->with([
             'cancelledBy:id,name,email',
             'cancelledBy.roles:id,name',
+            'priority:id,priority_name',
+            'assignedUser:id,name',
+            'assignedUser.roles:id,name',
+            'assignToUsers:id,ticket_id,user_id,assigned_at',
+            'assignToUsers.user:id,name,avatar_url',
+            'assignToUsers.user.roles:id,name',
             'categories:id,category_name',
             'serviceCenter:id,service_center_name',
             'system:id,system_name'

@@ -44,6 +44,7 @@ import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
 // TICKET COMPONENTS
 import RestoreTicket from "@/Pages/Tickets/RestoreTicket";
 import IndexUserLogsByTicketNumber from "@/Pages/UserLogs/IndexUserLogsByTicketNumber";
+import AvatarGroupWithPopover from "@/Components/Mui/AvatarGroupWithPopover";
 import useDynamicQuery from "@/Reuseable/hooks/useDynamicQuery";
 import { fetchingErrorAlert } from "@/Reuseable/helpers/fetchErrorAlert";
 import ViewPendingTicketSkeleton from "@/Pages/Tickets/Skeletons/ViewPendingTicketSkeleton";
@@ -331,7 +332,29 @@ const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
         const assignedUser = currentTicket.assigned_user as any;
         const assignedBy = currentTicket.assigned_by as any;
 
-        if (assignedUser?.name && assignedUser.name !== "Not specified") {
+        // Show all assigned users in a consolidated avatar group
+        if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
+            const assignedUsers = currentTicket.assign_to_users
+                .filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
+                .map((assignment) => assignment.user) // Extract user objects
+                .filter(Boolean); // Remove any undefined values
+
+            if (assignedUsers.length > 0) {
+                assignedDetails.push({
+                    label: "ASSIGNED TO",
+                    value: (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <AvatarGroupWithPopover
+                                users={assignedUsers}
+                                max={5}
+                            />
+                        </Box>
+                    ),
+                    icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                });
+            }
+        } else if (assignedUser?.name && assignedUser.name !== "Not specified") {
+            // Fallback to single user display if no assign_to_users data
             assignedDetails.push({
                 label: "ASSIGNED TO",
                 value: (
@@ -367,31 +390,7 @@ const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
             });
         }
 
-        // ADD ASSIGNMENT HISTORY - ONLY SHOW IF THERE'S ACTUAL ASSIGNMENT DATA
-        if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
-            currentTicket.assign_to_users.forEach((assignment, index) => {
-                // ONLY SHOW ASSIGNMENT ENTRY IF THERE'S BOTH A USER AND ASSIGNED_AT TIMESTAMP
-                if (assignment.user?.name && assignment.user.name !== "Not specified" && assignment.assigned_at) {
-                    assignedDetails.push({
-                        label: `ASSIGNMENT`,
-                        value: (
-                            <AvatarUser
-                                full_name={assignment.user?.name || "Not specified"}
-                                avatar_url={assignment.user?.avatar_url || null}
-                                role_name={assignment.user?.roles && assignment.user.roles.length > 0 ? assignment.user.roles[0].name : "No Role"}
-                            />
-                        ),
-                        icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-                    });
-
-                    assignedDetails.push({
-                        label: `ASSIGNED ON`,
-                        value: timeAgo(assignment.assigned_at),
-                        icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-                    });
-                }
-            });
-        }
+        // Multiple assigned users are now shown in the consolidated "ASSIGNED TO" section above
     }
 
     // RETURNED DETAILS - SHOW IF TICKET HAS RETURN DATA (FOR DELETED TICKETS, SHOW ALL AVAILABLE DATA)

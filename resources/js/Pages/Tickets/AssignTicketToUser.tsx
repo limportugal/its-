@@ -1,21 +1,18 @@
 import { useMemo, useCallback, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 
 // MUI COMPONENTS
 import CustomDialog from "@/Components/Mui/CustomDialog";
-import { CircularProgress, Box, Grid, useMediaQuery, useTheme, MenuItem, Button, Typography } from "@mui/material";
+import { CircularProgress, Box, Grid, useMediaQuery, useTheme, Button, Typography, Autocomplete, TextField, FormControl, FormHelperText, Checkbox } from "@mui/material";
 import ClearButton from "@/Components/Mui/ClearButton";
-import Dropdown from "@/Components/Mui/Dropdown";
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 
 // HOOKS, API, TYPE, HELPERS, UTILS & VALIDATIONS
 import { useDynamicMutation } from "@/Reuseable/hooks/useDynamicMutation";
 
 // REACT HOOK FORM WITH ZOD VALIDATION
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useDynamicQuery from "@/Reuseable/hooks/useDynamicQuery";
-import { fetchActiveUsersData } from "@/Reuseable/api/User/active-users-api";
 import { assignTicketSchema, AssignTicketFormValues } from "@/Reuseable/validations/assignTicketToUser";
 import { assignTicketToUserData } from "@/Reuseable/api/ticket/assign-ticket-to-user.api";
 import { AssignTicketToUserPayload, AssignTicketToUserProps } from "@/Reuseable/types/assignTicketToUserTypes";
@@ -30,11 +27,10 @@ import { fetchUsersDropdownData } from "@/Reuseable/api/ticket/users-dropdown.ap
 const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, selectedTicket, setShowSnackBarAlert }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const queryClient = useQueryClient();
 
     // FORM INITIAL VALUES
     const defaultValues = {
-        user_uuid: "",
+        user_uuid: [] as string[],
         priority: "",
     };
 
@@ -95,7 +91,7 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
             mutationKey: ["getPendingTickets", 'getViewPendingTicketData'],
             onSuccess: () => {
                 setShowSnackBarAlert("Ticket assigned successfully.");
-                reset({ user_uuid: "", priority: "" });
+                reset({ user_uuid: [], priority: "" });
                 onClose();
                 setTimeout(() => {
                     router.visit(route('tickets.indexPendingTickets'));
@@ -121,7 +117,7 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
 
     // MEMOIZE HANDLE FORM SUBMISSION
     const submitForm = useCallback(async (data: AssignTicketFormValues) => {
-        if (!data.user_uuid) return;
+        if (!data.user_uuid || data.user_uuid.length === 0) return;
         const formattedData: AssignTicketToUserPayload = {
             user_uuid: data.user_uuid,
             ...(data.priority ? { priority_id: data.priority } : {}),
@@ -163,27 +159,67 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                         }}
                     >
                         <Grid size={{ xs: 12 }}>
-                            <Dropdown
-                                name="user_uuid"
-                                label="ASSIGN TO A USER"
-                                control={control}
-                                options={userOptions}
-                                errors={errors}
+                            <FormControl 
+                                fullWidth 
+                                margin="dense" 
+                                error={!!errors.user_uuid}
                                 disabled={isPendingAssignTicketToUser || isUsersLoading}
-                                loading={isUsersLoading}
-                                renderOption={(props, option) => {
-                                    const { key, ...otherProps } = props;
-                                    return (
-                                        <MenuItem {...otherProps} key={key}>
-                                            <AvatarUser
-                                                full_name={option.label}
-                                                avatar_url={option.avatar_url}
-                                                role_name={option.role}
-                                            />
-                                        </MenuItem>
-                                    );
-                                }}
-                            />
+                            >
+                                <Controller
+                                    name="user_uuid"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Autocomplete
+                                            multiple
+                                            limitTags={2}
+                                            size="medium"
+                                            options={userOptions}
+                                            getOptionLabel={(option) => option.label || ""}
+                                            value={Array.isArray(field.value) && field.value.length > 0 
+                                                ? userOptions.filter(option => field.value.includes(option.value))
+                                                : []}
+                                            onChange={(_, newValue) => {
+                                                const selectedValues = newValue.map(item => item.value);
+                                                field.onChange(selectedValues);
+                                            }}
+                                            disableCloseOnSelect
+                                            disabled={isPendingAssignTicketToUser || isUsersLoading}
+                                            loading={isUsersLoading}
+                                            isOptionEqualToValue={(option, value) => option.value === value.value}
+                                            renderOption={(props, option, { selected }) => {
+                                                const { key, ...otherProps } = props;
+                                                return (
+                                                    <li {...otherProps} key={key}>
+                                                        <Checkbox
+                                                            checked={selected}
+                                                            sx={{ mr: 1 }}
+                                                        />
+                                                        <AvatarUser
+                                                            full_name={option.label}
+                                                            avatar_url={option.avatar_url}
+                                                            role_name={option.role}
+                                                        />
+                                                    </li>
+                                                );
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="ASSIGN TO A USER"
+                                                    placeholder="Select users"
+                                                    error={!!errors.user_uuid}
+                                                    size="medium"
+                                                />
+                                            )}
+                                        />
+                                    )}
+                                />
+                                {errors.user_uuid && (
+                                    <FormHelperText error sx={{ fontSize: '0.75rem', ml: 1.75 }}>
+                                        {errors.user_uuid.message as string}
+                                    </FormHelperText>
+                                )}
+                            </FormControl>
                         </Grid>
 
                         {/* BUTTONS */}

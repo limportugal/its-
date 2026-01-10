@@ -74,6 +74,11 @@ class ViewCancelledTicketService
            'assignedUser:id,name',
            'assignedUser.roles:id,name',
 
+           // ASSIGN TO USERS (MULTIPLE)
+           'assignToUsers:id,ticket_id,user_id,assigned_at',
+           'assignToUsers.user:id,name,avatar_url',
+           'assignToUsers.user.roles:id,name',
+
            // ASSIGNED BY
            'assignedBy:id,name',
            'assignedBy.roles:id,name',

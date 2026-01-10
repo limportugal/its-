@@ -52,16 +52,18 @@ const getRandomColor = () => {
 // ROLE CHIPS COMPONENT
 interface RoleChipsProps {
     roles: { name: string }[] | string;
+    borderRadius?: number;
+    size?: 'small' | 'medium' | 'large';
 }
 
-const RoleChips: React.FC<RoleChipsProps> = ({ roles }) => {
+const RoleChips: React.FC<RoleChipsProps> = ({ roles, borderRadius, size = 'medium' }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
     // HANDLE THE CASE WHEN ROLES IS A STRING
-    const rolesArray = Array.isArray(roles) 
-        ? roles 
-        : typeof roles === 'string' 
-            ? [{ name: roles }] 
+    const rolesArray = Array.isArray(roles)
+        ? roles
+        : typeof roles === 'string'
+            ? [{ name: roles }]
             : [];
 
     return (
@@ -78,14 +80,18 @@ const RoleChips: React.FC<RoleChipsProps> = ({ roles }) => {
                     <Tooltip key={index} title={roleDescription} arrow>
                         <Chip
                             label={role.name}
-                            size={isMobile ? "small" : "medium"}
+                            size={size === 'small' ? 'small' : isMobile ? "small" : "medium"}
                             sx={{
                                 marginRight: 0.5,
                                 backgroundColor: bg,
                                 color: text,
                                 fontWeight: "500",
-                                fontSize: { xs: '0.65rem', sm: '0.75rem' },
-                                height: { xs: '20px', sm: '32px' }
+                                fontSize: size === 'small' ? '0.6rem' : { xs: '0.65rem', sm: '0.75rem' },
+                                height: size === 'small' ? '20px' : { xs: '20px', sm: '32px' },
+                                borderRadius: borderRadius || undefined,
+                                '& .MuiChip-label': {
+                                    padding: size === 'small' ? '0 6px' : undefined
+                                }
                             }}
                         />
                     </Tooltip>

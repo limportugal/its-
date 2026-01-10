@@ -100,6 +100,7 @@ const AssignedDetailsSection: React.FC<AssignedDetailsSectionProps> = ({
                                         ...tableCellStyle,
                                         py: 3,
                                         px: 2,
+                                        textAlign: 'left',
                                         ...(index === assignedDetails.length - 1 && {
                                             borderBottom: 'none'
                                         })

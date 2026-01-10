@@ -137,7 +137,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     // LOGOUT REQUEST 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|JsonResponse
     {
         $user = Auth::user();
 
@@ -153,15 +153,28 @@ class AuthenticatedSessionController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // CLEAR BROWSER CACHE
-        $response = redirect('/');
-        
         // ADD HEADERS TO CLEAR ALL CACHED DATA
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        // Clear all data types on logout
-        $response->headers->set('Clear-Site-Data', '"cache", "cookies", "storage"');
+        $headers = [
+            'Cache-Control' => 'no-cache, no-store, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+            'Clear-Site-Data' => '"cache", "cookies", "storage"',
+        ];
+
+        // If it's an AJAX/JSON request (from frontend fetch), return JSON response
+        // Frontend will handle the redirect with full reload
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Logout successful',
+            ], 200, $headers);
+        }
+
+        // For regular form submissions, redirect as usual
+        $response = redirect('/');
+        foreach ($headers as $key => $value) {
+            $response->headers->set($key, $value);
+        }
 
         return $response;
     }

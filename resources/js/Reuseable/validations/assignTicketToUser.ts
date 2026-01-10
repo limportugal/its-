@@ -7,8 +7,8 @@ export const assignTicketSchema = z.object({
         .nullable()
         .optional(),
     user_uuid: z
-        .string()
-        .nonempty("Please select a user."),
+        .array(z.string())
+        .min(1, "Please select at least one user."),
 });
 
 export type AssignTicketFormValues = z.infer<typeof assignTicketSchema>;

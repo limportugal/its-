@@ -27,9 +27,25 @@ class CreateTicketController extends Controller
 
     public function createTicket(StoreTicketRequest $request)
     {
-        $ticketData = $request->validated();
-        $responseData = $this->ticketService->createTicket($ticketData, $request);
-        return response()->json($responseData, 201);
+        try {
+            $ticketData = $request->validated();
+            $responseData = $this->ticketService->createTicket($ticketData, $request);
+            return response()->json($responseData, 201);
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            \Log::error('Ticket creation failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Return a generic error message to the user
+            return response()->json([
+                'message' => 'Failed to create ticket. Please try again.',
+                'errors' => [
+                    'general' => ['An unexpected error occurred while creating the ticket.']
+                ]
+            ], 500);
+        }
     }
 
     public function showTicketPriorities()

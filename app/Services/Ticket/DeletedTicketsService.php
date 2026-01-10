@@ -14,14 +14,20 @@ class DeletedTicketsService
         $query = Ticket::query()
             ->select([
                 'id',
-                'uuid', 
-                'full_name', 
-                'email', 
-                'ticket_number', 
-                'description', 
+                'uuid',
+                'full_name',
+                'email',
+                'ticket_number',
+                'fsr_no',
+                'store_code',
+                'store_name',
+                'store_address',
+                'description',
+                'created_at',
                 'status',
                 'deleted_at',
                 'deleted_ticket_by_id',
+                'priority_id',
                 'service_center_id',
                 'system_id',
             ])
@@ -29,6 +35,12 @@ class DeletedTicketsService
                 'categories:id,category_name',
                 'deletedBy:id,name',
                 'deletedBy.roles:id,name',
+                'priority:id,priority_name',
+                'assignedUser:id,name',
+                'assignedUser.roles:id,name',
+                'assignToUsers:id,ticket_id,user_id,assigned_at',
+                'assignToUsers.user:id,name,avatar_url',
+                'assignToUsers.user.roles:id,name',
                 'serviceCenter:id,service_center_name',
                 'system:id,system_name'
             ])

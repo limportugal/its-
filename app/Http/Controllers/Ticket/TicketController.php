@@ -173,6 +173,12 @@ class TicketController extends Controller
 
     public function assignTicketToUser(Request $request, $ticket_uuid)
     {
+        $request->validate([
+            'user_uuid' => 'required|array|min:1',
+            'user_uuid.*' => 'required|string|exists:users,uuid',
+            'priority_id' => 'nullable|string',
+        ]);
+
         $result = $this->assignToUserTicketService->assignTicketToUser(
             $ticket_uuid,
             $request->user_uuid

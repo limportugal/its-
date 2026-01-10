@@ -8,6 +8,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 // CLOSED TICKET COMPONENTS
 import StatusChip from "@/Pages/Tickets/TicketComponents/StatusChip";
 import DeletedByUserChip from "@/Pages/Tickets/TicketComponents/DeletedByUserChip";
+import AssignedUserChip from "@/Pages/Tickets/TicketComponents/AssignedUserChip";
 import UserInfoTooltip from "@/Pages/Tickets/Columns/Tooltips/UserInfoTooltip";
 import DescriptionTooltip from "@/Pages/Tickets/Columns/Tooltips/DescriptionTooltip";
 
@@ -41,6 +42,18 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
         disableColumnMenu: true,
         renderCell: ({ row }) => {
             return <DeletedByUserChip row={row} />;
+        }
+    },
+    {
+        field: "assigned_user",
+        headerName: "ASSIGNED TO",
+        flex: 1,
+        minWidth: 250,
+        filterable: false,
+        sortable: false,
+        disableColumnMenu: true,
+        renderCell: ({ row }) => {
+            return <AssignedUserChip row={row} />;
         }
     },
     {

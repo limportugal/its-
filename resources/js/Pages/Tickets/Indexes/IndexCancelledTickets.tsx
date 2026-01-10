@@ -55,7 +55,7 @@ const IndexCancelledTickets = (): React.ReactElement => {
                 rowHeight={60}
                 autoHeight
                 loading={isPendingCancelledTickets}
-                pageSizeOptions={[25, 50, 75, 100]}
+                pageSizeOptions={[10, 25, 50, 75, 100]}
                 sx={{
                     ...dataGridHeaderStyles(theme),
                     cursor: "pointer",

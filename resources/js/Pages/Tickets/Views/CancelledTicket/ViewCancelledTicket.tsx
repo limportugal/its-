@@ -2,7 +2,7 @@ import { Head, Link } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import "@css/disabled-textfield.css";
-import React, { useState } from "react";
+import React from "react";
 
 // MUI COMPONENTS
 import { useTheme, useMediaQuery, Typography, Box, Paper, Tooltip, Fade, Zoom } from "@mui/material";
@@ -44,6 +44,7 @@ import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
 // TICKET COMPONENTS
 import IndexUserLogsByTicketNumber from "@/Pages/UserLogs/IndexUserLogsByTicketNumber";
 import ReOpenTicket from "@/Pages/Tickets/ReOpenTicket";
+import AvatarGroupWithPopover from "@/Components/Mui/AvatarGroupWithPopover";
 import useDynamicQuery from "@/Reuseable/hooks/useDynamicQuery";
 import { fetchingErrorAlert } from "@/Reuseable/helpers/fetchErrorAlert";
 import { ViewPendingTicketResponse } from "@/Reuseable/types/ticket/view-pending-ticket.types";
@@ -411,11 +412,33 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
 
     // ASSIGNED DETAILS - SHOW IF TICKET WAS ASSIGNED BEFORE BEING CANCELLED
     const assignedDetails: DetailField[] = [];
-    if (currentTicket.assigned_user) {
+    if (currentTicket.assigned_user || (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0)) {
         const assignedUser = currentTicket.assigned_user as any;
         const assignedBy = currentTicket.assigned_by as any;
-        
-        if (assignedUser?.name && assignedUser.name !== "Not specified") {
+
+        // Show all assigned users in a consolidated avatar group
+        if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
+            const assignedUsers = currentTicket.assign_to_users
+                .filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
+                .map((assignment) => assignment.user) // Extract user objects
+                .filter(Boolean); // Remove any undefined values
+
+            if (assignedUsers.length > 0) {
+                assignedDetails.push({
+                    label: "ASSIGNED TO",
+                    value: (
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                            <AvatarGroupWithPopover
+                                users={assignedUsers}
+                                max={5}
+                            />
+                        </Box>
+                    ),
+                    icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                });
+            }
+        } else if (assignedUser?.name && assignedUser.name !== "Not specified") {
+            // Fallback to single user display if no assign_to_users data
             assignedDetails.push({
                 label: "ASSIGNED TO",
                 value: (

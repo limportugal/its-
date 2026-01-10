@@ -14,6 +14,7 @@ import AvatarClient from "@/Components/Mui/AvatarClient";
 // TICKET COMPONENTS
 import StatusChip from "@/Pages/Tickets/TicketComponents/StatusChip";
 import DescriptionTooltip from "@/Pages/Tickets/Columns/Tooltips/DescriptionTooltip";
+import AssignedUserChip from "@/Pages/Tickets/TicketComponents/AssignedUserChip";
 import { timeAgo } from "@/Reuseable/utils/timeAgo";
 import { ClosedTicketsResponse } from "@/Reuseable/types/ticket/closed-tickets.types";
 import UserAvatar from "@/Components/Mui/AvatarUser";
@@ -170,6 +171,18 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
         filterable: true,
         valueGetter: (params: any) => params.row?.closed_by?.name || '', // Add valueGetter for quick filter
         renderCell: ({ row }) => <ClosedByCell row={row} />,
+    },
+    {
+        field: "assigned_user",
+        headerName: "ASSIGNED TO",
+        flex: 1,
+        minWidth: 250,
+        filterable: false,
+        sortable: false,
+        disableColumnMenu: true,
+        renderCell: ({ row }) => {
+            return <AssignedUserChip row={row} />;
+        }
     },
     {
         field: "status",

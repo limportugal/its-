@@ -42,7 +42,7 @@ export default function AccountMenu() {
         
         try {
             // First, try to get a fresh CSRF token
-            const response = await fetch(route('csrf-token'), {
+            const csrfResponse = await fetch(route('csrf-token'), {
                 method: 'GET',
                 credentials: 'same-origin',
                 headers: {
@@ -51,43 +51,45 @@ export default function AccountMenu() {
                 },
             });
             
-            if (response.ok) {
-                const data = await response.json();
-                const freshToken = data.csrf_token;
-                
-                // Use the fresh CSRF token for logout
-                router.post(route("logout"), {
-                    _token: freshToken,
-                }, {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        setProcessingLogout(false);
-                        setAnchorEl(null);
-                        // Force page reload to clear any cached data
-                        window.location.href = '/';
-                    },
-                    onError: (errors: any) => {
-                        setProcessingLogout(false);
-                        console.error('Logout error:', errors);
-                        
-                        // Handle 419 CSRF token mismatch - refresh the page to get new token
-                        if (errors && (
-                            (typeof errors === 'object' && errors.message && errors.message.includes('419')) ||
-                            (typeof errors === 'string' && errors.includes('419'))
-                        )) {
-                            console.log('CSRF token expired, refreshing page...');
-                            window.location.reload();
-                        }
-                    },
-                });
-            } else {
+            if (!csrfResponse.ok) {
                 throw new Error('Failed to get CSRF token');
             }
+
+            const csrfData = await csrfResponse.json();
+            const freshToken = csrfData.csrf_token;
+            
+            // Perform logout using fetch (not Inertia router) for full control
+            const logoutResponse = await fetch(route("logout"), {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': freshToken,
+                },
+                body: JSON.stringify({
+                    _token: freshToken,
+                }),
+            });
+            
+            if (logoutResponse.ok || logoutResponse.status === 302) {
+                // Logout successful, do full page reload to home
+                setProcessingLogout(false);
+                setAnchorEl(null);
+                window.location.href = '/';
+            } else if (logoutResponse.status === 419) {
+                // CSRF token expired, refresh page to get new token
+                console.log('CSRF token expired, refreshing page...');
+                window.location.reload();
+            } else {
+                throw new Error(`Logout failed with status: ${logoutResponse.status}`);
+            }
         } catch (error) {
-            console.error('Error getting CSRF token:', error);
+            console.error('Logout error:', error);
             setProcessingLogout(false);
             
-            // Fallback: refresh the page to get a new CSRF token
+            // Fallback: refresh the page
             window.location.reload();
         }
     };

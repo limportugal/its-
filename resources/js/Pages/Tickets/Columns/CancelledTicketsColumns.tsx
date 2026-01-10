@@ -13,6 +13,7 @@ import DescriptionTooltip from "@/Pages/Tickets/Columns/Tooltips/DescriptionTool
 // UTILS
 import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
 import CancelledByChip from "@/Pages/Tickets/TicketComponents/CancelledByChip";
+import AssignedUserChip from "@/Pages/Tickets/TicketComponents/AssignedUserChip";
 import { timeAgo } from "@/Reuseable/utils/timeAgo";
 
 // TYPES
@@ -45,6 +46,18 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
         disableColumnMenu: false,
         renderCell: ({ row }) => {
             return <CancelledByChip row={row} />;
+        }
+    },
+    {
+        field: "assigned_user",
+        headerName: "ASSIGNED TO",
+        flex: 1,
+        minWidth: 250,
+        filterable: false,
+        sortable: false,
+        disableColumnMenu: true,
+        renderCell: ({ row }) => {
+            return <AssignedUserChip row={row} />;
         }
     },
     {

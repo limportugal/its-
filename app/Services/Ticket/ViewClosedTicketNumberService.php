@@ -78,7 +78,7 @@ class ViewClosedTicketNumberService
  
             // ASSIGNMENT HISTORY
             'assignToUsers:id,ticket_id,user_id,assigned_at',
-            'assignToUsers.user:id,name',
+            'assignToUsers.user:id,name,avatar_url',
             'assignToUsers.user.roles:id,name',
  
             // RETURNED BY
