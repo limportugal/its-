@@ -56,10 +56,12 @@ export interface PendingTicketResponse {
             id: number;
             ticket_id: number;
             user_id: number;
+            assigned_at: string;
             user: {
                 id: number;
+                uuid: string;
                 name: string;
-                avatar_url: string;
+                avatar_url?: string;
                 roles: {
                     id: number;
                     name: string;

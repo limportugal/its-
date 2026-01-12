@@ -419,7 +419,7 @@ const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ use
             const assignedUsers = currentTicket.assign_to_users
                 .filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
                 .map((assignment) => assignment.user) // Extract user objects
-                .filter(Boolean); // Remove any undefined values
+                .filter((user): user is NonNullable<typeof user> => Boolean(user)); // Remove any undefined values and assert type
 
             if (assignedUsers.length > 0) {
                 assignedDetails.push({

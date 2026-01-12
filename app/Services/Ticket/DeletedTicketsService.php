@@ -39,7 +39,7 @@ class DeletedTicketsService
                 'assignedUser:id,name',
                 'assignedUser.roles:id,name',
                 'assignToUsers:id,ticket_id,user_id,assigned_at',
-                'assignToUsers.user:id,name,avatar_url',
+                'assignToUsers.user:id,name',
                 'assignToUsers.user.roles:id,name',
                 'serviceCenter:id,service_center_name',
                 'system:id,system_name'

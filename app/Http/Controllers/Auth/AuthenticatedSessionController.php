@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
     {
         // SET MAX ATTEMPTS AND LOCKOUT TIME
         $maxAttempts = 5;
-        $lockoutTime = 15 * 60;
+        $lockoutTime = 5 * 60;
         $rateKey = 'login:' . strtolower($request->email);
 
         // GET USER BY EMAIL FIRST
@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
             $lastAttemptTime = RateLimiter::availableIn($rateKey);
 
             // IF 10 MINUTES HAS PASSED, CLEAR THE RATE LIMITER
-            if ($lastAttemptTime <= ($lockoutTime - (10 * 60))) {
+            if ($lastAttemptTime <= ($lockoutTime - (2 * 60))) {
                 RateLimiter::clear($rateKey);
             }
         }

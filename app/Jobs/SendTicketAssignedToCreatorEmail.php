@@ -26,7 +26,8 @@ class SendTicketAssignedToCreatorEmail implements ShouldQueue
     {
         // RELOAD THE TICKET WITH ALL NECESSARY RELATIONSHIPS TO ENSURE WE HAVE THE LATEST DATA
         $ticket = Ticket::with([
-            'assignedUser:id,name,email',
+            'assignedUser:id,name,email,avatar_url',
+            'assignToUsers.user:id,name,email,avatar_url',
             'priority:id,priority_name',
             'categories:id,category_name',
             'attachments:id,uuid,file_path,original_name,attachable_type,attachable_id',

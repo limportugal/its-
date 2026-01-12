@@ -13,6 +13,10 @@ export interface ClosedTicketsResponse {
     closed_at: string;
     created_at: string;
     latest_reminder_reason: any;
+    categories: {
+        id: number;
+        category_name: string;
+    }[];
     service_center: {
         id: number;
         service_center_name: string;

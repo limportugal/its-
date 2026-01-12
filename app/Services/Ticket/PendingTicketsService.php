@@ -47,7 +47,7 @@ class PendingTicketsService
                 'assignedUser:id,name',
                 'assignedUser.roles:id,name',
                 'assignToUsers:id,ticket_id,user_id',
-                'assignToUsers.user:id,name',
+                'assignToUsers.user:id,uuid,name',
                 'assignToUsers.user.roles:id,name',
                 'assignedBy:id,name',
                 'assignedBy.roles:id,name',
@@ -55,30 +55,27 @@ class PendingTicketsService
                 'returnedBy.roles:id,name',
             ])
             ->whereIn('status', ['re-open', 'resubmitted', 'new_ticket', 'returned', 'assigned', 'follow-up', 'reminder'])
-            ->when(!$isAdmin, fn($q) => $q->where(function($query) use ($user, $isTeamLeader, $isSupportAgent) {
+            ->when(!$isAdmin, function($query) use ($user, $isTeamLeader, $isSupportAgent) {
                 if ($isTeamLeader) {
                     // TEAM LEADERS CAN SEE:
-                    // 1. ALL NEW_TICKET STATUS TICKETS
-                    // 2. ALL TICKETS ASSIGNED TO THEIR SUPPORT AGENTS
-                    $supportAgentIds = $user->supportAgents->pluck('id')->toArray();
-                    
-                    $query->where(function($subQuery) use ($user, $supportAgentIds) {
-                        // NEW TICKETS (not assigned to anyone yet)
-                        $subQuery->where('status', 'new_ticket')
-                                // OR TICKETS ASSIGNED TO THE TEAM LEADER
-                                ->orWhere('assign_to_user_id', $user->id)
-                                // OR TICKETS ASSIGNED TO ANY OF THEIR SUPPORT AGENTS
-                                ->orWhereIn('assign_to_user_id', $supportAgentIds);
-                    });
+                    // UNASSIGNED NEW TICKETS (for assignment purposes)
+                    $query->whereNull('assign_to_user_id')
+                          ->where('status', 'new_ticket');
                 } elseif ($isSupportAgent) {
-                    // SUPPORT AGENTS CAN ONLY SEE TICKETS ASSIGNED TO THEM
-                    $query->where('assign_to_user_id', $user->id);
+                    // SUPPORT AGENTS CAN SEE TICKETS ASSIGNED TO THEM
+                    // Either as primary assignee OR in assign_ticket_to_users table
+                    $query->where(function($q) use ($user) {
+                        $q->where('assign_to_user_id', $user->id)
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                              $assignQuery->where('user_id', $user->id);
+                          });
+                    });
                 } else {
-                    // OTHER NON-ADMIN USERS CAN SEE TICKETS THEY CREATED OR ASSIGNED TO THEM
-                    $query->where('user_id', $user->id)
-                          ->orWhere('assign_to_user_id', $user->id);
+                    // OTHER NON-ADMIN USERS CAN SEE UNASSIGNED TICKETS THEY CREATED
+                    $query->whereNull('assign_to_user_id')
+                          ->where('user_id', $user->id);
                 }
-            }));
+            });
 
         // DEFINE STATUS PRIORITY ORDER
         $statusPriority = [

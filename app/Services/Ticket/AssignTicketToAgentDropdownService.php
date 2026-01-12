@@ -12,7 +12,7 @@ class AssignTicketToAgentDropdownService
     public function assignTicketToAgentDropdown()
     {
         $currentUser = request()->user();
-        
+
         // CHECK IF CURRENT USER IS SUPER ADMIN, ADMIN, OR MANAGER - THEY CAN SEE ALL USERS
         if ($currentUser->hasAnyRole(['Super Admin', 'Admin', 'Manager'])) {
             $users = User::with('roles')->where('status', 'active')->select(
@@ -21,7 +21,7 @@ class AssignTicketToAgentDropdownService
                 'name',
                 'email',
             )->get();
-        } 
+        }
         // CHECK IF CURRENT USER IS TEAM LEADER, ONLY SHOW THEIR ASSIGNED SUPPORT AGENTS
         elseif ($currentUser->hasRole('Team Leader')) {
             $users = $currentUser->supportAgents()->with('roles')->where('users.status', 'active')->select(
@@ -30,7 +30,7 @@ class AssignTicketToAgentDropdownService
                 'users.name',
                 'users.email',
             )->get();
-        } 
+        }
         // FOR OTHER ROLES, RETURN EMPTY COLLECTION
         else {
             $users = collect();

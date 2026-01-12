@@ -8,8 +8,8 @@ interface TicketRowForAssignedUser {
     assigned_user?: {
         id: number;
         name: string;
-        avatar: string;
-        avatar_url: string;
+        avatar: string | null;
+        avatar_url: string | null;
         roles: {
             id: number;
             name: string;

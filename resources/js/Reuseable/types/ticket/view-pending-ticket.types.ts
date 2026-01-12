@@ -237,11 +237,16 @@ export interface ViewPendingTicketResponse {
         assigned_at: string;
         user?: {
             id: number;
+            uuid: string;
             name: string;
             avatar_url: string;
             roles: {
                 id: number;
                 name: string;
+                pivot?: {
+                    model_id: number;
+                    role_id: number;
+                };
             }[];
         };
     }[];

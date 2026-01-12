@@ -76,7 +76,7 @@ class ViewCancelledTicketService
 
            // ASSIGN TO USERS (MULTIPLE)
            'assignToUsers:id,ticket_id,user_id,assigned_at',
-           'assignToUsers.user:id,name,avatar_url',
+           'assignToUsers.user:id,name',
            'assignToUsers.user.roles:id,name',
 
            // ASSIGNED BY
@@ -107,7 +107,7 @@ class ViewCancelledTicketService
            
            // CLOSE REASONS
            'closeReasons:id,ticket_id,reason_text,closed_at',
-           'closeReasons.closedBy:id,name,email,avatar_url',
+           'closeReasons.closedBy:id,name,email',
            'closeReasons.closedBy.roles:id,name',
            
            // REOPENED BY

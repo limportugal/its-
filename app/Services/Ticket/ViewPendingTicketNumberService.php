@@ -83,7 +83,7 @@ class ViewPendingTicketNumberService
 
            // ASSIGNMENT HISTORY
            'assignToUsers:id,ticket_id,user_id,assigned_at',
-           'assignToUsers.user:id,name',
+           'assignToUsers.user:id,uuid,name',
            'assignToUsers.user.roles:id,name',
 
            // RETURNED BY

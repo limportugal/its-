@@ -24,6 +24,17 @@ class TicketAssignedToCreatorNotification extends Mailable
 
     public function build()
     {
+        // Get all assigned users with their details
+        $assignedUsers = $this->ticket->assignToUsers()->with('user:id,name,email,avatar_url')->get()->map(function ($assignment) {
+            return [
+                'name' => $assignment->user->name,
+                'email' => $assignment->user->email,
+                'avatar_url' => $assignment->user->avatar_url,
+                'first_letter' => strtoupper(substr($assignment->user->name, 0, 1)),
+                'assigned_at' => $assignment->assigned_at,
+            ];
+        });
+
         return $this->subject('Your Ticket Has Been Assigned - ' . $this->ticket->ticket_number)
             ->view('emails.ticket_assigned_to_creator')
             ->with([
@@ -39,6 +50,7 @@ class TicketAssignedToCreatorNotification extends Mailable
                 'attachments' => $this->ticket->attachments,
                 'created_at' => $this->ticket->created_at,
                 'status' => $this->ticket->status,
+                'assigned_users' => $assignedUsers,
                 'assigned_to' => $this->ticket->assignedUser->name ?? 'N/A',
                 'assigned_user_avatar_url' => $this->ticket->assignedUser->avatar_url ?? null,
                 'assigned_user_avatar_base64' => $this->getAvatarAsBase64(),

@@ -28,11 +28,16 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    // FORM INITIAL VALUES
-    const defaultValues = {
-        user_uuid: [] as string[],
+    // GET ALREADY ASSIGNED USER UUIDs
+    const assignedUserUuids = useMemo(() => {
+        return selectedTicket?.assign_to_users?.map(assign => assign.user?.uuid).filter(Boolean) || [];
+    }, [selectedTicket?.assign_to_users]);
+
+    // FORM INITIAL VALUES - INCLUDE ALREADY ASSIGNED USERS
+    const defaultValues = useMemo(() => ({
+        user_uuid: assignedUserUuids,
         priority: "",
-    };
+    }), [assignedUserUuids]);
 
     // ZOD RESOLVER FOR VALIDATION
     const {
@@ -60,7 +65,6 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
     // USER OPTIONS
     const userOptions = useMemo(() => {
         return userData?.data
-            ?.filter((user: UserDropdownItem) => user.id !== selectedTicket?.assigned_user?.id)
             ?.map((user: UserDropdownItem) => ({
                 value: user.uuid,
                 label: user.name,
@@ -69,19 +73,27 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                 role: user.roles?.[0] || 'N/A',
             }))
             ?.sort((a: { label: string }, b: { label: string }) => (a.label || '').localeCompare(b.label || '')) || [];
-    }, [userData, selectedTicket?.assigned_user?.id]);
+    }, [userData]);
 
-    // CLEAR FORM
+    // CLEAR FORM - RESET TO ASSIGNED USERS
     const resetForm = () => {
         reset(defaultValues);
     };
 
-    // RESET FORM WHEN THE DIALOG CLOSES
+    // CLEAR ALL SELECTIONS - MANUAL CLEAR
+    const clearAllSelections = () => {
+        reset({
+            user_uuid: [],
+            priority: "",
+        });
+    };
+
+    // RESET FORM WHEN THE DIALOG OPENS
     useEffect(() => {
         if (open) {
             resetForm();
         }
-    }, [open]);
+    }, [open, defaultValues]);
 
     // DYNAMIC MUTATION WITH CATCH INVALIDATION
     const { mutate: assignTicketMutation, isPending: isPendingAssignTicketToUser } =
@@ -91,7 +103,7 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
             mutationKey: ["getPendingTickets", 'getViewPendingTicketData'],
             onSuccess: () => {
                 setShowSnackBarAlert("Ticket assigned successfully.");
-                reset({ user_uuid: [], priority: "" });
+                reset(defaultValues);
                 onClose();
                 setTimeout(() => {
                     router.visit(route('tickets.indexPendingTickets'));
@@ -227,16 +239,15 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                             size={{ xs: 12 }}
                             sx={{
                                 display: "flex",
-                                justifyContent: "flex-end",
+                                justifyContent: "space-between",
                                 gap: 1,
                                 my: isMobile ? 1 : 2
                             }}
                         >
                             <ClearButton
-                                minWidth="200px"
                                 fullWidth={isMobile ? true : false}
                                 disabled={isPendingAssignTicketToUser}
-                                onClick={resetForm}
+                                onClick={clearAllSelections}
                             />
                             <Button
                                 variant="contained"
@@ -245,7 +256,6 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                                 disabled={isPendingAssignTicketToUser}
                                 endIcon={isPendingAssignTicketToUser ? <CircularProgress size={20} color="primary" /> : <AssignmentIndIcon />}
                                 fullWidth={isMobile}
-                                sx={{ minWidth: "200px" }}
                             >
                                 {isPendingAssignTicketToUser ? "ASSIGNING..." : "ASSIGN TICKET"}
                             </Button>

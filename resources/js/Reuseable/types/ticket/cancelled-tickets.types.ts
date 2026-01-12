@@ -78,19 +78,4 @@ export interface CancelledTicketsResponse {
             name: string;
         }[];
     };
-    assign_to_users?: {
-        id: number;
-        ticket_id: number;
-        user_id: number;
-        assigned_at: string;
-        user: {
-            id: number;
-            name: string;
-            avatar_url?: string;
-            roles: {
-                id: number;
-                name: string;
-            }[];
-        };
-    }[];
 }

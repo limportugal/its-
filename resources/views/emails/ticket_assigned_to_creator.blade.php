@@ -404,29 +404,59 @@
             </table>
         </div>
 
-        <!-- ASSIGNED AGENT CARD -->
-        @if(isset($assigned_to) && $assigned_to)
-        <div class="assigned-agent-card">
-            <div class="assigned-agent-content">
-                @if(isset($assigned_user_avatar_public) && $assigned_user_avatar_public)
-                    <img src="{{ $assigned_user_avatar_public }}" alt="{{ $assigned_user_first_letter ?? 'A' }}" class="agent-avatar">
-                @elseif(isset($assigned_user_avatar_url) && $assigned_user_avatar_url)
-                    <img src="{{ $assigned_user_avatar_url }}" alt="{{ $assigned_user_first_letter ?? 'A' }}" class="agent-avatar">
-                @elseif(isset($assigned_user_avatar_base64) && $assigned_user_avatar_base64)
-                    <img src="{{ $assigned_user_avatar_base64 }}" alt="{{ $assigned_user_first_letter ?? 'A' }}" class="agent-avatar">
-                @else
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjQiIGZpbGw9IiNmM2Y0ZjYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+CjxjaXJjbGUgY3g9IjI0IiBjeT0iMTgiIHI9IjYiIGZpbGw9IiM2YjcyODAiLz4KPHBhdGggZD0iTTEwIDM0QzEwIDI4LjQ3NzEgMTQuNDc3MSAyNCAyMCAyNEgyOEMzMy41MjI5IDI0IDM4IDI4LjQ3NzEgMzggMzRWMzZIMTBWMzRaIiBmaWxsPSIjNmI3MjgwIi8+Cjwvc3ZnPgo=" alt="Profile" class="agent-avatar">
-                @endif
-                <div class="agent-label">Assigned To Agent</div>
-                <h3 class="agent-name">{{ $assigned_to }}</h3>
-                <div class="agent-status">Your ticket is now being handled</div>
-                @if(isset($assigned_at))
-                <div class="agent-status" style="margin-top: 4px; font-size: 11px; opacity: 0.7;">
-                    Assigned on {{ date('M d, Y \a\t h:i A', strtotime($assigned_at)) }}
+        <!-- ASSIGNED AGENTS CARD -->
+        @if(isset($assigned_users) && $assigned_users->count() > 0)
+            @if($assigned_users->count() === 1)
+                <!-- SINGLE AGENT CARD -->
+                @php $agent = $assigned_users->first(); @endphp
+                <div class="assigned-agent-card">
+                    <div class="assigned-agent-content">
+                        @if(isset($agent['avatar_url']) && $agent['avatar_url'])
+                            <img src="{{ $agent['avatar_url'] }}" alt="{{ $agent['first_letter'] }}" class="agent-avatar">
+                        @else
+                            <div class="agent-avatar-fallback">{{ $agent['first_letter'] }}</div>
+                        @endif
+                        <div class="agent-label">Assigned To Agent</div>
+                        <h3 class="agent-name">{{ $agent['name'] }}</h3>
+                        <div class="agent-status">Your ticket is now being handled</div>
+                        @if(isset($agent['assigned_at']))
+                        <div class="agent-status" style="margin-top: 4px; font-size: 11px; opacity: 0.7;">
+                            Assigned on {{ date('M d, Y \a\t h:i A', strtotime($agent['assigned_at'])) }}
+                        </div>
+                        @endif
+                    </div>
                 </div>
-                @endif
-            </div>
-        </div>
+            @else
+                <!-- MULTIPLE AGENTS CARD -->
+                <div class="assigned-agent-card">
+                    <div class="assigned-agent-content">
+                        <div class="agent-icon">👥</div>
+                        <div class="agent-label">Assigned To Multiple Agents</div>
+                        <h3 class="agent-name">{{ $assigned_users->count() }} Support Agents</h3>
+                        <div class="agent-status">Your ticket is being handled by multiple specialists</div>
+                        <div style="margin-top: 16px; text-align: left;">
+                            @foreach($assigned_users as $agent)
+                                <div style="display: flex; align-items: center; margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                    @if(isset($agent['avatar_url']) && $agent['avatar_url'])
+                                        <img src="{{ $agent['avatar_url'] }}" alt="{{ $agent['first_letter'] }}" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 12px; border: 2px solid #ffffff;">
+                                    @else
+                                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: #3b82f6; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; margin-right: 12px; border: 2px solid #ffffff;">{{ $agent['first_letter'] }}</div>
+                                    @endif
+                                    <div>
+                                        <div style="font-weight: 600; font-size: 14px; color: #1e293b;">{{ $agent['name'] }}</div>
+                                        <div style="font-size: 12px; color: #64748b;">{{ $agent['email'] }}</div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @if(isset($assigned_at))
+                        <div class="agent-status" style="margin-top: 12px; font-size: 11px; opacity: 0.7;">
+                            First assigned on {{ date('M d, Y \a\t h:i A', strtotime($assigned_at)) }}
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
         @endif
 
         <!-- MESSAGE -->
