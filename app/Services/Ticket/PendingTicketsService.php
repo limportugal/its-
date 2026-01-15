@@ -108,7 +108,19 @@ class PendingTicketsService
                 're_open_count' => $counts->get('re-open', 0),
             ]);
 
-        $pendingTickets = $tickets->map(function ($ticket) {
+        $pendingTickets = $tickets->map(function ($ticket) use ($user) {
+            // Sort assignToUsers so current user appears first if assigned
+            if ($ticket->assignToUsers) {
+                $ticket->assignToUsers = $ticket->assignToUsers->sort(function ($a, $b) use ($user) {
+                    // Current user should appear first
+                    if ($a->user_id === $user->id) return -1;
+                    if ($b->user_id === $user->id) return 1;
+
+                    // Sort by assigned_at timestamp (oldest first)
+                    return $a->assigned_at <=> $b->assigned_at;
+                })->values();
+            }
+
             $baseTicket = $ticket->formatForResponse();
 
             unset($baseTicket->assigned_user);

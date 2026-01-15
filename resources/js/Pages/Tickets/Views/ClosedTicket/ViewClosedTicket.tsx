@@ -40,6 +40,7 @@ import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import { DetailField } from "@/Reuseable/types/ticketTypes";
 import { formatDate } from "@/Reuseable/utils/formatDate";
 import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
+import { useAuthUser } from "@/Reuseable/hooks/useAuthUser";
 
 // TICKET COMPONENTS
 import IndexUserLogsByTicketNumber from "@/Pages/UserLogs/IndexUserLogsByTicketNumber";
@@ -71,6 +72,7 @@ import { useViewClosedTicketSelectors } from "@/stores/ticket/useViewClosedTicke
 const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ userRoles, uuid }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { user: currentUser } = useAuthUser();
 
     // ZUSTAND STORE SELECTORS
     const { open: openReopenTicketDialog, setOpen: setOpenReopenTicketDialog } = useViewClosedTicketSelectors.useReopenTicketDialog();
@@ -410,67 +412,97 @@ const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ use
 
     // ASSIGNED DETAILS - SHOW IF TICKET HAS ASSIGNED USER DATA (FOR CLOSED TICKETS, SHOW IF DATA EXISTS)
     const assignedDetails: DetailField[] = [];
-    if (currentTicket.assigned_user || (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0)) {
-        const assignedUser = currentTicket.assigned_user as any;
-        const assignedBy = currentTicket.assigned_by as any;
+    const assignedUser = currentTicket.assigned_user as any;
+    const assignedBy = currentTicket.assigned_by as any;
 
-        // Show all assigned users in a consolidated avatar group
-        if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
-            const assignedUsers = currentTicket.assign_to_users
-                .filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
-                .map((assignment) => assignment.user) // Extract user objects
-                .filter((user): user is NonNullable<typeof user> => Boolean(user)); // Remove any undefined values and assert type
+    // Show all assigned users in a consolidated avatar group
+    if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
+        let assignedUsers: any[] = currentTicket.assign_to_users
+            ?.filter((assignment: any) => assignment?.name || assignment?.user?.name) // Filter out assignments without valid users
+            ?.map((assignment: any) => assignment?.user || assignment) // Extract user objects (handle both nested and flattened structures)
+            ?.filter(Boolean) || []; // Remove any undefined values
 
-            if (assignedUsers.length > 0) {
+        // Sort users so current logged-in user comes first, then primary user, then others
+        if (assignedUsers.length > 0) {
+            assignedUsers = assignedUsers.sort((a, b) => {
+                // Current user should always be first
+                if (currentUser && a.id === currentUser.id) return -1;
+                if (currentUser && b.id === currentUser.id) return 1;
+
+                // Then primary user comes next
+                if (assignedUser && a.id === assignedUser.id) return -1;
+                if (assignedUser && b.id === assignedUser.id) return 1;
+
+                return 0;
+            });
+        }
+
+        if (assignedUsers.length > 0) {
+            if (assignedUsers.length === 1) {
+                // Single user - display AvatarUser with name, service center, and role
+                const singleUser = assignedUsers[0];
+                assignedDetails.push({
+                    label: "ASSIGNED TO",
+                    value: (
+                        <AvatarUser
+                            full_name={singleUser?.name || "Not specified"}
+                            avatar_url={singleUser?.avatar_url || null}
+                            role_name={singleUser?.roles?.length > 0 ? singleUser?.roles[0]?.name : "No Role"}
+                        />
+                    ),
+                    icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                });
+            } else {
+                // Multiple users - display AvatarGroupWithPopover
                 assignedDetails.push({
                     label: "ASSIGNED TO",
                     value: (
                         <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                             <AvatarGroupWithPopover
                                 users={assignedUsers}
-                                max={5}
+                                max={3}
                             />
                         </Box>
                     ),
                     icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
                 });
             }
-        } else if (assignedUser?.name && assignedUser.name !== "Not specified") {
-            // Fallback to single user display if no assign_to_users data
-            assignedDetails.push({
-                label: "ASSIGNED TO",
-                value: (
-                    <AvatarUser
-                        full_name={assignedUser?.name || "Not specified"}
-                        avatar_url={assignedUser?.avatar_url || null}
-                        role_name={assignedUser?.roles?.length > 0 ? assignedUser?.roles[0].name : "No Role"}
-                    />
-                ),
-                icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-            });
         }
+    } else if (assignedUser?.name && assignedUser.name !== "Not specified") {
+        // Fallback to single user display if no assign_to_users data
+        assignedDetails.push({
+            label: "ASSIGNED TO",
+            value: (
+                <AvatarUser
+                    full_name={assignedUser?.name || "Not specified"}
+                    avatar_url={assignedUser?.avatar_url || null}
+                    role_name={assignedUser?.roles?.length > 0 ? assignedUser?.roles[0].name : "No Role"}
+                />
+            ),
+            icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        });
+    }
 
-        if (assignedBy?.name && assignedBy.name !== "Not specified") {
-            assignedDetails.push({
-                label: "ASSIGNED BY",
-                value: (
-                    <AvatarUser
-                        full_name={assignedBy?.name || "Not specified"}
-                        avatar_url={assignedBy?.avatar_url || null}
-                        role_name={assignedBy?.roles?.length > 0 ? assignedBy?.roles[0].name : "No Role"}
-                    />
-                ),
-                icon: <PersonAddIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-            });
-        }
+    if (assignedBy?.name && assignedBy.name !== "Not specified") {
+        assignedDetails.push({
+            label: "ASSIGNED BY",
+            value: (
+                <AvatarUser
+                    full_name={assignedBy?.name || "Not specified"}
+                    avatar_url={assignedBy?.avatar_url || null}
+                    role_name={assignedBy?.roles?.length > 0 ? assignedBy?.roles[0].name : "No Role"}
+                />
+            ),
+            icon: <PersonAddIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        });
+    }
 
-        if ((currentTicket as any).assigned_at) {
-            assignedDetails.push({
-                label: "ASSIGNED ON",
-                value: timeAgo((currentTicket as any).assigned_at),
-                icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-            });
-        }
+    if ((currentTicket as any).assigned_at) {
+        assignedDetails.push({
+            label: "ASSIGNED ON",
+            value: timeAgo((currentTicket as any).assigned_at),
+            icon: <AccessTimeIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        });
     }
 
     // RETURNED DETAILS - SHOW IF TICKET HAS RETURNED DATA (FOR CLOSED TICKETS, SHOW IF DATA EXISTS)

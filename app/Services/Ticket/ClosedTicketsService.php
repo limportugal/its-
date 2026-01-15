@@ -106,12 +106,47 @@ class ClosedTicketsService
             });
         }
 
-        // ROLE-BASED ACCESS CONTROL - OPTIMIZED
-        $canViewAllTickets = $userRoles->contains(fn($role) => in_array($role, ['Super Admin', 'Admin', 'Manager']));
-        
-        if (!$canViewAllTickets && $user) {
-            // For non-admin users, only show their own tickets for better performance
-            $query->where('user_id', $user->id);
+        // ROLE-BASED ACCESS CONTROL
+        $isAdmin = $userRoles->contains(fn($role) => in_array($role, ['Super Admin', 'Admin', 'Manager']));
+        $isTeamLeader = $userRoles->contains('Team Leader');
+        $isSupportAgent = $userRoles->contains('Support Agent');
+
+        if (!$isAdmin && $user) {
+            if ($isTeamLeader) {
+                // TEAM LEADERS CAN SEE:
+                // 1. TICKETS CREATED BY THEM
+                // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                // 3. TICKETS ASSIGNED TO THEIR SUPPORT AGENTS (both single and multi-assignment)
+                $supportAgentIds = $user->supportAgents->pluck('id')->toArray();
+
+                $query->where('user_id', $user->id)
+                      ->orWhere('assign_to_user_id', $user->id)
+                      ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                          $assignQuery->where('user_id', $user->id);
+                      })
+                      ->orWhereIn('assign_to_user_id', $supportAgentIds)
+                      ->orWhereHas('assignToUsers', function($assignQuery) use ($supportAgentIds) {
+                          $assignQuery->whereIn('user_id', $supportAgentIds);
+                      });
+            } elseif ($isSupportAgent) {
+                // SUPPORT AGENTS CAN SEE:
+                // 1. TICKETS CREATED BY THEM
+                // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                $query->where('user_id', $user->id)
+                      ->orWhere('assign_to_user_id', $user->id)
+                      ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                          $assignQuery->where('user_id', $user->id);
+                      });
+            } else {
+                // OTHER NON-ADMIN USERS CAN SEE:
+                // 1. TICKETS CREATED BY THEM
+                // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                $query->where('user_id', $user->id)
+                      ->orWhere('assign_to_user_id', $user->id)
+                      ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                          $assignQuery->where('user_id', $user->id);
+                      });
+            }
         }
 
         // APPLY SORTING

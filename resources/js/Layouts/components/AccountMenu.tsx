@@ -80,7 +80,6 @@ export default function AccountMenu() {
                 window.location.href = '/';
             } else if (logoutResponse.status === 419) {
                 // CSRF token expired, refresh page to get new token
-                console.log('CSRF token expired, refreshing page...');
                 window.location.reload();
             } else {
                 throw new Error(`Logout failed with status: ${logoutResponse.status}`);

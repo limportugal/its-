@@ -14,6 +14,7 @@ class ViewClosedTicketNumberService
         $userRoles = $user->roles->pluck('name');
         $isAdmin = $userRoles->contains(fn($role) => in_array($role, ['Super Admin', 'Admin', 'Manager']));
         $isTeamLeader = $userRoles->contains('Team Leader');
+        $isSupportAgent = $userRoles->contains('Support Agent');
 
         $viewClosedTicketNumber = Ticket::select(
             'id',
@@ -78,7 +79,7 @@ class ViewClosedTicketNumberService
  
             // ASSIGNMENT HISTORY
             'assignToUsers:id,ticket_id,user_id,assigned_at',
-            'assignToUsers.user:id,name',
+            'assignToUsers.user:id,uuid,name',
             'assignToUsers.user.roles:id,name',
  
             // RETURNED BY
@@ -125,20 +126,41 @@ class ViewClosedTicketNumberService
         ])
             ->where('uuid', $uuid)
             ->where('status', 'closed')
-            ->when(!$isAdmin, fn($q) => $q->where(function($query) use ($user, $isTeamLeader) {
+            ->when(!$isAdmin, fn($q) => $q->where(function($query) use ($user, $isTeamLeader, $isSupportAgent) {
                 if ($isTeamLeader) {
                     // TEAM LEADERS CAN SEE:
                     // 1. TICKETS CREATED BY THEM
-                    // 2. TICKETS ASSIGNED TO THEM
-                    // 3. TICKETS ASSIGNED TO THEIR SUPPORT AGENTS
+                    // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                    // 3. TICKETS ASSIGNED TO THEIR SUPPORT AGENTS (both single and multi-assignment)
                     $supportAgentIds = $user->supportAgents->pluck('id')->toArray();
-                    
+
                     $query->where('user_id', $user->id)
                           ->orWhere('assign_to_user_id', $user->id)
-                          ->orWhereIn('assign_to_user_id', $supportAgentIds);
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                              $assignQuery->where('user_id', $user->id);
+                          })
+                          ->orWhereIn('assign_to_user_id', $supportAgentIds)
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($supportAgentIds) {
+                              $assignQuery->whereIn('user_id', $supportAgentIds);
+                          });
+                } elseif ($isSupportAgent) {
+                    // SUPPORT AGENTS CAN SEE:
+                    // 1. TICKETS CREATED BY THEM
+                    // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                    $query->where('user_id', $user->id)
+                          ->orWhere('assign_to_user_id', $user->id)
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                              $assignQuery->where('user_id', $user->id);
+                          });
                 } else {
-                    // SUPPORT AGENTS CAN SEE TICKETS ASSIGNED TO THEM
-                    $query->where('assign_to_user_id', $user->id);
+                    // OTHER NON-ADMIN USERS CAN SEE:
+                    // 1. TICKETS CREATED BY THEM
+                    // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                    $query->where('user_id', $user->id)
+                          ->orWhere('assign_to_user_id', $user->id)
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                              $assignQuery->where('user_id', $user->id);
+                          });
                 }
             }))
             ->firstOrFail();
@@ -160,12 +182,13 @@ class ViewClosedTicketNumberService
            });
        }
 
-       // HIDE PIVOT DATA FROM ASSIGNMENT HISTORY USERS
-       if ($viewClosedTicketNumber->assignToUsers) {
-           $viewClosedTicketNumber->assignToUsers->each(function ($assignment) {
-                $assignment->makeHidden('user');
-           });
-       }
+       // NOTE: Keeping user data visible for frontend display of multiple assigned users
+       // HIDE PIVOT DATA FROM ASSIGNMENT HISTORY USERS - Commented out to show user info
+       // if ($viewClosedTicketNumber->assignToUsers) {
+       //     $viewClosedTicketNumber->assignToUsers->each(function ($assignment) {
+       //          $assignment->makeHidden('user');
+       //     });
+       // }
 
        // HIDE PIVOT DATA FROM RESUBMISSION REASONS' RETURNED BY USERS
        if ($viewClosedTicketNumber->resubmissionReasons) {

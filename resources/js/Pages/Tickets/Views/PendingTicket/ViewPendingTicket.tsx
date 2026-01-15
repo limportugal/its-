@@ -42,6 +42,7 @@ import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 // HOOKS, API, TYPES & UTILS, VALIDATION
 import { DetailField } from "@/Reuseable/types/ticketTypes";
 import { formatDate } from "@/Reuseable/utils/formatDate";
+import { useAuthUser } from "@/Reuseable/hooks/useAuthUser";
 
 // TICKET COMPONENTS
 import BottomNav from "@/Pages/Tickets/TicketComponents/BottomNav";
@@ -74,6 +75,7 @@ import { useViewPendingTicketSelectors } from "@/stores/ticket/useViewPendingTic
 const ViewPendingTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ userRoles, uuid }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { user: currentUser } = useAuthUser();
 
     // ZUSTAND STORE HOOKS
     const { open: openReturnDialog, setOpen: setOpenReturnDialog } = useViewPendingTicketSelectors.useReturnDialog();
@@ -429,24 +431,56 @@ const ViewPendingTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
 
         // Show all assigned users in a consolidated avatar group
         if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
-            const assignedUsers: any[] = currentTicket.assign_to_users
+            let assignedUsers: any[] = currentTicket.assign_to_users
                 ?.filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
                 ?.map((assignment) => assignment.user) // Extract user objects
                 ?.filter(Boolean) || []; // Remove any undefined values
 
+            // Sort users so current logged-in user comes first, then primary user, then others
             if (assignedUsers.length > 0) {
-                assignedDetails.push({
-                    label: "ASSIGNED TO",
-                    value: (
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-                            <AvatarGroupWithPopover
-                                users={assignedUsers}
-                                max={5}
-                            />
-                        </Box>
-                    ),
-                    icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                assignedUsers = assignedUsers.sort((a, b) => {
+                    // Current user should always be first
+                    if (currentUser && a.id === currentUser.id) return -1;
+                    if (currentUser && b.id === currentUser.id) return 1;
+
+                    // Then primary user comes next
+                    if (assignedUser && a.id === assignedUser.id) return -1;
+                    if (assignedUser && b.id === assignedUser.id) return 1;
+
+                    return 0;
                 });
+            }
+
+            if (assignedUsers.length > 0) {
+                if (assignedUsers.length === 1) {
+                    // Single user - display AvatarUser with name, service center, and role
+                    const singleUser = assignedUsers[0];
+                    assignedDetails.push({
+                        label: "ASSIGNED TO",
+                        value: (
+                            <AvatarUser
+                                full_name={singleUser?.name || "Not specified"}
+                                avatar_url={singleUser?.avatar_url || null}
+                                role_name={singleUser?.roles?.length > 0 ? singleUser?.roles[0].name : "No Role"}
+                            />
+                        ),
+                        icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                } else {
+                    // Multiple users - display AvatarGroupWithPopover
+                    assignedDetails.push({
+                        label: "ASSIGNED TO",
+                        value: (
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                <AvatarGroupWithPopover
+                                    users={assignedUsers}
+                                    max={3}
+                                />
+                            </Box>
+                        ),
+                        icon: <AssignmentIndIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
             }
         } else if (assignedUser?.name && assignedUser.name !== "Not specified") {
             // Fallback to single user display if no assign_to_users data

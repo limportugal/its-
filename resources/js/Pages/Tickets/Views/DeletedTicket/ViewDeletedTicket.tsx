@@ -40,6 +40,7 @@ import WorkHistoryOutlinedIcon from '@mui/icons-material/WorkHistoryOutlined';
 import { DetailField } from "@/Reuseable/types/ticketTypes";
 import { formatDate } from "@/Reuseable/utils/formatDate";
 import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
+import { useAuthUser } from "@/Reuseable/hooks/useAuthUser";
 
 // TICKET COMPONENTS
 import RestoreTicket from "@/Pages/Tickets/RestoreTicket";
@@ -70,6 +71,7 @@ import AttachmentViewer from "@/Pages/Tickets/Views/DeletedTicket/AttachmentView
 const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ userRoles, uuid }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { user: currentUser } = useAuthUser();
 
     const [openRestoreDialog, setOpenRestoreDialog] = useState(false);
     const [value, setValue] = useState('1');
@@ -334,10 +336,25 @@ const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
 
         // Show all assigned users in a consolidated avatar group
         if (currentTicket.assign_to_users && currentTicket.assign_to_users.length > 0) {
-            const assignedUsers = currentTicket.assign_to_users
+            let assignedUsers = currentTicket.assign_to_users
                 .filter((assignment) => assignment?.user?.name) // Filter out assignments without valid users
                 .map((assignment) => assignment.user) // Extract user objects
                 .filter(Boolean); // Remove any undefined values
+
+            // Sort users so current logged-in user comes first, then primary user, then others
+            if (assignedUsers.length > 0) {
+                assignedUsers = assignedUsers.sort((a, b) => {
+                    // Current user should always be first
+                    if (currentUser && a.id === currentUser.id) return -1;
+                    if (currentUser && b.id === currentUser.id) return 1;
+
+                    // Then primary user comes next
+                    if (assignedUser && a.id === assignedUser.id) return -1;
+                    if (assignedUser && b.id === assignedUser.id) return 1;
+
+                    return 0;
+                });
+            }
 
             if (assignedUsers.length > 0) {
                 assignedDetails.push({

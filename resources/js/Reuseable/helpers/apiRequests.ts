@@ -37,7 +37,6 @@ export const apiRequest = async <T>(
 
             // Handle session expired error (419 CSRF token mismatch)
             if (err.response && err.response.status === 419) {
-                console.log('CSRF token expired, refreshing page...');
                 // Session has expired or CSRF token mismatch
                 window.location.reload();
             }

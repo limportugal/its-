@@ -94,9 +94,9 @@ const PendingTickets: React.FC<{ userRoles?: string[] }> = ({ userRoles = [] }) 
                     mt: isAgent ? (isMobile ? -2 : 1) : (isMobile ? -0.5 : 1),
                     mx: isMobile ? -1 : 0,
                 }}
-                pageSizeOptions={[10, 20, 50, 100]}
+                pageSizeOptions={[50, 100, 150, 200]}
                 initialState={{
-                    pagination: { paginationModel: { pageSize: 10 } },
+                    pagination: { paginationModel: { pageSize: 50 } },
                     columns: {
                         columnVisibilityModel: {
                             assigned_by_id: false,

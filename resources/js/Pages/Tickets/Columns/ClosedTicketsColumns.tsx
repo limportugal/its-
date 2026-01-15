@@ -135,7 +135,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
         minWidth: 230,
         flex: 1,
         filterable: true,
-        valueGetter: (params: any) => params.row?.full_name || '', // Add valueGetter for quick filter
+        valueGetter: (value, row) => row?.full_name || '', // Add valueGetter for quick filter
         renderCell: ({ row }) => <ReportedByCell row={row} />,
     },
     {
@@ -146,7 +146,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
         filterable: true,
         sortable: false,
         disableColumnMenu: true,
-        valueGetter: (params: any) => params.row?.description || '', // Add valueGetter for quick filter
+        valueGetter: (value, row) => row?.description || '', // Add valueGetter for quick filter
         renderCell: ({ row, value }) => <DescriptionCell row={row} value={value} />,
     },
     {
@@ -160,7 +160,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
         filterable: true,
         sortable: false,
         disableColumnMenu: true,
-        valueGetter: (params: any) => params.row?.ticket_number || '', // Add valueGetter for quick filter
+        valueGetter: (value, row) => row?.ticket_number || '', // Add valueGetter for quick filter
         renderCell: ({ row, value }) => <TicketNumberCell row={row} value={value} />,
     },
     {
@@ -169,7 +169,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
         minWidth: 230,
         flex: 1,
         filterable: true,
-        valueGetter: (params: any) => params.row?.closed_by?.name || '', // Add valueGetter for quick filter
+        valueGetter: (value, row) => row?.closed_by?.name || '', // Add valueGetter for quick filter
         renderCell: ({ row }) => <ClosedByCell row={row} />,
     },
     {

@@ -146,8 +146,13 @@ class ViewPendingTicketNumberService
                                ->orWhereIn('assign_to_user_id', $supportAgentIds);
                    });
                } elseif ($isSupportAgent) {
-                   // SUPPORT AGENTS CAN ONLY SEE TICKETS ASSIGNED TO THEM
-                   $query->where('assign_to_user_id', $user->id);
+                   // SUPPORT AGENTS CAN SEE TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                   $query->where(function($subQuery) use ($user) {
+                       $subQuery->where('assign_to_user_id', $user->id)
+                               ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                                   $assignQuery->where('user_id', $user->id);
+                               });
+                   });
                } else {
                    // OTHER NON-ADMIN USERS CAN SEE TICKETS THEY CREATED OR ASSIGNED TO THEM
                    $query->where('user_id', $user->id)

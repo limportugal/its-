@@ -187,7 +187,7 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                                             size="medium"
                                             options={userOptions}
                                             getOptionLabel={(option) => option.label || ""}
-                                            value={Array.isArray(field.value) && field.value.length > 0 
+                                            value={Array.isArray(field.value) && field.value.length > 0
                                                 ? userOptions.filter(option => field.value.includes(option.value))
                                                 : []}
                                             onChange={(_, newValue) => {
@@ -198,6 +198,11 @@ const AssignTicketToUser: React.FC<AssignTicketToUserProps> = ({ open, onClose, 
                                             disabled={isPendingAssignTicketToUser || isUsersLoading}
                                             loading={isUsersLoading}
                                             isOptionEqualToValue={(option, value) => option.value === value.value}
+                                            slotProps={{
+                                                popper: {
+                                                    placement: 'top-start'
+                                                }
+                                            }}
                                             renderOption={(props, option, { selected }) => {
                                                 const { key, ...otherProps } = props;
                                                 return (

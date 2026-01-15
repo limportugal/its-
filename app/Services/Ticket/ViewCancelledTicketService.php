@@ -76,7 +76,7 @@ class ViewCancelledTicketService
 
            // ASSIGN TO USERS (MULTIPLE)
            'assignToUsers:id,ticket_id,user_id,assigned_at',
-           'assignToUsers.user:id,name',
+           'assignToUsers.user:id,uuid,name',
            'assignToUsers.user.roles:id,name',
 
            // ASSIGNED BY
@@ -146,8 +146,14 @@ class ViewCancelledTicketService
                           ->orWhere('assign_to_user_id', $user->id)
                           ->orWhereIn('assign_to_user_id', $supportAgentIds);
                 } else {
-                    // SUPPORT AGENTS CAN SEE TICKETS ASSIGNED TO THEM
-                    $query->where('assign_to_user_id', $user->id);
+                    // SUPPORT AGENTS CAN SEE:
+                    // 1. TICKETS CREATED BY THEM
+                    // 2. TICKETS ASSIGNED TO THEM (both single and multi-assignment)
+                    $query->where('user_id', $user->id)
+                          ->orWhere('assign_to_user_id', $user->id)
+                          ->orWhereHas('assignToUsers', function($assignQuery) use ($user) {
+                              $assignQuery->where('user_id', $user->id);
+                          });
                 }
             }))
             ->firstOrFail();

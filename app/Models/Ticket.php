@@ -298,13 +298,18 @@ class Ticket extends Model
             $category->makeHidden(['pivot']);
         });
 
+        // Rename assignToUsers to assign_to_users to avoid redundancy in JSON response
+        if ($this->relationLoaded('assignToUsers') && $this->assignToUsers) {
+            $this->setAttribute('assign_to_users', $this->assignToUsers);
+        }
+
         // Add latest reasons to the response
         $latestReturnReason = $this->getLatestReturnReason();
         $this->setAttribute('latest_return_reason', $latestReturnReason);
         $this->setAttribute('latest_resubmission_reason', $this->getLatestResubmissionReason());
         $this->setAttribute('latest_cancellation_reason', $this->getLatestCancellationReason());
         $this->setAttribute('latest_reminder_reason', $this->getLatestReminderReason());
-        
+
         if ($this->latest_cancellation_reason) {
             $this->setAttribute('cancelled_by', $this->latest_cancellation_reason->cancelledBy);
         }
@@ -318,6 +323,7 @@ class Ticket extends Model
             'cancelled_ticket_by_id',
             'follow_up_by_id',
             'reminded_by_id',
+            'assignToUsers', // Hide the original camelCase relationship to avoid redundancy
         ]);
     }
 }

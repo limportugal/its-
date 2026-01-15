@@ -65,7 +65,7 @@ const IndexCancelledTickets = (): React.ReactElement => {
                 }}
                 showToolbar
                 initialState={{
-                    pagination: { paginationModel: { pageSize: 25 } },
+                    pagination: { paginationModel: { pageSize: 10 } },
                     columns: {
                         columnVisibilityModel: {
                             updated_at: false,

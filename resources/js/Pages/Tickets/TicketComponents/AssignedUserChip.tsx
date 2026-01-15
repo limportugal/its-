@@ -3,6 +3,7 @@ import { Avatar, Typography, Stack, Box, useTheme, useMediaQuery } from "@mui/ma
 import PersonIcon from "@mui/icons-material/Person";
 import AvatarUser from "@/Components/Mui/AvatarUser";
 import AvatarGroupWithPopover from "@/Components/Mui/AvatarGroupWithPopover";
+import { useAuthUser } from "@/Reuseable/hooks/useAuthUser";
 // Minimal interface for AssignedUserChip - only includes properties it actually uses
 interface TicketRowForAssignedUser {
     assigned_user?: {
@@ -52,6 +53,7 @@ interface AssignedUserChipProps {
 const AssignedUserChip: React.FC<AssignedUserChipProps> = ({ row }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { user: currentUser } = useAuthUser();
 
     // Get all assigned users (from pivot table) - try both camelCase and snake_case
     let assignedUsers: any[] = (row.assignToUsers || row.assign_to_users)
@@ -61,11 +63,17 @@ const AssignedUserChip: React.FC<AssignedUserChipProps> = ({ row }) => {
     // Fallback to primary assigned user if no pivot data
     const primaryUser = row.assigned_user;
 
-    // Sort users so primary user comes first
-    if (primaryUser && assignedUsers.length > 0) {
+    // Sort users so current logged-in user comes first, then primary user, then others
+    if (assignedUsers.length > 0) {
         assignedUsers = assignedUsers.sort((a, b) => {
-            if (a.id === primaryUser.id) return -1;
-            if (b.id === primaryUser.id) return 1;
+            // Current user should always be first
+            if (currentUser && a.id === currentUser.id) return -1;
+            if (currentUser && b.id === currentUser.id) return 1;
+
+            // Then primary user comes next
+            if (primaryUser && a.id === primaryUser.id) return -1;
+            if (primaryUser && b.id === primaryUser.id) return 1;
+
             return 0;
         });
     }
@@ -126,7 +134,7 @@ const AssignedUserChip: React.FC<AssignedUserChipProps> = ({ row }) => {
             >
                 <AvatarGroupWithPopover
                     users={assignedUsers}
-                    max={5}
+                    max={3}
                 />
             </Box>
         );

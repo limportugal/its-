@@ -116,11 +116,6 @@ class StoreTicketService
         $file = $request->file('attachment');
 
         if (!$file || !$file->isValid()) {
-            // Log the specific error for debugging
-            \Log::error('File upload failed', [
-                'error' => $file ? $file->getError() : 'No file object',
-                'error_message' => $file ? $file->getErrorMessage() : 'Unknown error'
-            ]);
             return false;
         }
 
