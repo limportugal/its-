@@ -230,6 +230,26 @@ export interface ViewPendingTicketResponse {
             }[];
         };
     }[];
+    assignment_history: {
+        id: number;
+        ticket_id: number;
+        assigned_by_user_id: number;
+        assigned_at: string;
+        assigned_by: {
+            id: number;
+            uuid: string;
+            name: string;
+            avatar_url?: string;
+            roles: {
+                id: number;
+                name: string;
+                pivot?: {
+                    model_id: number;
+                    role_id: number;
+                };
+            }[];
+        };
+    }[];
     assign_to_users: {
         id: number;
         ticket_id: number;

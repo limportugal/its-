@@ -135,6 +135,7 @@ const AssignedUserChip: React.FC<AssignedUserChipProps> = ({ row }) => {
                 <AvatarGroupWithPopover
                     users={assignedUsers}
                     max={3}
+                    label="Assigned User"
                 />
             </Box>
         );

@@ -83,6 +83,11 @@ class ViewCancelledTicketService
            'assignedBy:id,name',
            'assignedBy.roles:id,name',
 
+           // ASSIGNMENT HISTORY
+           'assignmentHistory:id,ticket_id,assigned_by_user_id,assigned_at',
+           'assignmentHistory.assignedBy:id,uuid,name',
+           'assignmentHistory.assignedBy.roles:id,name',
+
            // RETURNED BY
            'returnedBy:id,name',
            'returnedBy.roles:id,name',

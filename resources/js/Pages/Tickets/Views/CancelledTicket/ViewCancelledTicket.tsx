@@ -469,7 +469,66 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
             });
         }
         
-        if (assignedBy?.name && assignedBy.name !== "Not specified") {
+        // Show all assigners in a consolidated display
+        if (currentTicket.assignment_history && currentTicket.assignment_history.length > 0) {
+            let assigners: any[] = currentTicket.assignment_history
+                ?.filter((assignment) => assignment?.assigned_by?.name) // Filter out assignments without valid users
+                ?.map((assignment) => assignment.assigned_by) // Extract assigned_by user objects
+                ?.filter(Boolean) || []; // Remove any undefined values
+
+            // Remove duplicates based on user ID and keep unique assigners
+            const uniqueAssigners = assigners.reduce((acc: any[], current: any) => {
+                const existingIndex = acc.findIndex((user: any) => user.id === current.id);
+                if (existingIndex === -1) {
+                    acc.push(current);
+                }
+                return acc;
+            }, []);
+
+            // Sort assigners so current logged-in user comes first
+            if (uniqueAssigners.length > 0) {
+                uniqueAssigners.sort((a: any, b: any) => {
+                    // Current user should always be first
+                    if (currentUser && a.id === currentUser.id) return -1;
+                    if (currentUser && b.id === currentUser.id) return 1;
+                    return 0;
+                });
+            }
+
+            if (uniqueAssigners.length > 0) {
+                if (uniqueAssigners.length === 1) {
+                    // Single assigner - display AvatarUser
+                    const singleAssigner = uniqueAssigners[0];
+                    assignedDetails.push({
+                        label: "ASSIGNED BY",
+                        value: (
+                            <AvatarUser
+                                full_name={singleAssigner?.name || "Not specified"}
+                                avatar_url={singleAssigner?.avatar_url || null}
+                                role_name={singleAssigner?.roles?.length > 0 ? singleAssigner?.roles[0].name : "No Role"}
+                            />
+                        ),
+                        icon: <PersonAddIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                } else {
+                    // Multiple assigners - display AvatarGroupWithPopover
+                    assignedDetails.push({
+                        label: "ASSIGNED BY",
+                        value: (
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+                                <AvatarGroupWithPopover
+                                    users={uniqueAssigners}
+                                    max={3}
+                                    label="Assigned By"
+                                />
+                            </Box>
+                        ),
+                        icon: <PersonAddIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+                    });
+                }
+            }
+        } else if (assignedBy?.name && assignedBy.name !== "Not specified") {
+            // Fallback to single assigner display if no assignment_history data
             assignedDetails.push({
                 label: "ASSIGNED BY",
                 value: (

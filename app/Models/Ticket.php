@@ -106,6 +106,12 @@ class Ticket extends Model
         return $this->hasMany(AssignTicketToUser::class, 'ticket_id');
     }
 
+    // RELATIONSHIP TO ASSIGNMENT HISTORY
+    public function assignmentHistory()
+    {
+        return $this->hasMany(TicketAssignmentHistory::class, 'ticket_id')->orderBy('assigned_at', 'desc');
+    }
+
     // RELATIONSHIP TO PRIORITY ONE TO MANY
     public function priority()
     {
@@ -303,6 +309,11 @@ class Ticket extends Model
             $this->setAttribute('assign_to_users', $this->assignToUsers);
         }
 
+        // Rename assignmentHistory to assignment_history to avoid redundancy in JSON response
+        if ($this->relationLoaded('assignmentHistory') && $this->assignmentHistory) {
+            $this->setAttribute('assignment_history', $this->assignmentHistory);
+        }
+
         // Add latest reasons to the response
         $latestReturnReason = $this->getLatestReturnReason();
         $this->setAttribute('latest_return_reason', $latestReturnReason);
@@ -324,6 +335,7 @@ class Ticket extends Model
             'follow_up_by_id',
             'reminded_by_id',
             'assignToUsers', // Hide the original camelCase relationship to avoid redundancy
+            'assignmentHistory', // Hide the original camelCase relationship to avoid redundancy
         ]);
     }
 }

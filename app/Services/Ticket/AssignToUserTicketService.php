@@ -5,6 +5,7 @@ namespace App\Services\Ticket;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Models\AssignTicketToUser;
+use App\Models\TicketAssignmentHistory;
 use App\Models\UserLogs;
 use App\Jobs\SendTicketAssignedEmail;
 use App\Jobs\SendTicketAssignedToCreatorEmail;
@@ -100,11 +101,20 @@ class AssignToUserTicketService
 
             // Update ticket with the first assigned user as primary assignee
             $primaryAssignedUser = $assignedUsers->first();
+            $assignedAt = now();
             $ticket->update([
                 'assign_to_user_id' => $primaryAssignedUser->id,
                 'status' => $ticket->status === 'returned' ? 'returned' : 'assigned',
                 'assigned_by_id' => Auth::id(),
-                'assigned_at' => now(),
+                'assigned_at' => $assignedAt,
+            ]);
+
+            // Create assignment history record for tracking who assigned the ticket
+            TicketAssignmentHistory::create([
+                'ticket_id' => $ticket->id,
+                'assigned_by_user_id' => Auth::id(),
+                'assigned_to_user_id' => $primaryAssignedUser->id,
+                'assigned_at' => $assignedAt,
             ]);
 
             // Reload the ticket with the updated assignedUser relationship

@@ -76,8 +76,13 @@ class ViewClosedTicketNumberService
             // ASSIGNED BY
             'assignedBy:id,name',
             'assignedBy.roles:id,name',
- 
+
             // ASSIGNMENT HISTORY
+            'assignmentHistory:id,ticket_id,assigned_by_user_id,assigned_at',
+            'assignmentHistory.assignedBy:id,uuid,name',
+            'assignmentHistory.assignedBy.roles:id,name',
+
+            // ASSIGNMENT TO USERS
             'assignToUsers:id,ticket_id,user_id,assigned_at',
             'assignToUsers.user:id,uuid,name',
             'assignToUsers.user.roles:id,name',

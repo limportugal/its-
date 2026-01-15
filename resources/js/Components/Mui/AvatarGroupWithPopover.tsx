@@ -12,6 +12,7 @@ interface User {
 interface AvatarGroupWithPopoverProps {
     users: User[];
     max?: number;
+    label?: string;
     avatarSize?: {
         xs: number;
         sm: number;
@@ -21,6 +22,7 @@ interface AvatarGroupWithPopoverProps {
 const AvatarGroupWithPopover: React.FC<AvatarGroupWithPopoverProps> = ({
     users,
     max = 3,
+    label = "Assigned User",
     avatarSize = { xs: 32, sm: 40 },
 }) => {
     // POPOVER STATE FOR AVATAR HOVER
@@ -190,7 +192,7 @@ const AvatarGroupWithPopover: React.FC<AvatarGroupWithPopoverProps> = ({
                                         textAlign: "left",
                                     }}
                                 >
-                                    Assigned User
+                                    {label}
                                 </Typography>
                                 <Typography
                                     variant="caption"
@@ -311,7 +313,7 @@ const AvatarGroupWithPopover: React.FC<AvatarGroupWithPopoverProps> = ({
                                         textAlign: "left",
                                     }}
                                 >
-                                    Assigned User
+                                    {label}
                                 </Typography>
                                 <Typography
                                     variant="caption"
