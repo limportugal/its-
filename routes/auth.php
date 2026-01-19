@@ -12,13 +12,13 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ticket\TicketController;
 
-// GUEST ROUTES 
+// GUEST ROUTES
 Route::middleware('guest')->group(function () {
     // REGISTER & LOGIN ROUTES
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
     Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])->middleware('timeout:authentication.login'); // Configurable timeout for login
 
     // PASSWORD RESET ROUTES
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');

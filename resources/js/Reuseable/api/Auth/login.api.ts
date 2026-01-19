@@ -43,10 +43,17 @@ export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
     const formDataWithCsrf = addCsrfToFormData(formData);
 
     const url = route('login');
+    // Frontend timeout: backend timeout (60s) + network buffer (5s) = 65 seconds
+    const backendTimeout = 60; // Should match config/timeout.php authentication.login
+    const networkBuffer = 5; // Buffer for network latency
+    const frontendTimeout = (backendTimeout + networkBuffer) * 1000; // Convert to milliseconds
+
     return apiRequest<LoginResponse>(
         loginApiClient,
         "post",
         url,
         formDataWithCsrf,
+        undefined,
+        frontendTimeout,
     );
 };
