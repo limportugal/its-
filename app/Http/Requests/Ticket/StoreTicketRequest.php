@@ -83,6 +83,17 @@ class StoreTicketRequest extends FormRequest
                     $rules['service_logs_imei'] = ['required', 'string', 'min:15', 'max:255'];
                 }
             }
+
+            // CHECK IF SYSTEM IS "Knox" AND HAS "Change Ownership" CATEGORY
+            if ($system && $normalizedSystemName === 'knox') {
+                if ($this->checkIfRequiresKnoxChangeOwnershipFields()) {
+                    $rules['knox_full_name'] = ['required', 'string', 'min:6', 'max:100'];
+                    $rules['knox_employee_id'] = ['required', 'string', 'min:3', 'max:30'];
+                    $rules['knox_email'] = ['required', 'email:rfc,dns', 'min:8', 'max:100'];
+                    $rules['knox_company_mobile_number'] = ['required', 'string', 'min:11', 'max:255'];
+                    $rules['knox_mobile_imei'] = ['required', 'string', 'min:15', 'max:255'];
+                }
+            }
         }
 
         return $rules;
@@ -205,6 +216,24 @@ class StoreTicketRequest extends FormRequest
         return in_array('location error', $selectedCategories);
     }
 
+    // CHECK IF KNOX CHANGE OWNERSHIP FIELDS ARE REQUIRED
+    private function checkIfRequiresKnoxChangeOwnershipFields(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        // Check if any selected category contains "change ownership"
+        return collect($selectedCategories)->contains(fn ($name) => str_contains($name, 'change ownership'));
+    }
+
     // NORMALIZE SYSTEM NAME FOR CONSISTENCY
     private function normalizeSystemName(?string $value): string
     {
@@ -258,6 +287,22 @@ class StoreTicketRequest extends FormRequest
             'service_logs_imei.required' => 'The IMEI is required for Location Error requests.',
             'service_logs_imei.min' => 'The IMEI must be at least 15 characters long.',
             'service_logs_imei.max' => 'The IMEI must not exceed 255 characters.',
+            'knox_full_name.required' => 'The full name is required for Knox Change Ownership requests.',
+            'knox_full_name.min' => 'The full name must be at least 6 characters long.',
+            'knox_full_name.max' => 'The full name must not exceed 100 characters.',
+            'knox_employee_id.required' => 'The employee ID is required for Knox Change Ownership requests.',
+            'knox_employee_id.min' => 'The employee ID must be at least 3 characters long.',
+            'knox_employee_id.max' => 'The employee ID must not exceed 30 characters.',
+            'knox_email.required' => 'The email is required for Knox Change Ownership requests.',
+            'knox_email.email' => 'The email must be a valid email address.',
+            'knox_email.min' => 'The email must be at least 8 characters long.',
+            'knox_email.max' => 'The email must not exceed 100 characters.',
+            'knox_company_mobile_number.required' => 'The company mobile number is required for Knox Change Ownership requests.',
+            'knox_company_mobile_number.min' => 'The company mobile number must be at least 11 characters long.',
+            'knox_company_mobile_number.max' => 'The company mobile number must not exceed 255 characters.',
+            'knox_mobile_imei.required' => 'The mobile IMEI is required for Knox Change Ownership requests.',
+            'knox_mobile_imei.min' => 'The mobile IMEI must be at least 15 characters long.',
+            'knox_mobile_imei.max' => 'The mobile IMEI must not exceed 255 characters.',
         ];
     }
 }

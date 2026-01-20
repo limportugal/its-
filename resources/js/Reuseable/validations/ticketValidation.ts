@@ -44,6 +44,11 @@ export const formSchema = z
         service_logs_mobile_model: z.string().optional(),
         service_logs_mobile_serial_no: z.string().optional(),
         service_logs_imei: z.string().optional(),
+        knox_full_name: z.string().optional(),
+        knox_employee_id: z.string().optional(),
+        knox_email: z.string().optional(),
+        knox_company_mobile_number: z.string().optional(),
+        knox_mobile_imei: z.string().optional(),
     })
     .superRefine((data, ctx) => {
         const normalizeSystemName = (value?: string | null) =>
@@ -406,6 +411,116 @@ export const formSchema = z
                     code: z.ZodIssueCode.custom,
                     message: "IMEI must not exceed 255 characters.",
                     path: ["service_logs_imei"],
+                });
+            }
+        }
+
+        // VALIDATE KNOX CHANGE OWNERSHIP FIELDS
+        const requiresKnoxChangeOwnershipFields =
+            normalizeSystemName(data.system_name) === "knox" &&
+            data.category_labels?.some((label) => {
+                const normalizedLabel = normalize(label);
+                return normalizedLabel.includes("change ownership");
+            });
+
+        if (requiresKnoxChangeOwnershipFields) {
+            if (!data.knox_full_name || data.knox_full_name.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name is required for Knox Change Ownership requests.",
+                    path: ["knox_full_name"],
+                });
+            } else if (data.knox_full_name.length < 6) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name must be at least 6 characters long.",
+                    path: ["knox_full_name"],
+                });
+            } else if (data.knox_full_name.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Full name must not exceed 100 characters.",
+                    path: ["knox_full_name"],
+                });
+            }
+
+            if (!data.knox_employee_id || data.knox_employee_id.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID is required for Knox Change Ownership requests.",
+                    path: ["knox_employee_id"],
+                });
+            } else if (data.knox_employee_id.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID must be at least 3 characters long.",
+                    path: ["knox_employee_id"],
+                });
+            } else if (data.knox_employee_id.length > 30) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Employee ID must not exceed 30 characters.",
+                    path: ["knox_employee_id"],
+                });
+            }
+
+            if (!data.knox_email || data.knox_email.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Email is required for Knox Change Ownership requests.",
+                    path: ["knox_email"],
+                });
+            } else if (!/^\S+@\S+\.\S+$/.test(data.knox_email)) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Email must be a valid email address.",
+                    path: ["knox_email"],
+                });
+            } else if (data.knox_email.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Email must not exceed 100 characters.",
+                    path: ["knox_email"],
+                });
+            }
+
+            if (!data.knox_company_mobile_number || data.knox_company_mobile_number.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company mobile number is required for Knox Change Ownership requests.",
+                    path: ["knox_company_mobile_number"],
+                });
+            } else if (data.knox_company_mobile_number.length < 11) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company mobile number must be at least 11 characters long.",
+                    path: ["knox_company_mobile_number"],
+                });
+            } else if (data.knox_company_mobile_number.length > 255) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Company mobile number must not exceed 255 characters.",
+                    path: ["knox_company_mobile_number"],
+                });
+            }
+
+            if (!data.knox_mobile_imei || data.knox_mobile_imei.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile IMEI is required for Knox Change Ownership requests.",
+                    path: ["knox_mobile_imei"],
+                });
+            } else if (data.knox_mobile_imei.length < 15) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile IMEI must be at least 15 characters long.",
+                    path: ["knox_mobile_imei"],
+                });
+            } else if (data.knox_mobile_imei.length > 255) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Mobile IMEI must not exceed 255 characters.",
+                    path: ["knox_mobile_imei"],
                 });
             }
         }

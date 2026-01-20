@@ -92,6 +92,24 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
                 description={params.value}
                 system={params.row.system?.system_name}
                 categories={params.row.categories}
+                fsr_no={params.row.fsr_no}
+                store_code={params.row.store_code}
+                store_name={params.row.store_name}
+                address={params.row.store_address}
+                powerform_full_name={params.row.powerform_full_name}
+                powerform_employee_id={params.row.powerform_employee_id}
+                powerform_email={params.row.powerform_email}
+                powerform_company_number={params.row.powerform_company_number}
+                powerform_imei={params.row.powerform_imei}
+                service_logs_mobile_no={params.row.service_logs_mobile_no}
+                service_logs_mobile_model={params.row.service_logs_mobile_model}
+                service_logs_mobile_serial_no={params.row.service_logs_mobile_serial_no}
+                service_logs_imei={params.row.service_logs_imei}
+                knox_full_name={params.row.knox_full_name}
+                knox_employee_id={params.row.knox_employee_id}
+                knox_email={params.row.knox_email}
+                knox_company_mobile_number={params.row.knox_company_mobile_number}
+                knox_mobile_imei={params.row.knox_mobile_imei}
             />
         ),
     },

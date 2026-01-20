@@ -64,10 +64,28 @@ const DescriptionCell = React.memo(({ row, value }: { row: ClosedTicketsResponse
     const categories = React.useMemo(() => row.categories, [row.categories]);
     
     return (
-        <DescriptionTooltip 
-            description={description} 
+        <DescriptionTooltip
+            description={description}
             system={systemName}
-            categories={categories} 
+            categories={categories}
+            fsr_no={row.fsr_no}
+            store_code={row.store_code}
+            store_name={row.store_name}
+            address={row.store_address}
+            powerform_full_name={row.powerform_full_name}
+            powerform_employee_id={row.powerform_employee_id}
+            powerform_email={row.powerform_email}
+            powerform_company_number={row.powerform_company_number}
+            powerform_imei={row.powerform_imei}
+            service_logs_mobile_no={row.service_logs_mobile_no}
+            service_logs_mobile_model={row.service_logs_mobile_model}
+            service_logs_mobile_serial_no={row.service_logs_mobile_serial_no}
+            service_logs_imei={row.service_logs_imei}
+            knox_full_name={row.knox_full_name}
+            knox_employee_id={row.knox_employee_id}
+            knox_email={row.knox_email}
+            knox_company_mobile_number={row.knox_company_mobile_number}
+            knox_mobile_imei={row.knox_mobile_imei}
         />
     );
 }, (prevProps, nextProps) => {

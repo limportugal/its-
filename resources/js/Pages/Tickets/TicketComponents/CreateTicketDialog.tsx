@@ -187,6 +187,18 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
         );
     }, [systemName, selectedCategories, categoryOptions]);
 
+    // DETERMINE IF KNOX CHANGE OWNERSHIP FIELDS SHOULD BE SHOWN
+    // SHOW WHEN "Knox" IS SELECTED AND "Change Ownership" CATEGORY IS SELECTED
+    const showKnoxChangeOwnershipFields = useMemo(() => {
+        if (normalizeText(systemName) !== "knox") return false;
+
+        // Check if any selected category contains "change ownership"
+        return selectedCategories?.some((categoryId) => {
+            const category = categoryOptions.find((cat: any) => cat.value === categoryId);
+            return category && normalizeText(category.label).includes("change ownership");
+        }) || false;
+    }, [systemName, selectedCategories, categoryOptions]);
+
     return (
         <Dialog
             open={open}
@@ -643,6 +655,72 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             name="service_logs_imei"
                                             label="IMEI"
                                             placeholder="You can find it by dialing *#06# on your phone's keypad"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {/* CONDITIONAL KNOX CHANGE OWNERSHIP FIELDS */}
+                            {showKnoxChangeOwnershipFields && (
+                                <>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="knox_full_name"
+                                            label="FULL NAME"
+                                            placeholder="Enter full name"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PersonIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="knox_employee_id"
+                                            label="EMPLOYEE ID"
+                                            placeholder="Enter employee ID"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<BadgeIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="knox_email"
+                                            label="EMAIL"
+                                            placeholder="Enter email"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<EmailIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="knox_company_mobile_number"
+                                            label="COMPANY MOBILE NUMBER"
+                                            placeholder="Enter company mobile number"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12}} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="knox_mobile_imei"
+                                            label="MOBILE IMEI"
+                                            placeholder="Enter mobile IMEI"
                                             control={control}
                                             errors={errors}
                                             disabled={ticketIsPending}

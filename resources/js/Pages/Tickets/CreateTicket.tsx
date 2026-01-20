@@ -46,6 +46,10 @@ const requiresStoreFields = (systemName?: string | null, labels?: string[]) =>
     systemName === "Customer Not Found" ||
     (systemName === "FSR Online" && !!labels?.includes("Customer Not Found"));
 
+const requiresKnoxChangeOwnershipFields = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "knox" &&
+    !!labels?.some((label) => label.toLowerCase().includes("change ownership"));
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -368,6 +372,15 @@ const CreateTicket = forwardRef<
                 submitData.append('service_logs_imei', data.service_logs_imei || "");
             }
 
+            // APPEND KNOX CHANGE OWNERSHIP FIELDS
+            if (requiresKnoxChangeOwnershipFields(data.system_name, data.category_labels)) {
+                submitData.append('knox_full_name', data.knox_full_name || "");
+                submitData.append('knox_employee_id', data.knox_employee_id || "");
+                submitData.append('knox_email', data.knox_email || "");
+                submitData.append('knox_company_mobile_number', data.knox_company_mobile_number || "");
+                submitData.append('knox_mobile_imei', data.knox_mobile_imei || "");
+            }
+
             // HANDLE FILE ATTACHMENT
             if (data.attachment && data.attachment instanceof File) {
                 submitData.append('attachment', data.attachment);
@@ -453,6 +466,14 @@ const CreateTicket = forwardRef<
             setValue('service_logs_mobile_model', "");
             setValue('service_logs_mobile_serial_no', "");
             setValue('service_logs_imei', "");
+        }
+
+        if (normalizeSystemName(newValue?.label) !== "knox") {
+            setValue('knox_full_name', "");
+            setValue('knox_employee_id', "");
+            setValue('knox_email', "");
+            setValue('knox_company_mobile_number', "");
+            setValue('knox_mobile_imei', "");
         }
     };
 

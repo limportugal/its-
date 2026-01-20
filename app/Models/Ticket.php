@@ -44,6 +44,13 @@ class Ticket extends Model
         'service_logs_mobile_serial_no',
         'service_logs_imei',
 
+        // KNOX FIELDS (FOR KNOX + CHANGE OWNERSHIP)
+        'knox_full_name',
+        'knox_employee_id',
+        'knox_email',
+        'knox_company_mobile_number',
+        'knox_mobile_imei',
+
         //TIMESTAMP
         'closed_at',
         'expired_at',

@@ -30,6 +30,11 @@ class ViewDeletedTicketNumberService
             'service_logs_mobile_model',
             'service_logs_mobile_serial_no',
             'service_logs_imei',
+            'knox_full_name',
+            'knox_employee_id',
+            'knox_email',
+            'knox_company_mobile_number',
+            'knox_mobile_imei',
             'description',
             'status',
 

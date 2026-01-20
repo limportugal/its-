@@ -389,6 +389,43 @@ const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ use
             icon: <PhoneAndroidIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
         },
         {
+            label: "KNOX DETAILS",
+            value: currentTicket.knox_full_name ||
+                currentTicket.knox_employee_id ||
+                currentTicket.knox_email ||
+                currentTicket.knox_company_mobile_number ||
+                currentTicket.knox_mobile_imei ? (
+                    <>
+                        {currentTicket.knox_full_name && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Full Name:</strong> {currentTicket.knox_full_name}
+                            </Typography>
+                        )}
+                        {currentTicket.knox_employee_id && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Employee ID:</strong> {currentTicket.knox_employee_id}
+                            </Typography>
+                        )}
+                        {currentTicket.knox_email && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Email:</strong> {currentTicket.knox_email}
+                            </Typography>
+                        )}
+                        {currentTicket.knox_company_mobile_number && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Company Mobile Number:</strong> {currentTicket.knox_company_mobile_number}
+                            </Typography>
+                        )}
+                        {currentTicket.knox_mobile_imei && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
+                                <strong>Mobile IMEI:</strong> {currentTicket.knox_mobile_imei}
+                            </Typography>
+                        )}
+                    </>
+                ) : "Not specified",
+            icon: <DevicesIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
+        },
+        {
             label: "DESCRIPTION",
             value: currentTicket.description || "",
             multiline: true,

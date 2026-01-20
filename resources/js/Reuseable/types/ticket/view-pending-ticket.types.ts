@@ -18,6 +18,11 @@ export interface ViewPendingTicketResponse {
     service_logs_mobile_model: string | null;
     service_logs_mobile_serial_no: string | null;
     service_logs_imei: string | null;
+    knox_full_name: string | null;
+    knox_employee_id: string | null;
+    knox_email: string | null;
+    knox_company_mobile_number: string | null;
+    knox_mobile_imei: string | null;
     description: string;
     action_taken: string | null;
     status: string;

@@ -25,10 +25,24 @@ interface DescriptionTooltipProps {
     description: string;
     system?: string;
     categories?: Array<{ category_name: string }>;
-    fsr_no?: string;
-    store_code?: string;
-    store_name?: string;
-    address?: string;
+    fsr_no?: string | null;
+    store_code?: string | null;
+    store_name?: string | null;
+    address?: string | null;
+    powerform_full_name?: string | null;
+    powerform_employee_id?: string | null;
+    powerform_email?: string | null;
+    powerform_company_number?: string | null;
+    powerform_imei?: string | null;
+    service_logs_mobile_no?: string | null;
+    service_logs_mobile_model?: string | null;
+    service_logs_mobile_serial_no?: string | null;
+    service_logs_imei?: string | null;
+    knox_full_name?: string | null;
+    knox_employee_id?: string | null;
+    knox_email?: string | null;
+    knox_company_mobile_number?: string | null;
+    knox_mobile_imei?: string | null;
 }
 
 const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
@@ -39,6 +53,20 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
     store_code,
     store_name,
     address,
+    powerform_full_name,
+    powerform_employee_id,
+    powerform_email,
+    powerform_company_number,
+    powerform_imei,
+    service_logs_mobile_no,
+    service_logs_mobile_model,
+    service_logs_mobile_serial_no,
+    service_logs_imei,
+    knox_full_name,
+    knox_employee_id,
+    knox_email,
+    knox_company_mobile_number,
+    knox_mobile_imei,
 }) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -413,11 +441,557 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                 </Typography>
                             </>
                         )}
+
+                        {/* POWERFORM FULL NAME SECTION */}
+                        {powerform_full_name && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        PowerForm Full Name
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_full_name}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM EMPLOYEE ID SECTION */}
+                        {powerform_employee_id && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <TagIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        PowerForm Employee ID
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_employee_id}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM EMAIL SECTION */}
+                        {powerform_email && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        PowerForm Email
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_email}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM COMPANY NUMBER SECTION */}
+                        {powerform_company_number && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        PowerForm Company Number
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_company_number}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM IMEI SECTION */}
+                        {powerform_imei && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <QrCode2Icon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        PowerForm IMEI
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_imei}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* SERVICE LOGS MOBILE NO SECTION */}
+                        {service_logs_mobile_no && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Service Logs Mobile No
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {service_logs_mobile_no}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* SERVICE LOGS MOBILE MODEL SECTION */}
+                        {service_logs_mobile_model && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Service Logs Mobile Model
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {service_logs_mobile_model}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* SERVICE LOGS MOBILE SERIAL NO SECTION */}
+                        {service_logs_mobile_serial_no && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <QrCode2Icon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Service Logs Mobile Serial No
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {service_logs_mobile_serial_no}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* SERVICE LOGS IMEI SECTION */}
+                        {service_logs_imei && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <QrCode2Icon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Service Logs IMEI
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {service_logs_imei}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* KNOX FULL NAME SECTION */}
+                        {knox_full_name && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Knox Full Name
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {knox_full_name}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* KNOX EMPLOYEE ID SECTION */}
+                        {knox_employee_id && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <TagIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Knox Employee ID
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {knox_employee_id}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* KNOX EMAIL SECTION */}
+                        {knox_email && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Knox Email
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {knox_email}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* KNOX COMPANY MOBILE NUMBER SECTION */}
+                        {knox_company_mobile_number && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Knox Company Mobile Number
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {knox_company_mobile_number}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* KNOX MOBILE IMEI SECTION */}
+                        {knox_mobile_imei && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <QrCode2Icon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Knox Mobile IMEI
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {knox_mobile_imei}
+                                </Typography>
+                            </>
+                        )}
                     </Box>
                 </Box>
             </Box>
         ),
-        [description, system, categoryNames, fsr_no, store_code, store_name, address, theme]
+        [description, system, categoryNames, fsr_no, store_code, store_name, address, powerform_full_name, powerform_employee_id, powerform_email, powerform_company_number, powerform_imei, service_logs_mobile_no, service_logs_mobile_model, service_logs_mobile_serial_no, service_logs_imei, knox_full_name, knox_employee_id, knox_email, knox_company_mobile_number, knox_mobile_imei, theme]
     );
 
     return (
