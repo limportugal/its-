@@ -25,7 +25,7 @@ class TicketAssignedToCreatorNotification extends Mailable
     public function build()
     {
         // Get all assigned users with their details
-        $assignedUsers = $this->ticket->assignToUsers()->with('user:id,name,email,avatar_url')->get()->map(function ($assignment) {
+        $assignedUsers = $this->ticket->assignToUsers()->with('user:id,name,email')->get()->map(function ($assignment) {
             return [
                 'name' => $assignment->user->name,
                 'email' => $assignment->user->email,
