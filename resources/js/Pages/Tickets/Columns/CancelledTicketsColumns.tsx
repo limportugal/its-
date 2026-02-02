@@ -86,8 +86,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        width: 500,
-        flex: 1,
+        width: 250,
         filterable: false,
         sortable: false,
         disableColumnMenu: true,

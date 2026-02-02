@@ -160,8 +160,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        minWidth: 500,
-        flex: 1,
+        width: 250,
         filterable: true,
         sortable: false,
         disableColumnMenu: true,

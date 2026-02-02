@@ -82,7 +82,7 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        width: 500,
+        width: 250,
         filterable: false,
         sortable: false,
         disableColumnMenu: true,
