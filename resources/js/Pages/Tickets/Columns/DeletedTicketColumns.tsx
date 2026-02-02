@@ -22,7 +22,7 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
     {
         field: "created_at",
         headerName: "DELETED ON",
-        minWidth: 180,
+        minWidth: 200,
         flex: 1,
         filterable: true,
         renderCell: (params) => (
@@ -59,7 +59,7 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
     {
         field: "full_name",
         headerName: "REPORTED BY",
-        minWidth: 230,
+        minWidth: 250,
         flex: 1,
         filterable: true,
         renderCell: (params) => {
@@ -82,8 +82,7 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        flex: 1,
-        minWidth: 250,
+        width: 500,
         filterable: false,
         sortable: false,
         disableColumnMenu: true,
@@ -117,6 +116,7 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
         field: "ticket_number",
         headerName: "TICKET NUMBER",
         minWidth: 250,
+        flex: 1,
         headerAlign: "center",
         align: "center",
         filterable: true,
@@ -127,7 +127,8 @@ const baseDeletedTicketsColumns: GridColDef<DeletedTicketRow>[] = [
     {
         field: "status",
         headerName: "STATUS",
-        width: 160,
+        minWidth: 250,
+        flex: 1,
         headerAlign: "center",
         align: "center",
         filterable: false,

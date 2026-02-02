@@ -143,7 +143,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                     padding: { xs: 1, sm: 1.5 },
                     width: "auto",
                     minWidth: { xs: 280, sm: 350 },
-                    maxWidth: { xs: "90vw", sm: "80vw" },
+                    maxWidth: 640,
                     [theme.breakpoints.down("sm")]: {
                         fontSize: "0.75rem",
                     },

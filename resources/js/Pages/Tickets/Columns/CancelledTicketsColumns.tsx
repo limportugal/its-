@@ -39,7 +39,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "cancelled_by",
         headerName: "CANCELLED BY",
-        minWidth: 230,
+        minWidth: 250,
         flex: 1,
         filterable: true,
         sortable: true,
@@ -63,7 +63,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "full_name",
         headerName: "REPORTED BY",
-        minWidth: 230,
+        minWidth: 250,
         flex: 1,
         filterable: true,
         renderCell: (params) => {
@@ -86,7 +86,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        minWidth: 150,
+        width: 500,
         flex: 1,
         filterable: false,
         sortable: false,
@@ -120,7 +120,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "ticket_number",
         headerName: "TICKET NUMBER",
-        minWidth: 200,
+        minWidth: 250,
         flex: 1,
         headerAlign: "center",
         align: "center",
@@ -138,7 +138,7 @@ const CancelledTicketsColumns: GridColDef<CancelledTicketsResponse>[] = [
     {
         field: "status",
         headerName: "STATUS",
-        minWidth: 150,
+        minWidth: 250,
         flex: 1,
         headerAlign: "center",
         align: "center",

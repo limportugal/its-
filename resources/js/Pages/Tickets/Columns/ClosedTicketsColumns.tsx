@@ -144,14 +144,15 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "closed_at",
         headerName: "CLOSED ON",
-        width: 200,
+        minWidth: 200,
+        flex: 1,
         renderCell: ({ row }) => <ClosedDateCell row={row} />,
     },
     {
         field: "full_name",
         headerName: "REPORTED BY",
-        minWidth: 230,
         flex: 1,
+        minWidth: 250,
         filterable: true,
         valueGetter: (value, row) => row?.full_name || '', // Add valueGetter for quick filter
         renderCell: ({ row }) => <ReportedByCell row={row} />,
@@ -159,7 +160,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        minWidth: 300,
+        minWidth: 500,
         flex: 1,
         filterable: true,
         sortable: false,
@@ -170,7 +171,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "ticket_number",
         headerName: "TICKET NUMBER",
-        minWidth: 200,
+        minWidth: 250,
         flex: 1,
         hideable: true,
         headerAlign: "center",
@@ -184,7 +185,7 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "closed_by",
         headerName: "CLOSED BY",
-        minWidth: 230,
+        minWidth: 250,
         flex: 1,
         filterable: true,
         valueGetter: (value, row) => row?.closed_by?.name || '', // Add valueGetter for quick filter
@@ -205,7 +206,8 @@ const ClosedTicketsColumns: GridColDef<ClosedTicketsResponse>[] = [
     {
         field: "status",
         headerName: "STATUS",
-        minWidth: 150,
+        minWidth: 250,
+        flex: 1,
         headerAlign: "center",
         align: "center",
         filterable: false,

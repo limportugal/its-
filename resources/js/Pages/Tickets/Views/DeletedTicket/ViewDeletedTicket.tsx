@@ -41,6 +41,7 @@ import { DetailField } from "@/Reuseable/types/ticketTypes";
 import { formatDate } from "@/Reuseable/utils/formatDate";
 import { decodeHtmlEntities } from "@/Reuseable/utils/decodeHtmlEntities";
 import { useAuthUser } from "@/Reuseable/hooks/useAuthUser";
+import { decodeHTML } from "@/Reuseable/helpers/decodeHTML";
 
 // TICKET COMPONENTS
 import RestoreTicket from "@/Pages/Tickets/RestoreTicket";
@@ -345,7 +346,7 @@ const ViewDeletedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
         },
         {
             label: "DESCRIPTION",
-            value: currentTicket.description || "",
+            value: decodeHTML(currentTicket.description || ""),
             multiline: true,
             minRows: 1,
             rows: Math.min(Math.max(currentTicket.description?.split('\n').length || 1, 1), 10),

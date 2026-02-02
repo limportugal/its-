@@ -19,6 +19,7 @@ import DescriptionTooltip from "@/Pages/Tickets/Columns/Tooltips/DescriptionTool
 // UTILS
 import { formatDate } from "@/Reuseable/utils/formatDate";
 import { snakeCaseToTitleCase } from "@/Reuseable/utils/capitalize";
+import { decodeHTML } from "@/Reuseable/helpers/decodeHTML";
 
 // Type for individual ticket row
 type PendingTicketRow = PendingTicketResponse['pending_tickets'][0];
@@ -63,14 +64,13 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "description",
         headerName: "REPORTED DESCRIPTION",
-        flex: 1,
-        minWidth: 300,
+        width: 500,
         filterable: false,
         sortable: false,
         disableColumnMenu: true,
         renderCell: (params) => (
             <DescriptionTooltip
-                description={params.value}
+                description={decodeHTML(params.value)}
                 system={params.row.system?.system_name}
                 categories={params.row.categories}
                 fsr_no={params.row.fsr_no}
@@ -97,7 +97,8 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "priority",
         headerName: "PRIORITY",
-        width: 160,
+        flex: 1,
+        minWidth: 250,
         headerAlign: "center",
         align: "center",
         filterable: false,
@@ -112,6 +113,7 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "categories",
         headerName: "PROBLEM CATEGORIES",
+        flex: 1,
         minWidth: 250,
         headerAlign: "center",
         align: "center",
@@ -138,6 +140,7 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "ticket_number",
         headerName: "TICKET NUMBER",
+        flex: 1,
         minWidth: 250,
         headerAlign: "center",
         align: "center",
@@ -149,7 +152,8 @@ const basePendingTicketsColumns: GridColDef<PendingTicketRow>[] = [
     {
         field: "status",
         headerName: "STATUS",
-        width: 160,
+        flex: 1,
+        minWidth: 250,
         headerAlign: "center",
         align: "center",
         filterable: false,
