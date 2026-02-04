@@ -127,7 +127,7 @@ export default function ResetPasswordLayout({ children, isLoading = false }: Pro
                         |{" "}
                         <Box
                             component="a"
-                            href="https://ideaserv.site/"
+                            href="https://its.ideaserv.online/"
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{

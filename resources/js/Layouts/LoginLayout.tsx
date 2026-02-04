@@ -155,7 +155,7 @@ export default function LoginLayout({ children }: PropsWithChildren<{ isLoading?
                         |{" "}
                         <Box
                             component="a"
-                            href="https://ideaserv.site/"
+                            href="https://its.ideaserv.online/"
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{

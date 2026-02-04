@@ -163,7 +163,7 @@ export default function ResubmitLayout({ children, isLoading = false, autoHeight
                         |{" "}
                         <Box
                             component="a"
-                            href="https://ideaserv.site/"
+                            href="https://its.ideaserv.online/"
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{

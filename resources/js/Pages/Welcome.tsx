@@ -895,7 +895,7 @@ export default function Welcome() {
                         |{" "}
                         <Box
                             component="a"
-                            href="https://ideaserv.site/"
+                            href="https://its.ideaserv.online/"
                             target="_blank"
                             rel="noopener noreferrer"
                             sx={{
