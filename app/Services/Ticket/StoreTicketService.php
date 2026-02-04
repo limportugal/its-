@@ -66,37 +66,22 @@ class StoreTicketService
 
         // Use database lock to prevent race conditions
         $ticketNumber = DB::transaction(function () use ($date, $year) {
-            // GET THE HIGHEST TICKET NUMBER FOR TODAY'S DATE
-            $lastTicketNumber = Ticket::whereYear('created_at', $year)
-                ->where('ticket_number', 'like', "ITS-{$date}-%")
-                ->lockForUpdate() // Prevent race conditions
+            // GET THE MOST RECENT TICKET FOR THE CURRENT YEAR TO CONTINUE SEQUENCE
+            $mostRecentTicket = Ticket::whereYear('created_at', $year)
+                ->where('ticket_number', 'like', 'ITS-%')
+                ->lockForUpdate()
                 ->orderBy('ticket_number', 'desc')
                 ->value('ticket_number');
 
-            // IF NO TICKET FOUND FOR TODAY, GET THE MOST RECENT TICKET TO CONTINUE SEQUENCE
-            if (!$lastTicketNumber) {
-                $lastTicketNumber = Ticket::whereYear('created_at', $year)
-                    ->where('ticket_number', 'like', 'ITS-%')
-                    ->lockForUpdate()
-                    ->orderBy('ticket_number', 'desc')
-                    ->value('ticket_number');
-                
-                // IF WE FOUND A TICKET FROM A DIFFERENT DATE, CONTINUE THAT SEQUENCE
-                if ($lastTicketNumber) {
-                    // EXTRACT DATE FROM THE LAST TICKET (format: ITS-MMDDYYYY-XXXXXX)
-                    $date = substr($lastTicketNumber, 4, 8); // Extract MMDDYYYY from ITS-MMDDYYYY-XXXXXX
-                }
-            }
-
-            // EXTRACT THE INCREMENT NUMBER FROM THE LAST TICKET
+            // DETERMINE THE NEXT SEQUENCE NUMBER
             $increment = 1;
-            if ($lastTicketNumber) {
+            if ($mostRecentTicket) {
                 // EXTRACT THE INCREMENT PART (positions 13-17 in format: ITS-MMDDYYYY-00000)
-                $lastIncrement = (int) substr($lastTicketNumber, 13, 5);
+                $lastIncrement = (int) substr($mostRecentTicket, 13, 5);
                 $increment = $lastIncrement + 1;
             }
 
-            // FORMAT THE TICKET NUMBER AS "ITS-MMDDYYYY-00000"
+            // FORMAT THE TICKET NUMBER AS "ITS-MMDDYYYY-XXXXX" WITH CONTINUOUS SEQUENCE
             return sprintf('ITS-%s-%05d', $date, $increment);
         });
 

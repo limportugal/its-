@@ -262,36 +262,84 @@ export default function Welcome() {
                             py: { xs: 1, sm: 2 },
                             mt: { xs: 4, sm: 0 },
                             px: { xs: 1.5, sm: 3 },
-                            gap: { xs: 3, sm: 2 },
+                            gap: { xs: 1.5, sm: 1.5 },
                             // Specific adjustments for different mobile sizes
                             "@media (max-height: 667px)": {
                                 // iPhone SE, iPhone 8 and smaller screens
                                 mt: 2,
-                                gap: 2,
+                                gap: 1,
                                 py: 0.5,
                             },
                             "@media (min-height: 800px) and (max-width: 430px)":
                                 {
                                     // iPhone 14 Pro Max and similar tall phones
                                     mt: 6,
-                                    gap: 4,
+                                    gap: 2,
                                 },
                             position: "relative",
-                            "&::after": {
-                                content: '""',
-                                position: "absolute",
-                                top: "50%",
-                                left: "10%",
-                                right: "10%",
-                                height: "1px",
-                                background:
-                                    "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(66,165,245,0.5) 50%, rgba(255,255,255,0.3) 80%, transparent 100%)",
-                                transform: "translateY(-50%)",
-                                zIndex: 1,
-                            },
                         }}
                     >
-                        {/* TOP SECTION - TEXT CONTENT */}
+                        {/* TOP SECTION - LOGO */}
+                        <MotionBox
+                            initial="hidden"
+                            animate={isVisible ? "visible" : "hidden"}
+                            variants={cardVariants}
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "100%",
+                                px: { xs: 2, sm: 3 },
+                                position: "relative",
+                                zIndex: 2,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    backgroundColor: "white",
+                                    borderRadius: { xs: 2.5, sm: 4 },
+                                    p: { xs: 1.5, sm: 3 },
+                                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "100%",
+                                    maxWidth: { xs: 300, sm: 360 },
+                                    "@media (max-width: 375px)": {
+                                        maxWidth: 280,
+                                        p: 1.2,
+                                        borderRadius: 2,
+                                    },
+                                    "@media (min-width: 415px)": {
+                                        maxWidth: 340,
+                                        p: 2,
+                                    },
+                                }}
+                            >
+                                <Box
+                                    component="img"
+                                    src="/img/logo.png"
+                                    alt="Company Logo"
+                                    loading="eager"
+                                    decoding="sync"
+                                    sx={{
+                                        maxHeight: { xs: 40, sm: 50 },
+                                        maxWidth: "100%",
+                                        height: "auto",
+                                        width: "auto",
+                                        objectFit: "contain",
+                                        "@media (max-width: 375px)": {
+                                            maxHeight: 35,
+                                        },
+                                        "@media (min-width: 415px)": {
+                                            maxHeight: 45,
+                                        },
+                                    }}
+                                />
+                            </Box>
+                        </MotionBox>
+
+                        {/* MIDDLE SECTION - TEXT CONTENT */}
                         <MotionBox
                             initial="hidden"
                             animate={isVisible ? "visible" : "hidden"}
@@ -300,11 +348,9 @@ export default function Welcome() {
                                 textAlign: "center",
                                 color: "white",
                                 px: { xs: 1, sm: 2 },
-                                mt: { xs: 1, sm: 2 },
-                                flex: 0.6,
                                 display: "flex",
                                 flexDirection: "column",
-                                justifyContent: "flex-end",
+                                justifyContent: "center",
                                 position: "relative",
                                 zIndex: 2,
                             }}
@@ -324,30 +370,27 @@ export default function Welcome() {
                                     textAlign: "center",
                                     textShadow:
                                         "0 4px 8px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.1)",
-                                    mb: { xs: 2, sm: 1.5 },
+                                    mb: { xs: 1, sm: 1 },
                                     filter: "drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))",
+                                    whiteSpace: "nowrap",
                                     "@media (max-width: 375px)": {
                                         fontSize: "1.5rem",
                                         lineHeight: 1.2,
                                     },
+                                    "@media (max-width: 320px)": {
+                                        fontSize: "1.2rem",
+                                        lineHeight: 1.2,
+                                    },
                                 }}
                             >
-                                <Box component="span" sx={{ display: "block" }}>
-                                    Internal
-                                </Box>
-                                <Box component="span" sx={{ display: "block" }}>
-                                    Ticketing
-                                </Box>
-                                <Box component="span" sx={{ display: "block" }}>
-                                    System
-                                </Box>
+                                Internal Ticketing System
                             </Typography>
 
                             <Typography
                                 sx={{
                                     fontSize: { xs: 16, sm: 20 },
                                     fontWeight: "600",
-                                    mb: { xs: 0.5, sm: 1.5 },
+                                    mb: { xs: 0.5, sm: 0.5 },
                                     color: "rgba(255,255,255,0.95)",
                                     textTransform: "uppercase",
                                     letterSpacing: { xs: "0.8px", sm: "1.5px" },
@@ -372,7 +415,7 @@ export default function Welcome() {
                                     fontWeight: "400",
                                     color: "rgba(255,255,255,0.85)",
                                     lineHeight: 1.5,
-                                    mb: { xs: 0.5, sm: 1.5 },
+                                    mb: { xs: 0, sm: 0 },
                                     maxWidth: { xs: "95%", sm: "100%" },
                                     mx: "auto",
                                     "@media (max-width: 375px)": {
@@ -395,13 +438,12 @@ export default function Welcome() {
                             </Typography>
                         </MotionBox>
 
-                        {/* MIDDLE SECTION - WHITE CARD WITH LOGO AND BUTTONS */}
+                        {/* BOTTOM SECTION - CREATE TICKET BUTTON */}
                         <MotionBox
                             initial="hidden"
                             animate={isVisible ? "visible" : "hidden"}
                             variants={cardVariants}
                             sx={{
-                                flex: 0.6,
                                 display: "flex",
                                 alignItems: "flex-start",
                                 justifyContent: "center",
@@ -409,125 +451,55 @@ export default function Welcome() {
                                 px: { xs: 2, sm: 3 },
                                 position: "relative",
                                 zIndex: 2,
-                                pt: { xs: 1, sm: 2 },
+                                pt: { xs: 0, sm: 0 },
                             }}
                         >
-                            {/* WHITE CARD CONTAINER */}
-                            <Box
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                onClick={handleOpenCreateTicketDialog}
+                                fullWidth
                                 sx={{
-                                    backgroundColor: "white",
-                                    borderRadius: { xs: 2.5, sm: 4 },
-                                    p: { xs: 1.5, sm: 3 },
-                                    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+                                    fontSize: { xs: 14, sm: 16 },
+                                    fontWeight: "500",
+                                    textTransform: "uppercase",
+                                    py: { xs: 1, sm: 1.5 },
+                                    px: { xs: 2, sm: 3 },
+                                    minHeight: { xs: 36, sm: 42 },
+                                    boxShadow:
+                                        "0 4px 16px rgba(25, 118, 210, 0.3)",
                                     display: "flex",
-                                    flexDirection: "column",
                                     alignItems: "center",
-                                    gap: { xs: 1, sm: 2 },
-                                    width: "100%",
+                                    gap: { xs: 1, sm: 1.5 },
                                     maxWidth: { xs: 300, sm: 360 },
-                                    height: "auto",
                                     "@media (max-width: 375px)": {
-                                        // iPhone SE and smaller
-                                        maxWidth: 280,
-                                        p: 1.2,
+                                        fontSize: 13,
+                                        py: 0.8,
+                                        px: 1.5,
+                                        minHeight: 32,
                                         gap: 0.8,
-                                        borderRadius: 2,
+                                        maxWidth: 280,
                                     },
                                     "@media (min-width: 415px)": {
-                                        // iPhone 14 Pro Max and larger
-                                        maxWidth: 340,
-                                        p: 2,
+                                        fontSize: 15,
+                                        py: 1.2,
+                                        px: 2.5,
+                                        minHeight: 38,
                                         gap: 1.2,
+                                        maxWidth: 340,
                                     },
+                                    "&:hover": {
+                                        boxShadow:
+                                            "0 6px 20px rgba(25, 118, 210, 0.4)",
+                                        transform: "translateY(-2px)",
+                                    },
+                                    transition: "all 0.3s ease",
                                 }}
                             >
-                                {/* LOGO AT TOP */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        width: "100%",
-                                        mb: { xs: 0.5, sm: 1 },
-                                    }}
-                                >
-                                    <Box
-                                        component="img"
-                                        src="/img/logo.png"
-                                        alt="Company Logo"
-                                        loading="eager"
-                                        decoding="sync"
-                                        sx={{
-                                            maxHeight: { xs: 40, sm: 50 },
-                                            maxWidth: "100%",
-                                            height: "auto",
-                                            width: "auto",
-                                            objectFit: "contain",
-                                            "@media (max-width: 375px)": {
-                                                maxHeight: 35,
-                                            },
-                                            "@media (min-width: 415px)": {
-                                                maxHeight: 45,
-                                            },
-                                        }}
-                                    />
-                                </Box>
-
-                                {/* BUTTONS BELOW LOGO */}
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: { xs: 1, sm: 1.5 },
-                                        width: "100%",
-                                    }}
-                                >
-                                    {/* CREATE TICKET BUTTON */}
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        onClick={handleOpenCreateTicketDialog}
-                                        fullWidth
-                                        sx={{
-                                            fontSize: { xs: 14, sm: 16 },
-                                            fontWeight: "500",
-                                            textTransform: "uppercase",
-                                            py: { xs: 1, sm: 1.5 },
-                                            px: { xs: 2, sm: 3 },
-                                            minHeight: { xs: 36, sm: 42 },
-                                            boxShadow:
-                                                "0 4px 16px rgba(25, 118, 210, 0.3)",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: { xs: 1, sm: 1.5 },
-                                            "&:hover": {
-                                                boxShadow:
-                                                    "0 6px 20px rgba(25, 118, 210, 0.4)",
-                                                transform: "translateY(-2px)",
-                                            },
-                                            transition: "all 0.3s ease",
-                                            "@media (max-width: 375px)": {
-                                                fontSize: 13,
-                                                py: 0.8,
-                                                px: 1.5,
-                                                minHeight: 32,
-                                                gap: 0.8,
-                                            },
-                                            "@media (min-width: 415px)": {
-                                                fontSize: 15,
-                                                py: 1.2,
-                                                px: 2.5,
-                                                minHeight: 38,
-                                                gap: 1.2,
-                                            },
-                                        }}
-                                    >
-                                        <IoTicket size={20} />
-                                        CREATE TICKET
-                                    </Button>
-                                </Box>
-                            </Box>
+                                <IoTicket size={20} />
+                                CREATE TICKET
+                            </Button>
                         </MotionBox>
                     </Box>
 
@@ -843,76 +815,135 @@ export default function Welcome() {
                     zIndex: 2,
                 }}
             >
-                <Typography
-                    variant="body2"
+                <Box
                     sx={{
-                        fontSize: {
-                            xs: "0.75rem",
-                            sm: "0.85rem",
-                            md: "0.9rem",
-                        },
-                        color: "rgba(255, 255, 255, 0.3)",
-                        lineHeight: { xs: 1.3, sm: 1.4, md: 1.5 },
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: { xs: 0.5, sm: 1 },
+                        flexWrap: "wrap",
                     }}
                 >
-                    © {new Date().getFullYear()}{" "}
-                    <Box component="span" sx={{ display: "inline" }}>
-                        <Box
-                            component="a"
-                            href="https://apsoft.com.ph/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Apsoft Inc.
-                        </Box>{" "}
-                        |{" "}
-                        <Box
-                            component="a"
-                            href="https://phillogix.site/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Phillogix Systems, Inc.
-                        </Box>{" "}
-                        |{" "}
-                        <Box
-                            component="a"
-                            href="https://its.ideaserv.online/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Ideaserv Systems, Inc.
-                        </Box>
-                    </Box>{" "}
-                    | All Rights Reserved.
-                </Typography>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            color: "rgba(255, 255, 255, 0.4)",
+                            fontWeight: { xs: 300, sm: 400 },
+                        }}
+                    >
+                        © {new Date().getFullYear()}
+                    </Typography>
+                    <Box
+                        component="a"
+                        href="https://apsoft.com.ph/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Apsoft
+                    </Box>
+                    <Box
+                        component="a"
+                        href="https://phillogix.site/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Phillogix
+                    </Box>
+                    <Box
+                        component="a"
+                        href="https://its.ideaserv.online/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Ideaserv
+                    </Box>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            color: "rgba(255, 255, 255, 0.4)",
+                            fontWeight: { xs: 300, sm: 400 },
+                        }}
+                    >
+                        All Rights Reserved.
+                    </Typography>
+                </Box>
             </MotionBox>
         </Box>
     );
