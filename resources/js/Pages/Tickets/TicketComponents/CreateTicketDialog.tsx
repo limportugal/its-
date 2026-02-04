@@ -31,9 +31,6 @@ import AutoComplete from "@/Components/Mui/AutoComplete";
 // SKELETON COMPONENT
 import CreateTicketSkeleton from "@/Pages/Tickets/Skeletons/CreateTicketSkeleton";
 
-// RECAPTCHA
-import ReCaptcha from "@/Pages/Tickets/TicketComponents/ReCaptcha";
-
 // TYPES
 import { CreateTicketDialogProps } from "@/Pages/Tickets/types/CreateTicketDialog.types";
 
@@ -57,11 +54,6 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     resetForm,
     handleSubmit,
     submitForm,
-    recaptchaRef,
-    recaptchaSiteKey,
-    onRecaptchaChange,
-    onRecaptchaError,
-    onRecaptchaExpired,
     serviceCenter,
     system,
     category,
@@ -774,24 +766,6 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                 />
                             </Grid>
                         </Grid>
-
-                        {/* INVISIBLE RECAPTCHA */}
-                        <Box sx={{
-                            position: 'fixed',
-                            bottom: 16,
-                            right: 16,
-                            zIndex: 1000
-                        }}>
-                            <ReCaptcha
-                                ref={recaptchaRef}
-                                siteKey={recaptchaSiteKey}
-                                onChange={onRecaptchaChange}
-                                onExpired={onRecaptchaExpired}
-                                onError={onRecaptchaError}
-                                theme="light"
-                                size="invisible"
-                            />
-                        </Box>
                     </form>
                 )}
             </DialogContent>

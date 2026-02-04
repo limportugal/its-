@@ -15,9 +15,6 @@ class StoreTicketService
 
     public function createTicket(array $ticketData, ?Request $request = null): array
     {
-        // Remove reCAPTCHA token from ticket data after validation (handled by RecaptchaRule)
-        unset($ticketData['recaptcha_token']);
-
         $ticket = null;
         $result = DB::transaction(function () use ($ticketData, $request, &$ticket) {
             // GENERATE TICKET NUMBER

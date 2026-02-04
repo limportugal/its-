@@ -7,9 +7,6 @@ import "@/../../public/css/floatAnimation.css";
 import SignInForm from "@/Pages/Tickets/TicketComponents/HeaderSignInForm";
 import CreateTicket from "@/Pages/Tickets/CreateTicket";
 import { useCreateTicketStore } from "@/stores/useCreateTicketStore";
-import ReCaptcha, {
-    ReCaptchaRef,
-} from "@/Pages/Tickets/TicketComponents/ReCaptcha";
 
 import "@fontsource/geist-sans/800.css";
 import "@fontsource-variable/inter";
@@ -19,10 +16,6 @@ const MotionSpan = motion.create("span");
 
 export default function Welcome() {
     const { isDialogOpen, openDialog, closeDialog } = useCreateTicketStore();
-
-    // INVISIBLE RECAPTCHA FOR WELCOME PAGE
-    const recaptchaRef = useRef<ReCaptchaRef>(null);
-    const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
     // ANIMATION STATE - TRIGGER ON MOUNT
     const [isVisible, setIsVisible] = useState(false);
@@ -833,26 +826,6 @@ export default function Welcome() {
                 handleClose={handleCloseCreateTicketDialog}
                 ticket={undefined}
             />
-
-            {/* INVISIBLE RECAPTCHA BADGE */}
-            <Box
-                sx={{
-                    position: "fixed",
-                    bottom: 16,
-                    right: 16,
-                    zIndex: 1000,
-                }}
-            >
-                <ReCaptcha
-                    ref={recaptchaRef}
-                    siteKey={recaptchaSiteKey}
-                    onChange={() => {}}
-                    onExpired={() => {}}
-                    onError={() => {}}
-                    theme="light"
-                    size="invisible"
-                />
-            </Box>
 
             {/* FOOTER */}
             <MotionBox

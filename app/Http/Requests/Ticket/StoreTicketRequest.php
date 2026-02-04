@@ -25,7 +25,6 @@ class StoreTicketRequest extends FormRequest
             'categories.*'      => 'integer|exists:categories,id',
             'description'       => ['required', 'string', 'min:10', 'max:510'],
             'attachment'        => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf', 'max:10240'], // 10MB max
-            'recaptcha_token'   => ['required', 'string', new \App\Rules\RecaptchaRule()],
         ];
 
         // CHECK IF SYSTEM IS "Customer Not Found"

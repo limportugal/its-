@@ -21,9 +21,8 @@ import { formSchema, FormValues } from "@/Reuseable/validations/ticketValidation
 import { useDynamicMutation } from "@/Reuseable/hooks/useDynamicMutation";
 import { Ticket } from "@/Reuseable/types/ticketTypes";
 
-// CREATE TICKET DIALOG & RECAPTCHA
+// CREATE TICKET DIALOG
 import CreateTicketDialog from "@/Pages/Tickets/TicketComponents/CreateTicketDialog";
-import { ReCaptchaRef } from "@/Pages/Tickets/TicketComponents/ReCaptcha";
 
 const normalizeSystemName = (value?: string | null) =>
     value ? value.toLowerCase().replace(/\s+/g, " ").trim() : "";
@@ -80,10 +79,6 @@ const CreateTicket = forwardRef<
     // DETECT SMALL SCREENS TO MAKE FULL DISPLAY
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-    // INVISIBLE RECAPTCHA
-    const recaptchaRef = useRef<ReCaptchaRef>(null);
-    const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
     // STATE FOR FORM CONTROLS
     const [serviceCenter, setServiceCenter] = useState<any>(null);
@@ -287,35 +282,9 @@ const CreateTicket = forwardRef<
             },
         });
 
-    // UNIFIED ERROR ALERT HELPER
-    const showRecaptchaAlert = useCallback((icon: 'error' | 'warning', title: string, text: string) => {
-        Swal.fire({
-            icon,
-            title,
-            text,
-            confirmButtonColor: "#1976D2",
-            allowOutsideClick: false,
-        });
-    }, []);
-
     // UNIFIED SUBMIT FORM FUNCTION
     const submitForm = useCallback(
-        async (data: FormValues, recaptchaToken?: string) => {
-            // IF NO TOKEN PROVIDED, TRIGGER RECAPTCHA OR USE FALLBACK
-            if (!recaptchaToken) {
-                // STORE FORM DATA FOR RECAPTCHA CALLBACK
-                (window as any).pendingFormData = data;
-
-                // EXECUTE INVISIBLE RECAPTCHA FIRST
-                if (recaptchaRef.current) {
-                    recaptchaRef.current.execute();
-                } else {
-                    // FALLBACK: SUBMIT WITH TEST TOKEN IF RECAPTCHA FAILS TO LOAD
-                    await submitForm(data, 'test_token');
-                }
-                return;
-            }
-
+        async (data: FormValues) => {
             // CREATE FORMDATA AND SUBMIT WITH MUTATION
             const submitData = new FormData();
 
@@ -326,7 +295,6 @@ const CreateTicket = forwardRef<
             submitData.append('system_id', String(data.system_id));
             submitData.append('description', data.description);
             submitData.append('priority_id', String(data.priority_id));
-            submitData.append('recaptcha_token', recaptchaToken);
 
             // APPEND STORE FIELDS IF CUSTOMER NOT FOUND IS SELECTED
             // OR IF FSR ONLINE IS SELECTED WITH CUSTOMER NOT FOUND CATEGORY
@@ -398,36 +366,6 @@ const CreateTicket = forwardRef<
         },
         [createTicketMutation],
     );
-
-    // HANDLE RECAPTCHA TOKEN RECEIVED
-    const handleRecaptchaChange = useCallback(
-        async (token: string | null) => {
-            if (!token) {
-                showRecaptchaAlert('error', 'Error!', 'reCAPTCHA verification failed. Please try again.');
-                return;
-            }
-
-            // GET STORED FORM DATA
-            const formData = (window as any).pendingFormData;
-            if (!formData) {
-                showRecaptchaAlert('error', 'Error!', 'Form data not available. Please try again.');
-                return;
-            }
-
-            // SUBMIT WITH TOKEN
-            await submitForm(formData, token);
-        },
-        [submitForm, showRecaptchaAlert],
-    );
-
-    // HANDLE RECAPTCHA ERRORS
-    const handleRecaptchaError = useCallback(() => {
-        showRecaptchaAlert('error', 'Error!', 'reCAPTCHA verification failed. Please try again.');
-    }, [showRecaptchaAlert]);
-
-    const handleRecaptchaExpired = useCallback(() => {
-        showRecaptchaAlert('warning', 'Session Expired', 'reCAPTCHA session expired. Please try again.');
-    }, [showRecaptchaAlert]);
 
     // HANDLE CHANGE FUNCTIONS
     const handleChange = (setter: (value: any) => void) => (event: any, newValue: any) => {
@@ -510,11 +448,6 @@ const CreateTicket = forwardRef<
             isPendingServiceCenters={isPendingServiceCenters}
             systemOptions={systemOptions}
             isPendingSystems={isPendingSystems}
-            recaptchaRef={recaptchaRef}
-            recaptchaSiteKey={recaptchaSiteKey}
-            onRecaptchaChange={handleRecaptchaChange}
-            onRecaptchaError={handleRecaptchaError}
-            onRecaptchaExpired={handleRecaptchaExpired}
             serviceCenter={serviceCenter}
             system={system}
             category={category}
