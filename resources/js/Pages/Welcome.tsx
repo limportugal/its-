@@ -378,8 +378,9 @@ export default function Welcome() {
                                         lineHeight: 1.2,
                                     },
                                     "@media (max-width: 320px)": {
-                                        fontSize: "1.2rem",
+                                        fontSize: "1.5rem",
                                         lineHeight: 1.2,
+                                        mb: 0.8,
                                     },
                                 }}
                             >
@@ -396,9 +397,15 @@ export default function Welcome() {
                                     letterSpacing: { xs: "0.8px", sm: "1.5px" },
                                     textShadow:
                                         "0 0 15px rgba(255,255,255,0.2)",
+                                    whiteSpace: "nowrap",
                                     "@media (max-width: 375px)": {
                                         fontSize: 14,
                                         letterSpacing: "0.6px",
+                                    },
+                                    "@media (max-width: 320px)": {
+                                        fontSize: "0.85rem",
+                                        letterSpacing: "0.3px",
+                                        mb: 0.6,
                                     },
                                     "@media (min-width: 415px)": {
                                         fontSize: 18,

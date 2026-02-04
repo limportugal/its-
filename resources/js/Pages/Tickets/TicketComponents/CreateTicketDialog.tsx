@@ -772,9 +772,22 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             <DialogActions
                 sx={{
                     px: 9,
+                    "@media (max-width: 320px)": {
+                        px: 2,
+                    },
                 }}
             >
-                <Grid container spacing={1.5} sx={{ width: "100%" }}>
+                <Grid 
+                    container 
+                    spacing={1.5} 
+                    sx={{ 
+                        width: "100%",
+                        gap: { xs: 1.5, sm: 1.5 },
+                        "@media (max-width: 320px)": {
+                            gap: "8px !important",
+                        },
+                    }}
+                >
                     <Grid size={{ xs: 6, sm: 6 }}>
                         <ClearButton
                             fullWidth
