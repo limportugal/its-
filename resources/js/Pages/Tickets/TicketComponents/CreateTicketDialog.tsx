@@ -2,11 +2,9 @@ import { Controller, useWatch } from "react-hook-form";
 import React, { useMemo } from "react";
 
 // MUI COMPONENTS
-import { Typography, Grid, Dialog, DialogContent, DialogActions, Checkbox, Box, Chip, TextField } from "@mui/material";
+import { Typography, Grid, Dialog, DialogContent, DialogActions, Button, Box, Chip, TextField, CircularProgress, Checkbox } from "@mui/material";
 import MuiTextField from "@/Components/Mui/MuiTextField";
 import DialogTitle from "@/Components/Mui/DialogTitle";
-import SubmitButton from "@/Components/Mui/SubmitButton";
-import ClearButton from "@/Components/Mui/ClearButton";
 import Dropdown from "@/Components/Mui/Dropdown";
 
 // MUI ICONS
@@ -22,6 +20,7 @@ import StorefrontIcon from '@mui/icons-material/Storefront';
 import TagIcon from '@mui/icons-material/Tag';
 import BadgeIcon from '@mui/icons-material/Badge';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import SendIcon from '@mui/icons-material/Send';
 
 // CREATE TICKET COMPONENTS
 import FileUploadField from "@/Pages/Tickets/TicketComponents/FileUploadField";
@@ -228,10 +227,10 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                     <form onSubmit={handleSubmit(submitForm)}>
                         <Grid
                             container
-                            spacing={{ xs: 0, sm: 2 }}
+                            spacing={{ xs: 0.5, sm: 2 }}
                             sx={{
                                 px: { xs: 0, sm: 6 },
-                                py: { xs: 0, sm: 0 }
+                                py: { xs: 0, sm: 0 },
                             }}
                         >
                             <Grid size={{ xs: 12, sm: 12, md: 6 }}>
@@ -737,8 +736,8 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             fullWidth
                                             multiline
                                             maxRows={10}
-                                            minRows={isMobile ? 5 : 2}
-                                            rows={Math.min(Math.max((field.value?.split('\n').length || (isMobile ? 5 : 2)), (isMobile ? 5 : 2)), 10)}
+                                            minRows={2}
+                                            rows={Math.min(Math.max((field.value?.split('\n').length || 2), 2), 10)}
                                             errors={errors}
                                             disabled={ticketIsPending}
                                             icon={<DescriptionIcon />}
@@ -772,43 +771,59 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             <DialogActions
                 sx={{
                     px: 9,
+                    justifyContent: "flex-end",
                     "@media (max-width: 320px)": {
-                        px: 2,
+                        px: 3,
                     },
                 }}
             >
-                <Grid 
-                    container 
-                    spacing={1.5} 
-                    sx={{ 
-                        width: "100%",
-                        gap: { xs: 1.5, sm: 1.5 },
-                        "@media (max-width: 320px)": {
-                            gap: "8px !important",
-                        },
-                    }}
-                >
-                    <Grid size={{ xs: 6, sm: 6 }}>
-                        <ClearButton
-                            fullWidth
-                            onClick={() => {
-                                resetForm();
-                                // Also reset locally controlled Autocomplete states
-                                setServiceCenter(null);
-                                setSystem(null);
-                            }}
-                            disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
-                        />
-                    </Grid>
-                    <Grid size={{ xs: 6, sm: 6 }}>
-                        <SubmitButton
-                            fullWidth
-                            onClick={() => handleSubmit(submitForm)()}
-                            disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
-                            loading={ticketIsPending}
-                        />
-                    </Grid>
-                </Grid>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Button
+                        variant="text"
+                        color="primary"
+                        onClick={() => {
+                            resetForm();
+                            setServiceCenter(null);
+                            setSystem(null);
+                        }}
+                        disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
+                        sx={{
+                            textTransform: "none",
+                            fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                            py: { xs: 0.375, sm: 0.75 },
+                            px: { xs: 1, sm: 1.5 },
+                            minHeight: { xs: 32, sm: 36 },
+                        }}
+                    >
+                        Clear form
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleSubmit(submitForm)()}
+                        disabled={ticketIsPending || isPendingPriorities || isPendingServiceCenters || isPendingSystems}
+                        endIcon={
+                            ticketIsPending ? (
+                                <CircularProgress size={18} color="inherit" />
+                            ) : (
+                                <SendIcon fontSize="small" />
+                            )
+                        }
+                        sx={{
+                            textTransform: "uppercase",
+                            fontWeight: 600,
+                            fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                            py: { xs: 0.375, sm: 0.75 },
+                            px: { xs: 1.5, sm: 2 },
+                            minHeight: { xs: 32, sm: 36 },
+                            "& .MuiButton-endIcon svg": {
+                                fontSize: { xs: 18, sm: 20 },
+                            },
+                        }}
+                    >
+                        {ticketIsPending ? "SUBMITTING..." : "SUBMIT"}
+                    </Button>
+                </Box>
             </DialogActions>
         </Dialog>
     );

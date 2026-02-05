@@ -73,8 +73,8 @@ export default function AccountMenu() {
                 }),
             });
             
-            if (logoutResponse.ok || logoutResponse.status === 302) {
-                // Logout successful, do full page reload to home
+            if (logoutResponse.ok) {
+                // Logout successful - immediately trigger full reload from frontend
                 setProcessingLogout(false);
                 setAnchorEl(null);
                 window.location.href = '/';

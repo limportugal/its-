@@ -1,12 +1,31 @@
 import { PropsWithChildren } from "react";
 import { Container, Box, Paper, useTheme, useMediaQuery, Typography } from "@mui/material";
+import { motion } from "motion/react";
 import AnimatedBackground from "@/Layouts/components/animatedBackground";
+
+const MotionBox = motion.create(Box);
 
 // GUEST LAYOUT COMPONENT
 export default function CreatePasswordLayout({ children, isLoading = false }: PropsWithChildren<{ isLoading?: boolean }>) {
     // MUI BREAKPOINTS MEDIA QUERY
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const footerVariants = {
+        hidden: {
+            opacity: 0,
+            y: 15,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+                ease: [0.25, 0.1, 0.25, 1] as const,
+                delay: 0.2,
+            },
+        },
+    };
 
     // RENDER THE PAGE
     return (
@@ -67,7 +86,10 @@ export default function CreatePasswordLayout({ children, isLoading = false }: Pr
             </Box>
 
             {/* FOOTER */}
-            <Box
+            <MotionBox
+                initial="hidden"
+                animate="visible"
+                variants={footerVariants}
                 sx={{
                     position: "absolute",
                     bottom: 0,
@@ -79,73 +101,136 @@ export default function CreatePasswordLayout({ children, isLoading = false }: Pr
                     zIndex: 2,
                 }}
             >
-                <Typography 
-                    variant="body2" 
-                    sx={{ 
-                        fontSize: { xs: "0.75rem", sm: "0.85rem", md: "0.9rem" }, 
-                        color: "rgba(255, 255, 255, 0.3)",
-                        lineHeight: { xs: 1.3, sm: 1.4, md: 1.5 },
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: { xs: 0.5, sm: 1 },
+                        flexWrap: "wrap",
                     }}
                 >
-                    © {new Date().getFullYear()}{" "}
-                    <Box component="span" sx={{ display: "inline" }}>
-                        <Box
-                            component="a"
-                            href="https://apsoft.com.ph/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Apsoft Inc.
-                        </Box>{" "}
-                        |{" "}
-                        <Box
-                            component="a"
-                            href="https://phillogix.site/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Phillogix Systems, Inc.
-                        </Box>{" "}
-                        |{" "}
-                        <Box
-                            component="a"
-                            href="https://its.ideaserv.online/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
-                                color: "rgba(255, 255, 255, 0.5)",
-                                textDecoration: "none",
-                                transition: "color 0.3s ease",
-                                "&:hover": {
-                                    color: "rgba(255, 255, 255, 0.8)",
-                                    textDecoration: "underline",
-                                },
-                            }}
-                        >
-                            Ideaserv Systems, Inc.
-                        </Box>
-                    </Box>{" "}
-                    | All Rights Reserved.
-                </Typography>
-            </Box>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            color: "rgba(255, 255, 255, 0.4)",
+                            fontWeight: { xs: 300, sm: 400 },
+                        }}
+                    >
+                        © {new Date().getFullYear()}
+                    </Typography>
+                    <Box
+                        component="a"
+                        href="https://apsoft.com.ph/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Apsoft
+                    </Box>
+                    <Box
+                        component="a"
+                        href="https://phillogix.site/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Phillogix
+                    </Box>
+                    <Box
+                        component="a"
+                        href="https://its.ideaserv.online/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            color: "rgba(255, 255, 255, 0.7)",
+                            textDecoration: "none",
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            fontWeight: 500,
+                            px: { xs: 1, sm: 1.5 },
+                            py: { xs: 0.3, sm: 0.4 },
+                            borderRadius: { xs: 1, sm: 1.5 },
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid rgba(255, 255, 255, 0.1)",
+                            transition: "all 0.3s ease",
+                            "&:hover": {
+                                color: "rgba(255, 255, 255, 1)",
+                                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                                borderColor: "rgba(255, 255, 255, 0.2)",
+                                transform: "translateY(-1px)",
+                            },
+                        }}
+                    >
+                        Ideaserv
+                    </Box>
+                    <Typography
+                        variant="body2"
+                        sx={{
+                            fontSize: {
+                                xs: "0.7rem",
+                                sm: "0.85rem",
+                                md: "0.9rem",
+                            },
+                            color: "rgba(255, 255, 255, 0.4)",
+                            fontWeight: { xs: 300, sm: 400 },
+                        }}
+                    >
+                        All Rights Reserved.
+                    </Typography>
+                </Box>
+            </MotionBox>
         </>
     );
 }

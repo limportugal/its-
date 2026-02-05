@@ -29,6 +29,7 @@ import MuiTextField from "@/Components/Mui/MuiTextField";
 export default function Login({ canResetPassword }: { canResetPassword: boolean }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const isVerySmall = useMediaQuery('(max-width: 320px)');
     const [showPassword, setShowPassword] = useState(false);
     const queryClient = useQueryClient();
 
@@ -111,26 +112,26 @@ export default function Login({ canResetPassword }: { canResetPassword: boolean 
                             severity="info"
                             sx={{
                                 fontWeight: 600,
-                                fontSize: isMobile ? '0.875rem' : '1rem',
+                                fontSize: isVerySmall ? '0.75rem' : isMobile ? '0.875rem' : '1rem',
                                 mb: 0.5,
                                 textAlign: 'center',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 '& .MuiAlert-icon': {
-                                    fontSize: isMobile ? '1.5rem' : '2rem',
+                                    fontSize: isVerySmall ? '1.25rem' : isMobile ? '1.5rem' : '2rem',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                 },
                                 '& .MuiAlert-message': {
                                     fontWeight: 600,
-                                    fontSize: isMobile ? '0.875rem' : '1rem',
+                                    fontSize: isVerySmall ? '0.75rem' : isMobile ? '0.875rem' : '1rem',
                                     textAlign: 'center',
                                 }
                             }}
                         >
-                            STRICTLY FOR ADMIN USE ONLY
+                            {isMobile ? "FOR ADMIN USE ONLY" : "STRICTLY FOR ADMIN USE ONLY"}
                         </Alert>
                         <MuiLink
                             component={InertiaLink}
@@ -232,59 +233,58 @@ export default function Login({ canResetPassword }: { canResetPassword: boolean 
                         />
                     </Stack>
 
-                    {/* REMEMBER ME CHECKBOX & FORGOT PASSWORD LINK */}
+                    {/* REMEMBER ME & FORGOT PASSWORD: stacked on mobile, inline on desktop */}
                     <Box sx={{
                         display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
+                        flexDirection: isMobile ? "column" : "row",
+                        justifyContent: isMobile ? "flex-start" : "space-between",
+                        alignItems: isMobile ? "stretch" : "center",
                         width: "100%",
-                        mb: isMobile ? 1 : 3,
-                        mt: 0.5
+                        mb: isMobile ? 1.5 : 3,
+                        mt: isMobile ? 1.5 : 0.5,
+                        ...(isMobile && { paddingLeft: 0, marginLeft: 0 }),
                     }}>
-                        {/* LEFT: Remember Me */}
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                        {/* Remember Me - no extra left space on mobile only */}
+                        <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0, ...(isMobile && { marginLeft: 0 }) }}>
                             <Checkbox
                                 {...register("remember")}
                                 onChange={(e) => setValue("remember", e.target.checked)}
                                 disabled={loading}
                                 size={isMobile ? "small" : "medium"}
+                                sx={isMobile ? {
+                                    paddingLeft: 0,
+                                    marginLeft: 0,
+                                    "&.MuiCheckbox-root": { paddingLeft: 0, marginLeft: 0 },
+                                } : undefined}
                             />
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    fontSize: isMobile ? "0.875rem" : "1rem",
+                                    fontSize: isVerySmall ? "0.8125rem" : isMobile ? "0.875rem" : "1rem",
                                     color: loading ? "text.disabled" : "text.primary",
-                                    userSelect: "none"
+                                    userSelect: "none",
+                                    whiteSpace: "nowrap"
                                 }}
                             >
                                 Remember me
                             </Typography>
                         </Box>
 
-                        {/* RIGHT: Forgot Password Link */}
                         {canResetPassword && (
                             <MuiLink
                                 component={InertiaLink}
                                 href={route("password.request")}
                                 sx={{
                                     textDecoration: "underline",
-                                    color: "text.secondary",
-                                    "&:hover": { color: "primary.main" },
-                                    fontSize: isMobile ? "0.875rem" : "1rem",
-                                    fontWeight: "500",
+                                    color: "primary.main",
+                                    "&:hover": { color: "primary.dark" },
+                                    fontSize: isVerySmall ? "0.8125rem" : isMobile ? "0.875rem" : "1rem",
+                                    fontWeight: 500,
                                     pointerEvents: loading ? "none" : "auto",
                                     opacity: loading ? 0.5 : 1,
                                 }}
                             >
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontSize: isMobile ? "0.875rem" : "1rem",
-                                        color: "text.primary"
-                                    }}
-                                >
-                                    Forgot your password?
-                                </Typography>
+                                Forgot password?
                             </MuiLink>
                         )}
                     </Box>

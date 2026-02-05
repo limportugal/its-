@@ -1,6 +1,6 @@
 import { Box, Button, Stack, AppBar, Toolbar } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import LoginIcon from "@mui/icons-material/Login";
 import { Link, usePage } from "@inertiajs/react";
 
 const SingInForm = () => {
@@ -21,17 +21,25 @@ const SingInForm = () => {
                             // IF NOT LOGGED IN, SHOW LOG IN BUTTON
                             <Link href={route("login")} style={{ textDecoration: "none", color: "white" }}>
                                 <Button 
-                                    size="medium" 
-                                    variant="text" 
-                                    color="inherit"
+                                    size="medium"
+                                    variant="outlined" 
+                                    color="primary"
+                                    endIcon={<LoginIcon fontSize="small" />}
                                     sx={{
                                         color: "white",
+                                        fontSize: { xs: "0.8125rem", sm: "0.875rem" },
+                                        py: { xs: 0.375, sm: 0.75 },
+                                        px: { xs: 1, sm: 1.5 },
+                                        minHeight: { xs: 32, sm: 36 },
+                                        "& .MuiButton-endIcon": {
+                                            "& svg": { fontSize: { xs: 18, sm: 20 } },
+                                        },
                                         "&:hover": {
                                             backgroundColor: "primary.main"
                                         }
                                     }}
                                 >
-                                    Beta Version 1.0
+                                    Admin Login
                                 </Button>
                             </Link>
                         )}

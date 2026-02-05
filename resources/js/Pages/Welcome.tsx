@@ -748,7 +748,7 @@ export default function Welcome() {
                                             }}
                                         >
                                             <IoTicket size={20} />
-                                            CREATE NEW TICKET
+                                            CREATE A NEW TICKET
                                         </Button>
                                     </Grid>
                                 </Grid>

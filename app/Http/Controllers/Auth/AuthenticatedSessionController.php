@@ -104,15 +104,6 @@ class AuthenticatedSessionController extends Controller
         UserLogs::logActivity("{$user->name}, has successfully logged in.", $user->id);
         session()->flash('success', 'Welcome back! You have successfully logged in.');
 
-        // CLEAR ALL CACHE AND COOKIES ON BACKEND
-        // Clear any existing cache tags if using cache
-        if (method_exists(app('cache'), 'tags')) {
-            app('cache')->tags(['user', 'tickets', 'dashboard'])->flush();
-        }
-        
-        // Clear application cache
-        app('cache')->flush();
-
         // Handle JSON API response
         if ($request->wantsJson()) {
             $response = response()->json([
@@ -126,13 +117,7 @@ class AuthenticatedSessionController extends Controller
                 'refresh' => true,
             ]);
         }
-        
-        // ADD HEADERS TO CLEAR CACHED DATA BUT PRESERVE SESSION
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        // ONLY CLEAR CACHE AND STORAGE, NOT COOKIES (TO PRESERVE SESSION)
-        $response->headers->set('Clear-Site-Data', '"cache", "storage"');
+
         return $response;
     }
 
@@ -162,7 +147,7 @@ class AuthenticatedSessionController extends Controller
         ];
 
         // If it's an AJAX/JSON request (from frontend fetch), return JSON response
-        // Frontend will handle the redirect with full reload
+        // Frontend will handle the full reload immediately after logout
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
