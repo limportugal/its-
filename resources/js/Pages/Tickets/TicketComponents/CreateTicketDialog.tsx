@@ -769,13 +769,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                 )}
             </DialogContent>
             <DialogActions
-                sx={{
-                    px: 9,
-                    justifyContent: "flex-end",
-                    "@media (max-width: 320px)": {
-                        px: 3,
-                    },
-                }}
+                sx={{ px: { xs: 3, sm: 9 }, justifyContent: "flex-end" }}
             >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Button
