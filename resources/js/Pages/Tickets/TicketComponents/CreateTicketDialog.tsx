@@ -212,7 +212,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             aria-modal="true"
         >
             <DialogTitle
-                title="CREATE A NEW TICKET"
+                title="Ticket Creation Form"
                 subtitle="Kindly provide complete and detailed information about your issue. Our support team will review your request and respond accordingly."
                 handleClose={handleClose}
                 disabled={isPendingPriorities || isPendingServiceCenters || isPendingSystems || ticketIsPending}
