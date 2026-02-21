@@ -209,6 +209,23 @@
 </head>
 
 <body>
+    @php
+        $fixMojibake = static function ($value) {
+            if (!is_string($value) || $value === '') {
+                return $value;
+            }
+
+            if (!preg_match('/Ã.|Â.|â.|ðŸ/u', $value)) {
+                return $value;
+            }
+
+            return mb_convert_encoding($value, 'ISO-8859-1', 'UTF-8');
+        };
+
+        $categoryDisplay = is_array($category_name) || is_object($category_name)
+            ? implode(', ', (array) $category_name)
+            : $category_name;
+    @endphp
     <div class="container">
         <div class="header">
             <h1>Ticket Assignment Notification</h1>
@@ -234,13 +251,13 @@
                     <!-- REPORTED BY -->
                     <tr>
                         <th>👤 Reported By</th>
-                        <td>{{ $reported_by_name }}</td>
+                        <td>{{ $fixMojibake($reported_by_name) }}</td>
                     </tr>
 
                     <!-- REPORTER EMAIL -->
                     <tr>
                         <th>📧 Reporter Email</th>
-                        <td>{{ $reported_by_email }}</td>
+                        <td>{{ $fixMojibake($reported_by_email) }}</td>
                     </tr>
 
 
@@ -254,37 +271,31 @@
                     <!-- PRIORITY -->
                     <tr>
                         <th>⚡ Priority</th>
-                        <td>{{ $priority }}</td>
+                        <td>{{ $fixMojibake($priority) }}</td>
                     </tr>
 
                     <!-- PROBLEM ENCOUNTERED -->
                     <tr>
                         <th>⚠️ Problem Category</th>
-                        <td>
-                            @if (is_array($category_name) || is_object($category_name))
-                                {{ implode(', ', (array) $category_name) }}
-                            @else
-                                {{ $category_name }}
-                            @endif
-                        </td>
+                        <td>{{ $fixMojibake($categoryDisplay) }}</td>
                     </tr>
 
                     <!-- SERVICE CENTER -->
                     <tr>
                         <th>🏢 Service Center</th>
-                        <td>{{ $service_center_name }}</td>
+                        <td>{{ $fixMojibake($service_center_name) }}</td>
                     </tr>
 
                     <!-- SYSTEM -->
                     <tr>
                         <th>💻 System</th>
-                        <td>{{ $system_name }}</td>
+                        <td>{{ $fixMojibake($system_name) }}</td>
                     </tr>
 
                     <!-- DESCRIPTION -->
                     <tr>
                         <th>📝 Description</th>
-                        <td>{{ $description }}</td>
+                        <td>{{ $fixMojibake($description) }}</td>
                     </tr>
 
                     <!-- ATTACHMENTS -->
@@ -318,7 +329,7 @@
                     @if(isset($assigned_to) && $assigned_to)
                     <tr>
                         <th>👤 Assigned To Agent</th>
-                        <td><strong>{{ $assigned_to }}</strong></td>
+                        <td><strong>{{ $fixMojibake($assigned_to) }}</strong></td>
                     </tr>
                     @endif
 
@@ -326,7 +337,7 @@
                     @if(isset($assigned_user_email) && $assigned_user_email)
                     <tr>
                         <th>📧 Your Email</th>
-                        <td><strong>{{ $assigned_user_email }}</strong></td>
+                        <td><strong>{{ $fixMojibake($assigned_user_email) }}</strong></td>
                     </tr>
                     @endif
                 </tbody>

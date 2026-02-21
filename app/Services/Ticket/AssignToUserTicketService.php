@@ -20,6 +20,8 @@ class AssignToUserTicketService
     public function assignTicketToUser(string $ticketUuid, array $userUuids)
     {
         return DB::transaction(function () use ($ticketUuid, $userUuids) {
+            $userUuids = array_values(array_unique($userUuids));
+
             $ticket = Ticket::with('assignedUser')
                 ->where('uuid', $ticketUuid)
                 ->firstOrFail();
@@ -54,6 +56,10 @@ class AssignToUserTicketService
                 ];
             }
 
+            // Capture existing assignments first so we can notify only newly-added users.
+            $existingAssignmentUserIds = AssignTicketToUser::where('ticket_id', $ticket->id)
+                ->pluck('user_id');
+
             // Get all users to be assigned
             $assignedUsers = User::whereIn('uuid', $userUuids)->get();
 
@@ -64,23 +70,31 @@ class AssignToUserTicketService
                 ];
             }
 
-            $assignedUserNames = [];
+            // Keep user order aligned with selected UUID order.
+            $assignedUsersByUuid = $assignedUsers->keyBy('uuid');
+            $orderedAssignedUsers = collect($userUuids)
+                ->map(fn ($uuid) => $assignedUsersByUuid->get($uuid))
+                ->filter();
 
-            // DELETE ALL EXISTING ASSIGNMENTS FOR THIS TICKET (CreateUpdate pattern)
-            $oldAssignments = AssignTicketToUser::where('ticket_id', $ticket->id)->get();
-            AssignTicketToUser::where('ticket_id', $ticket->id)->delete();
+            $newAssignmentUserIds = $orderedAssignedUsers->pluck('id');
+            $usersToAdd = $orderedAssignedUsers->whereIn('id', $newAssignmentUserIds->diff($existingAssignmentUserIds));
+            $usersToRemove = User::whereIn('id', $existingAssignmentUserIds->diff($newAssignmentUserIds))->get();
 
-            // Log removal activity for old assignments
-            foreach ($oldAssignments as $oldAssignment) {
-                $oldUser = $oldAssignment->user;
-                if ($oldUser) {
-                    $oldUserRole = $oldUser->roles->first()->name ?? 'Unknown Role';
-                    UserLogs::logActivity("Ticket assignment removed from ($oldUser->name | $oldUserRole).", Auth::id(), $ticket->ticket_number);
-                }
+            // Remove users that are no longer assigned.
+            if ($usersToRemove->isNotEmpty()) {
+                AssignTicketToUser::where('ticket_id', $ticket->id)
+                    ->whereIn('user_id', $usersToRemove->pluck('id'))
+                    ->delete();
             }
 
-            // CREATE NEW ASSIGNMENTS
-            foreach ($assignedUsers as $assignedUser) {
+            // Log removal activity for removed assignments.
+            foreach ($usersToRemove as $removedUser) {
+                $removedUserRole = $removedUser->roles->first()->name ?? 'Unknown Role';
+                UserLogs::logActivity("Ticket assignment removed from ($removedUser->name | $removedUserRole).", Auth::id(), $ticket->ticket_number);
+            }
+
+            // Create only new assignments and notify only newly added users.
+            foreach ($usersToAdd as $assignedUser) {
                 AssignTicketToUser::create([
                     'ticket_id' => $ticket->id,
                     'user_id' => $assignedUser->id,
@@ -91,16 +105,14 @@ class AssignToUserTicketService
                 $assignedUserRole = $assignedUser->roles->first()->name ?? 'Unknown Role';
                 UserLogs::logActivity("Ticket was assigned to ($assignedUser->name | $assignedUserRole).", Auth::id(), $ticket->ticket_number);
 
-                // Send notification to newly assigned user
+                // Send notification only to the specific newly-assigned user.
                 if (!empty($assignedUser->email)) {
-                    SendTicketAssignedEmail::dispatch($ticket);
+                    SendTicketAssignedEmail::dispatch($ticket, $assignedUser->id);
                 }
-
-                $assignedUserNames[] = $assignedUser->name;
             }
 
             // Update ticket with the first assigned user as primary assignee
-            $primaryAssignedUser = $assignedUsers->first();
+            $primaryAssignedUser = $orderedAssignedUsers->first();
             $assignedAt = now();
             $ticket->update([
                 'assign_to_user_id' => $primaryAssignedUser->id,
@@ -125,6 +137,7 @@ class AssignToUserTicketService
                 SendTicketAssignedToCreatorEmail::dispatch($ticket);
             }
 
+            $assignedUserNames = $orderedAssignedUsers->pluck('name')->toArray();
             $assignedUsersList = implode(', ', $assignedUserNames);
 
             return [
@@ -138,7 +151,7 @@ class AssignToUserTicketService
                     'assign_to_user_id' => $ticket->assign_to_user_id,
                     'assigned_to_name' => $primaryAssignedUser->name,
                     'assigned_user_email' => $primaryAssignedUser->email,
-                    'assigned_users' => $ticket->assignToUsers->map(function ($assign) {
+                    'assigned_users' => $ticket->assignToUsers()->with('user')->get()->map(function ($assign) {
                         return [
                             'user_id' => $assign->user->id,
                             'user_name' => $assign->user->name,
