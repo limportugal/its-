@@ -27,6 +27,29 @@ const hardReloadToHome = async (): Promise<void> => {
     window.location.replace("/");
 };
 
+const shouldSkipSessionRedirect = (status: number, url: string): boolean => {
+    if (!(status === 401 || status === 419)) {
+        return true;
+    }
+
+    const requestUrl = (url || "").toLowerCase();
+    const path = window.location.pathname.toLowerCase();
+
+    const isAuthEndpoint =
+        requestUrl.includes("/login") ||
+        requestUrl.includes("/register") ||
+        requestUrl.includes("/forgot-password") ||
+        requestUrl.includes("/reset-password");
+
+    const isAuthScreen =
+        path === "/login" ||
+        path === "/register" ||
+        path === "/forgot-password" ||
+        path.startsWith("/reset-password");
+
+    return isAuthEndpoint || isAuthScreen;
+};
+
 export const apiRequest = async <T>(
     apiClient: AxiosInstance,
     method: string = "GET",
@@ -55,7 +78,10 @@ export const apiRequest = async <T>(
         if (err instanceof AxiosError) {
 
             // Handle session expiry errors with a hard redirect.
-            if (err.response && (err.response.status === 419 || err.response.status === 401)) {
+            if (
+                err.response &&
+                !shouldSkipSessionRedirect(err.response.status, url)
+            ) {
                 await hardReloadToHome();
             }
 
