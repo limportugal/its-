@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import AppBarComponent from "./components/AppBar";
 import DrawerComponent from "./components/Drawer";
 import MainContent from "./components/MainContent";
+import SessionExpiryDialog from "./components/SessionExpiryDialog";
 import useDrawerStore from "../stores/useDrawerStore";
 
 const drawerWidth = 240;
@@ -48,6 +49,7 @@ const AuthenticatedLayout: React.FC<AuthenticatedLayoutProps> = ({ header, child
     // RENDER THE COMPONENT
     return (
         <Box sx={{ display: "flex" }}>
+            <SessionExpiryDialog />
             <AppBarComponent
                 handleDrawerToggle={handleDrawerToggle}
                 isMiniDrawer={isMiniDrawer}

@@ -8,6 +8,25 @@ interface ApiError extends Error {
     response?: any; // Full response object
 }
 
+const hardReloadToHome = async (): Promise<void> => {
+    try {
+        window.sessionStorage.clear();
+    } catch {}
+
+    try {
+        window.localStorage.clear();
+    } catch {}
+
+    if ("caches" in window) {
+        try {
+            const keys = await window.caches.keys();
+            await Promise.all(keys.map((key) => window.caches.delete(key)));
+        } catch {}
+    }
+
+    window.location.replace("/");
+};
+
 export const apiRequest = async <T>(
     apiClient: AxiosInstance,
     method: string = "GET",
@@ -35,10 +54,9 @@ export const apiRequest = async <T>(
     } catch (err: unknown) {
         if (err instanceof AxiosError) {
 
-            // Handle session expired error (419 CSRF token mismatch)
-            if (err.response && err.response.status === 419) {
-                // Session has expired or CSRF token mismatch
-                window.location.reload();
+            // Handle session expiry errors with a hard redirect.
+            if (err.response && (err.response.status === 419 || err.response.status === 401)) {
+                await hardReloadToHome();
             }
 
             // Extract the actual error message from Laravel response

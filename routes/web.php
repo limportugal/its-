@@ -8,7 +8,7 @@ require __DIR__ . '/home-s3.php';
 require __DIR__ . '/public.php';
 
 // AUTHENTICATED ROUTES
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'session.security'])->group(function () {
     // DASHBOARD - Super Admin, Admin, Support Agent, Manager, Team Leader
     Route::middleware(['role:Super Admin|Admin|Support Agent|Manager|Team Leader'])->group(function () {
         require __DIR__ . '/dashboard.php';

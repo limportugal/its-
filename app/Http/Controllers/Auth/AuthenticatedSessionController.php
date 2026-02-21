@@ -100,6 +100,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
         $request->session()->regenerate();
+        $request->session()->put('session_started_at', now()->timestamp);
+        $request->session()->put('last_activity_at', now()->timestamp);
 
         UserLogs::logActivity("{$user->name}, has successfully logged in.", $user->id);
         session()->flash('success', 'Welcome back! You have successfully logged in.');

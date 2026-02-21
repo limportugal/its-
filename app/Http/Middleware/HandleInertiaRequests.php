@@ -27,7 +27,6 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    
     public function share(Request $request): array
     {
         return [
@@ -35,17 +34,15 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            
-            // ✅ CSRF TOKEN FOR FRONTEND REQUESTS
             'csrf_token' => csrf_token(),
-            
-            // ✅ LOGIN FLASH MESSAGES
             'flash' => [
                 'success' => session('success'),
                 'error' => session('error'),
             ],
-            
-            // ✅ USER ROLES FOR DRAWER MENU ACCESS
+            'session' => [
+                'lifetime_minutes' => (int) config('session.lifetime', 30),
+                'warning_seconds' => (int) config('session_security.warning_seconds', 60),
+            ],
             'userRoles' => $request->user() ? $request->user()->roles->pluck('name')->toArray() : [],
         ];
     }
