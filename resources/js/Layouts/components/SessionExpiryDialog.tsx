@@ -3,6 +3,7 @@ import { usePage } from "@inertiajs/react";
 import {
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -32,7 +33,7 @@ const SessionExpiryDialog: React.FC = () => {
 
     const [open, setOpen] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(Math.max(1, warningSeconds));
-    const [loading, setLoading] = useState(false);
+    const [actionLoading, setActionLoading] = useState<"logout" | "stay" | null>(null);
     const warnedAtRef = useRef<number>(Date.now());
     const warningTimeoutRef = useRef<number | null>(null);
     const countdownRef = useRef<number | null>(null);
@@ -104,6 +105,7 @@ const SessionExpiryDialog: React.FC = () => {
         }
 
         redirectingRef.current = true;
+        setActionLoading("logout");
         clearTimers();
         await requestServerLogout();
         await clearClientState();
@@ -141,21 +143,21 @@ const SessionExpiryDialog: React.FC = () => {
 
     const markActivity = useMemo(
         () => () => {
-            if (open || loading) {
+            if (open || actionLoading !== null) {
                 return;
             }
 
             scheduleWarning();
         },
-        [loading, open, scheduleWarning],
+        [actionLoading, open, scheduleWarning],
     );
 
     const keepSessionAlive = useCallback(async () => {
-        if (loading) {
+        if (actionLoading !== null) {
             return;
         }
 
-        setLoading(true);
+        setActionLoading("stay");
 
         try {
             const response = await fetch(route("csrf-token"), {
@@ -182,12 +184,12 @@ const SessionExpiryDialog: React.FC = () => {
             }
 
             setOpen(false);
-            setLoading(false);
+            setActionLoading(null);
             scheduleWarning();
         } catch {
             await hardLogout();
         }
-    }, [hardLogout, loading, scheduleWarning]);
+    }, [actionLoading, hardLogout, scheduleWarning]);
 
     useEffect(() => {
         scheduleWarning();
@@ -228,11 +230,25 @@ const SessionExpiryDialog: React.FC = () => {
                 </Box>
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button color="inherit" onClick={hardLogout} disabled={loading}>
-                    Logout
+                <Button color="inherit" onClick={hardLogout} disabled={actionLoading !== null}>
+                    {actionLoading === "logout" ? (
+                        <>
+                            <CircularProgress size={16} sx={{ mr: 1 }} />
+                            Logging out...
+                        </>
+                    ) : (
+                        "Logout"
+                    )}
                 </Button>
-                <Button variant="contained" onClick={keepSessionAlive} disabled={loading}>
-                    Stay Logged In
+                <Button variant="contained" onClick={keepSessionAlive} disabled={actionLoading !== null}>
+                    {actionLoading === "stay" ? (
+                        <>
+                            <CircularProgress size={16} sx={{ mr: 1, color: "inherit" }} />
+                            Please wait...
+                        </>
+                    ) : (
+                        "Stay Logged In"
+                    )}
                 </Button>
             </DialogActions>
         </Dialog>
