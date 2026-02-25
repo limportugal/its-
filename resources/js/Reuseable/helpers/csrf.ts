@@ -38,6 +38,7 @@ export const fetchFreshCsrfToken = async (): Promise<string | null> => {
         const response = await fetch('/csrf-token', {
             method: 'GET',
             credentials: 'include',
+            cache: 'no-store',
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
@@ -46,7 +47,24 @@ export const fetchFreshCsrfToken = async (): Promise<string | null> => {
         
         if (response.ok) {
             const data = await response.json();
-            return data.csrf_token;
+            const freshToken = data.csrf_token || null;
+
+            if (freshToken) {
+                const meta = document.querySelector('meta[name="csrf-token"]');
+                if (meta) {
+                    meta.setAttribute('content', freshToken);
+                }
+
+                const w = window as any;
+                if (w.page?.props) {
+                    w.page.props.csrf_token = freshToken;
+                }
+                if (w.initialPage?.props) {
+                    w.initialPage.props.csrf_token = freshToken;
+                }
+            }
+
+            return freshToken;
         }
         
         return null;

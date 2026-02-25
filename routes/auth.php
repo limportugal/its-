@@ -14,7 +14,17 @@ use App\Http\Controllers\Ticket\TicketController;
 
 // CSRF token route for SPA/AJAX requests (guest + auth)
 Route::get('/csrf-token', function () {
-    return response()->json(['csrf_token' => csrf_token()]);
+    request()->session()->regenerateToken();
+
+    return response()->json(
+        ['csrf_token' => csrf_token()],
+        200,
+        [
+            'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]
+    );
 })->name('csrf-token');
 
 // GUEST ROUTES

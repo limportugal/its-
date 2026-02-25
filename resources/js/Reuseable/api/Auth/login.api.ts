@@ -67,15 +67,12 @@ export const loginUser = async (data: LoginPayload): Promise<LoginResponse> => {
             frontendTimeout,
         );
     } catch (error: any) {
-        if (error?.status === 419) {
+        const status = error?.status ?? error?.response?.status;
+
+        if (status === 419) {
             const freshToken = await fetchFreshCsrfToken();
 
             if (freshToken) {
-                const meta = document.querySelector('meta[name="csrf-token"]');
-                if (meta) {
-                    meta.setAttribute('content', freshToken);
-                }
-
                 applyCsrfHeader(freshToken);
 
                 return apiRequest<LoginResponse>(
