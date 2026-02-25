@@ -8,7 +8,9 @@ import { usePage } from '@inertiajs/react';
 // Get CSRF token from Inertia shared data or meta tag
 export const getCsrfToken = (): string => {
     // First try to get from Inertia shared data
-    const csrfToken = (window as any).page?.props?.csrf_token;
+    const csrfToken =
+        (window as any).page?.props?.csrf_token ||
+        (window as any).initialPage?.props?.csrf_token;
     
     if (csrfToken) {
         return csrfToken;
@@ -35,7 +37,7 @@ export const fetchFreshCsrfToken = async (): Promise<string | null> => {
     try {
         const response = await fetch('/csrf-token', {
             method: 'GET',
-            credentials: 'same-origin',
+            credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',

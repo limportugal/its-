@@ -12,6 +12,11 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Ticket\TicketController;
 
+// CSRF token route for SPA/AJAX requests (guest + auth)
+Route::get('/csrf-token', function () {
+    return response()->json(['csrf_token' => csrf_token()]);
+})->name('csrf-token');
+
 // GUEST ROUTES
 Route::middleware('guest')->group(function () {
     // REGISTER & LOGIN ROUTES
@@ -55,9 +60,4 @@ Route::middleware(['auth', 'session.security'])->group(function () {
 
     // LOGOUT ROUTE
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
-    
-    // CSRF token route for Inertia
-    Route::get('/csrf-token', function () {
-        return response()->json(['csrf_token' => csrf_token()]);
-    })->name('csrf-token');
 });
