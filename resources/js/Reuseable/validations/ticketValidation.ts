@@ -40,6 +40,11 @@ export const formSchema = z
         powerform_email: z.string().optional(),
         powerform_company_number: z.string().optional(),
         powerform_imei: z.string().optional(),
+        powerform_store_code: z.string().optional(),
+        powerform_store_name: z.string().optional(),
+        powerform_store_address: z.string().optional(),
+        powerform_store_ownership: z.string().optional(),
+        powerform_store_type: z.string().optional(),
         service_logs_mobile_no: z.string().optional(),
         service_logs_mobile_model: z.string().optional(),
         service_logs_mobile_serial_no: z.string().optional(),
@@ -276,6 +281,112 @@ export const formSchema = z
                     code: z.ZodIssueCode.custom,
                     message: "IMEI must not exceed 255 characters.",
                     path: ["powerform_imei"],
+                });
+            }
+        }
+
+        const requiresPowerFormAdditionalNewStoreFields =
+            normalizeSystemName(data.system_name) === "power form" &&
+            data.category_labels?.some((label) => normalize(label) === "additional new store");
+
+        if (requiresPowerFormAdditionalNewStoreFields) {
+            if (!data.powerform_store_code || data.powerform_store_code.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store code is required for Additional New Store requests.",
+                    path: ["powerform_store_code"],
+                });
+            } else if (data.powerform_store_code.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store code must be at least 3 characters long.",
+                    path: ["powerform_store_code"],
+                });
+            } else if (data.powerform_store_code.length > 50) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store code must not exceed 50 characters.",
+                    path: ["powerform_store_code"],
+                });
+            }
+
+            if (!data.powerform_store_name || data.powerform_store_name.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store name is required for Additional New Store requests.",
+                    path: ["powerform_store_name"],
+                });
+            } else if (data.powerform_store_name.length < 3) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store name must be at least 3 characters long.",
+                    path: ["powerform_store_name"],
+                });
+            } else if (data.powerform_store_name.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store name must not exceed 100 characters.",
+                    path: ["powerform_store_name"],
+                });
+            }
+
+            if (!data.powerform_store_address || data.powerform_store_address.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store address is required for Additional New Store requests.",
+                    path: ["powerform_store_address"],
+                });
+            } else if (data.powerform_store_address.length < 10) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store address must be at least 10 characters long.",
+                    path: ["powerform_store_address"],
+                });
+            } else if (data.powerform_store_address.length > 510) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store address must not exceed 510 characters.",
+                    path: ["powerform_store_address"],
+                });
+            }
+
+            if (!data.powerform_store_ownership || data.powerform_store_ownership.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Ownership is required for Additional New Store requests.",
+                    path: ["powerform_store_ownership"],
+                });
+            } else if (data.powerform_store_ownership.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Ownership must be at least 2 characters long.",
+                    path: ["powerform_store_ownership"],
+                });
+            } else if (data.powerform_store_ownership.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Ownership must not exceed 100 characters.",
+                    path: ["powerform_store_ownership"],
+                });
+            }
+
+            if (!data.powerform_store_type || data.powerform_store_type.trim() === "") {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store type is required for Additional New Store requests.",
+                    path: ["powerform_store_type"],
+                });
+            } else if (data.powerform_store_type.length < 2) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store type must be at least 2 characters long.",
+                    path: ["powerform_store_type"],
+                });
+            } else if (data.powerform_store_type.length > 100) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Store type must not exceed 100 characters.",
+                    path: ["powerform_store_type"],
                 });
             }
         }

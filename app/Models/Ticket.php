@@ -37,6 +37,11 @@ class Ticket extends Model
         'powerform_email',
         'powerform_company_number',
         'powerform_imei',
+        'powerform_store_code',
+        'powerform_store_name',
+        'powerform_store_address',
+        'powerform_store_ownership',
+        'powerform_store_type',
 
         // SERVICE LOGS FIELDS (FOR SERVICE LOGS SYSTEM + LOCATION ERROR)
         'service_logs_mobile_no',

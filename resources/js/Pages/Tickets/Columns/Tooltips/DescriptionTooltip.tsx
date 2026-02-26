@@ -34,6 +34,11 @@ interface DescriptionTooltipProps {
     powerform_email?: string | null;
     powerform_company_number?: string | null;
     powerform_imei?: string | null;
+    powerform_store_code?: string | null;
+    powerform_store_name?: string | null;
+    powerform_store_address?: string | null;
+    powerform_store_ownership?: string | null;
+    powerform_store_type?: string | null;
     service_logs_mobile_no?: string | null;
     service_logs_mobile_model?: string | null;
     service_logs_mobile_serial_no?: string | null;
@@ -58,6 +63,11 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
     powerform_email,
     powerform_company_number,
     powerform_imei,
+    powerform_store_code,
+    powerform_store_name,
+    powerform_store_address,
+    powerform_store_ownership,
+    powerform_store_type,
     service_logs_mobile_no,
     service_logs_mobile_model,
     service_logs_mobile_serial_no,
@@ -466,7 +476,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
                                         }}
                                     >
-                                        PowerForm Full Name
+                                        Full Name
                                     </Typography>
                                 </Box>
                                 <Typography
@@ -505,7 +515,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
                                         }}
                                     >
-                                        PowerForm Employee ID
+                                        Employee ID
                                     </Typography>
                                 </Box>
                                 <Typography
@@ -544,7 +554,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
                                         }}
                                     >
-                                        PowerForm Email
+                                        Email
                                     </Typography>
                                 </Box>
                                 <Typography
@@ -583,7 +593,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
                                         }}
                                     >
-                                        PowerForm Company Number
+                                        Company Number
                                     </Typography>
                                 </Box>
                                 <Typography
@@ -622,7 +632,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                             fontSize: { xs: "0.75rem", sm: "0.875rem" },
                                         }}
                                     >
-                                        PowerForm IMEI
+                                        IMEI
                                     </Typography>
                                 </Box>
                                 <Typography
@@ -633,6 +643,201 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                                     }}
                                 >
                                     {powerform_imei}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM STORE CODE SECTION */}
+                        {powerform_store_code && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <QrCode2Icon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Store Code
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_store_code}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM STORE NAME SECTION */}
+                        {powerform_store_name && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <StoreIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Store Name
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_store_name}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM STORE ADDRESS SECTION */}
+                        {powerform_store_address && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <LocationOnIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Store Address
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_store_address}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM STORE OWNERSHIP SECTION */}
+                        {powerform_store_ownership && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <ComputerIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Ownership
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_store_ownership}
+                                </Typography>
+                            </>
+                        )}
+
+                        {/* POWERFORM STORE TYPE SECTION */}
+                        {powerform_store_type && (
+                            <>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: { xs: 0.75, sm: 1 },
+                                        marginTop: { xs: 0.75, sm: 1 },
+                                    }}
+                                >
+                                    <TagIcon
+                                        sx={{
+                                            fontSize: { xs: 14, sm: 16 },
+                                            color: "primary.main",
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                            fontWeight: "bold",
+                                            fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                                        }}
+                                    >
+                                        Store Type
+                                    </Typography>
+                                </Box>
+                                <Typography
+                                    variant="body2"
+                                    sx={{
+                                        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
+                                        marginLeft: { xs: 2, sm: 3 },
+                                    }}
+                                >
+                                    {powerform_store_type}
                                 </Typography>
                             </>
                         )}
@@ -991,7 +1196,7 @@ const DescriptionTooltip: React.FC<DescriptionTooltipProps> = ({
                 </Box>
             </Box>
         ),
-        [description, system, categoryNames, fsr_no, store_code, store_name, address, powerform_full_name, powerform_employee_id, powerform_email, powerform_company_number, powerform_imei, service_logs_mobile_no, service_logs_mobile_model, service_logs_mobile_serial_no, service_logs_imei, knox_full_name, knox_employee_id, knox_email, knox_company_mobile_number, knox_mobile_imei, theme]
+        [description, system, categoryNames, fsr_no, store_code, store_name, address, powerform_full_name, powerform_employee_id, powerform_email, powerform_company_number, powerform_imei, powerform_store_code, powerform_store_name, powerform_store_address, powerform_store_ownership, powerform_store_type, service_logs_mobile_no, service_logs_mobile_model, service_logs_mobile_serial_no, service_logs_imei, knox_full_name, knox_employee_id, knox_email, knox_company_mobile_number, knox_mobile_imei, theme]
     );
 
     return (

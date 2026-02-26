@@ -14,6 +14,11 @@ export interface PendingTicketResponse {
         powerform_email: string;
         powerform_company_number: string;
         powerform_imei: string;
+        powerform_store_code: string;
+        powerform_store_name: string;
+        powerform_store_address: string;
+        powerform_store_ownership: string;
+        powerform_store_type: string;
         service_logs_mobile_no: string;
         service_logs_mobile_model: string;
         service_logs_mobile_serial_no: string;

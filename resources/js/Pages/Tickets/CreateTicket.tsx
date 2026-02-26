@@ -49,6 +49,10 @@ const requiresKnoxChangeOwnershipFields = (systemName?: string | null, labels?: 
     normalizeSystemName(systemName) === "knox" &&
     !!labels?.some((label) => label.toLowerCase().includes("change ownership"));
 
+const requiresPowerFormAdditionalNewStoreFields = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "power form" &&
+    !!labels?.some((label) => label.toLowerCase().trim() === "additional new store");
+
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
     {
@@ -106,6 +110,11 @@ const CreateTicket = forwardRef<
         powerform_email: "",
         powerform_company_number: "",
         powerform_imei: "",
+        powerform_store_code: "",
+        powerform_store_name: "",
+        powerform_store_address: "",
+        powerform_store_ownership: "",
+        powerform_store_type: "",
         service_logs_mobile_no: "",
         service_logs_mobile_model: "",
         service_logs_mobile_serial_no: "",
@@ -190,6 +199,11 @@ const CreateTicket = forwardRef<
             powerform_email: "",
             powerform_company_number: "",
             powerform_imei: "",
+            powerform_store_code: "",
+            powerform_store_name: "",
+            powerform_store_address: "",
+            powerform_store_ownership: "",
+            powerform_store_type: "",
             service_logs_mobile_no: "",
             service_logs_mobile_model: "",
             service_logs_mobile_serial_no: "",
@@ -212,6 +226,11 @@ const CreateTicket = forwardRef<
         setValue('powerform_email', "");
         setValue('powerform_company_number', "");
         setValue('powerform_imei', "");
+        setValue('powerform_store_code', "");
+        setValue('powerform_store_name', "");
+        setValue('powerform_store_address', "");
+        setValue('powerform_store_ownership', "");
+        setValue('powerform_store_type', "");
         setValue('service_logs_mobile_no', "");
         setValue('service_logs_mobile_model', "");
         setValue('service_logs_mobile_serial_no', "");
@@ -328,6 +347,14 @@ const CreateTicket = forwardRef<
                 submitData.append('powerform_imei', data.powerform_imei || "");
             }
 
+            if (requiresPowerFormAdditionalNewStoreFields(data.system_name, data.category_labels)) {
+                submitData.append('powerform_store_code', data.powerform_store_code || "");
+                submitData.append('powerform_store_name', data.powerform_store_name || "");
+                submitData.append('powerform_store_address', data.powerform_store_address || "");
+                submitData.append('powerform_store_ownership', data.powerform_store_ownership || "");
+                submitData.append('powerform_store_type', data.powerform_store_type || "");
+            }
+
             if (requiresAccountLockedFields(data.system_name, data.category_labels)) {
                 submitData.append('powerform_email', data.powerform_email || "");
                 submitData.append('powerform_company_number', data.powerform_company_number || "");
@@ -397,6 +424,11 @@ const CreateTicket = forwardRef<
             setValue('powerform_email', "");
             setValue('powerform_company_number', "");
             setValue('powerform_imei', "");
+            setValue('powerform_store_code', "");
+            setValue('powerform_store_name', "");
+            setValue('powerform_store_address', "");
+            setValue('powerform_store_ownership', "");
+            setValue('powerform_store_type', "");
         }
 
         if (normalizeSystemName(newValue?.label) !== "service logs system") {

@@ -71,6 +71,15 @@ class StoreTicketRequest extends FormRequest
                     $rules['powerform_company_number'] = ['required', 'string', 'min:11', 'max:255'];
                     $rules['powerform_imei'] = ['required', 'string', 'min:15', 'max:255'];
                 }
+
+                // CHECK IF ADDITIONAL NEW STORE IS SELECTED (REQUIRES POWERFORM STORE FIELDS)
+                if ($this->checkIfRequiresPowerFormAdditionalNewStoreFields()) {
+                    $rules['powerform_store_code'] = ['required', 'string', 'min:3', 'max:50'];
+                    $rules['powerform_store_name'] = ['required', 'string', 'min:3', 'max:100'];
+                    $rules['powerform_store_address'] = ['required', 'string', 'min:10', 'max:510'];
+                    $rules['powerform_store_ownership'] = ['required', 'string', 'min:2', 'max:100'];
+                    $rules['powerform_store_type'] = ['required', 'string', 'min:2', 'max:100'];
+                }
             }
 
             // CHECK IF SYSTEM IS "Service Logs System" AND HAS "Location Error" CATEGORY
@@ -165,6 +174,23 @@ class StoreTicketRequest extends FormRequest
         ];
 
         return !empty(array_intersect($selectedCategories, $requiredCategoryNames));
+    }
+
+    // CHECK IF POWER FORM ADDITIONAL NEW STORE FIELDS ARE REQUIRED
+    private function checkIfRequiresPowerFormAdditionalNewStoreFields(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        return in_array('additional new store', $selectedCategories);
     }
 
     // CHECK IF ACCOUNT LOCKED FIELDS ARE REQUIRED
@@ -274,6 +300,21 @@ class StoreTicketRequest extends FormRequest
             'powerform_imei.required' => 'The IMEI is required for Power Form tickets.',
             'powerform_imei.min' => 'The IMEI must be at least 15 characters long.',
             'powerform_imei.max' => 'The IMEI must not exceed 255 characters.',
+            'powerform_store_code.required' => 'The store code is required for Power Form Additional New Store requests.',
+            'powerform_store_code.min' => 'The store code must be at least 3 characters long.',
+            'powerform_store_code.max' => 'The store code must not exceed 50 characters.',
+            'powerform_store_name.required' => 'The store name is required for Power Form Additional New Store requests.',
+            'powerform_store_name.min' => 'The store name must be at least 3 characters long.',
+            'powerform_store_name.max' => 'The store name must not exceed 100 characters.',
+            'powerform_store_address.required' => 'The store address is required for Power Form Additional New Store requests.',
+            'powerform_store_address.min' => 'The store address must be at least 10 characters long.',
+            'powerform_store_address.max' => 'The store address must not exceed 510 characters.',
+            'powerform_store_ownership.required' => 'The ownership is required for Power Form Additional New Store requests.',
+            'powerform_store_ownership.min' => 'The ownership must be at least 2 characters long.',
+            'powerform_store_ownership.max' => 'The ownership must not exceed 100 characters.',
+            'powerform_store_type.required' => 'The store type is required for Power Form Additional New Store requests.',
+            'powerform_store_type.min' => 'The store type must be at least 2 characters long.',
+            'powerform_store_type.max' => 'The store type must not exceed 100 characters.',
             'service_logs_mobile_no.required' => 'The mobile number is required for Location Error requests.',
             'service_logs_mobile_no.min' => 'The mobile number must be at least 11 characters long.',
             'service_logs_mobile_no.max' => 'The mobile number must not exceed 25 characters.',

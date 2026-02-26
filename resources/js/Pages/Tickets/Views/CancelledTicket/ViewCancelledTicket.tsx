@@ -329,7 +329,12 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
                 currentTicket.powerform_employee_id ||
                 currentTicket.powerform_email ||
                 currentTicket.powerform_company_number ||
-                currentTicket.powerform_imei ? (
+                currentTicket.powerform_imei ||
+                currentTicket.powerform_store_code ||
+                currentTicket.powerform_store_name ||
+                currentTicket.powerform_store_address ||
+                currentTicket.powerform_store_ownership ||
+                currentTicket.powerform_store_type ? (
                     <>
                         {currentTicket.powerform_full_name && (
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
@@ -354,6 +359,31 @@ const ViewCancelledTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ 
                         {currentTicket.powerform_imei && (
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
                                 <strong>IMEI:</strong> {currentTicket.powerform_imei}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_store_code && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Store Code:</strong> {currentTicket.powerform_store_code}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_store_name && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Store Name:</strong> {currentTicket.powerform_store_name}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_store_address && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Store Address:</strong> {currentTicket.powerform_store_address}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_store_ownership && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Ownership:</strong> {currentTicket.powerform_store_ownership}
+                            </Typography>
+                        )}
+                        {currentTicket.powerform_store_type && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
+                                <strong>Store Type:</strong> {currentTicket.powerform_store_type}
                             </Typography>
                         )}
                     </>

@@ -37,11 +37,13 @@ const PendingTickets: React.FC<{ userRoles?: string[] }> = ({ userRoles = [] }) 
         data: pendingTickets,
         isError: isErrorPendingTicketsData,
         isPending: isPendingTicketsData,
+        isFetching: isFetchingPendingTicketsData,
     } = useDynamicQuery<PendingTicketResponse>(
         ["getPendingTickets"],
         fetchPendingTicketsData,
         {
-            refetchInterval: 1000 * 60 * 1, // UPDATE PENDING LISTS EVERY 1 MINUTE
+            refetchInterval: 60000,
+            refetchIntervalInBackground: true,
         }
     );
 

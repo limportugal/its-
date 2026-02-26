@@ -145,6 +145,16 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
         );
     }, [systemName, selectedCategories, categoryOptions]);
 
+    // DETERMINE IF POWERFORM ADDITIONAL NEW STORE FIELDS SHOULD BE SHOWN
+    const showPowerFormAdditionalNewStoreFields = useMemo(() => {
+        if (normalizeText(systemName) !== "power form") return false;
+
+        return selectedCategories?.some((categoryId) => {
+            const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === normalizeText(categoryId));
+            return category && normalizeText(category.label) === "additional new store";
+        }) || false;
+    }, [systemName, selectedCategories, categoryOptions]);
+
     // DETERMINE IF ACCOUNT LOCKED FIELDS SHOULD BE SHOWN
     // ONLY SHOW IF ACCOUNT LOCKED IS SELECTED AND NO OTHER POWERFORM CATEGORIES ARE SELECTED
     const showAccountLockedFields = useMemo(() => {
@@ -567,6 +577,72 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                             disabled={ticketIsPending}
                                             fullWidth
                                             icon={<PhoneAndroidIcon />}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
+                            {/* CONDITIONAL POWERFORM ADDITIONAL NEW STORE FIELDS */}
+                            {showPowerFormAdditionalNewStoreFields && (
+                                <>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_store_code"
+                                            label="STORE CODE"
+                                            placeholder="Enter store code"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<QrCode2Icon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_store_name"
+                                            label="STORE NAME"
+                                            placeholder="Enter store name"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<StorefrontIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_store_address"
+                                            label="STORE ADDRESS"
+                                            placeholder="Enter store address"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<LocationOnIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_store_ownership"
+                                            label="OWNERSHIP"
+                                            placeholder="Enter ownership"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<BadgeIcon />}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <MuiTextField
+                                            name="powerform_store_type"
+                                            label="STORE TYPE"
+                                            placeholder="Enter store type"
+                                            control={control}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            fullWidth
+                                            icon={<TagIcon />}
                                         />
                                     </Grid>
                                 </>
