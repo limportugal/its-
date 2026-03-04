@@ -1,5 +1,6 @@
 import { route } from "ziggy-js";
 import axios from "axios";
+import { apiRequest } from "@/Reuseable/helpers/apiRequests";
 
 export interface RestoreTicketResponse {
     success: boolean;
@@ -11,9 +12,18 @@ export interface RestoreTicketResponse {
     };
 }
 
+const restoreTicketApiClient = axios.create({
+    withCredentials: true,
+});
+
 export const restoreTicket = async (
     uuid: string
 ): Promise<RestoreTicketResponse> => {
-    const response = await axios.patch(route('tickets.restoreTicketByUuid', { uuid }), {});
-    return response.data;
+    const url = route('tickets.restoreTicketByUuid', { uuid });
+    return apiRequest<RestoreTicketResponse>(
+        restoreTicketApiClient,
+        "patch",
+        url,
+        {},
+    );
 };

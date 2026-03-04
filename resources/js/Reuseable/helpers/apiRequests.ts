@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosError } from "axios";
+import { fetchFreshCsrfToken, getCsrfToken } from "@/Reuseable/helpers/csrf";
 
 interface ApiError extends Error {
     status?: number; // HTTP status code
@@ -8,7 +9,7 @@ interface ApiError extends Error {
     response?: any; // Full response object
 }
 
-const hardReloadToHome = async (): Promise<void> => {
+const hardReloadToLogin = async (): Promise<void> => {
     try {
         window.sessionStorage.clear();
     } catch {}
@@ -24,7 +25,12 @@ const hardReloadToHome = async (): Promise<void> => {
         } catch {}
     }
 
-    window.location.replace("/");
+    window.location.replace("/login");
+};
+
+const isMutationMethod = (method: string): boolean => {
+    const normalized = method.toUpperCase();
+    return normalized === "POST" || normalized === "PUT" || normalized === "PATCH" || normalized === "DELETE";
 };
 
 const shouldSkipSessionRedirect = (status: number, url: string): boolean => {
@@ -57,12 +63,20 @@ export const apiRequest = async <T>(
     data?: any,
     params?: any,
     timeout: number = 15000,
+    csrfRetried: boolean = false,
 ): Promise<T> => {
     try {
         const headers: Record<string, string> = {
             "X-Requested-With": "XMLHttpRequest",
             "Accept": "application/json",
         };
+
+        if (isMutationMethod(method)) {
+            const csrfToken = getCsrfToken();
+            if (csrfToken) {
+                headers["X-CSRF-TOKEN"] = csrfToken;
+            }
+        }
 
         const response = await apiClient.request<T>({
             method,
@@ -76,13 +90,34 @@ export const apiRequest = async <T>(
         return response.data;
     } catch (err: unknown) {
         if (err instanceof AxiosError) {
+            const status = err.response?.status;
 
-            // Handle session expiry errors with a hard redirect.
+            // Try to recover once from CSRF token mismatch by fetching a fresh token.
+            if (status === 419 && !csrfRetried && isMutationMethod(method)) {
+                const freshToken = await fetchFreshCsrfToken();
+
+                if (freshToken) {
+                    apiClient.defaults.headers.common["X-CSRF-TOKEN"] = freshToken;
+
+                    return apiRequest<T>(
+                        apiClient,
+                        method,
+                        url,
+                        data,
+                        params,
+                        timeout,
+                        true,
+                    );
+                }
+            }
+
+            // Handle auth session expiry with a hard redirect.
             if (
                 err.response &&
-                !shouldSkipSessionRedirect(err.response.status, url)
+                status === 401 &&
+                !shouldSkipSessionRedirect(status, url)
             ) {
-                await hardReloadToHome();
+                await hardReloadToLogin();
             }
 
             // Extract the actual error message from Laravel response
