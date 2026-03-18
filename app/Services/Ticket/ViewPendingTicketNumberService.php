@@ -25,6 +25,7 @@ class ViewPendingTicketNumberService
             'fsr_no',
             'store_code',
             'store_name',
+            'client_name',
             'store_address',
             'powerform_full_name',
             'powerform_employee_id',

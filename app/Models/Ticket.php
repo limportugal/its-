@@ -26,6 +26,7 @@ class Ticket extends Model
         // STORE FIELDS (FOR CUSTOMER NOT FOUND)
         'store_code',
         'store_name',
+        'client_name',
         'store_address',
         
         // FSR FIELD (FOR FSR ONLINE)

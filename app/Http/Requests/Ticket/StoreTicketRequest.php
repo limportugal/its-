@@ -27,6 +27,13 @@ class StoreTicketRequest extends FormRequest
             'attachment'        => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf', 'max:10240'], // 10MB max
         ];
 
+        // CHECK IF "Additional Store" CATEGORY IS SELECTED (client_name required)
+        if ($this->checkIfRequiresClientName()) {
+            $rules['client_name'] = ['required', 'string', 'min:2', 'max:100'];
+        } else {
+            $rules['client_name'] = ['nullable', 'string', 'max:100'];
+        }
+
         // CHECK IF SYSTEM IS "Customer Not Found"
         if ($this->has('system_id')) {
             $system = System::find($this->input('system_id'));
@@ -257,6 +264,23 @@ class StoreTicketRequest extends FormRequest
 
         // Check if any selected category contains "change ownership"
         return collect($selectedCategories)->contains(fn ($name) => str_contains($name, 'change ownership'));
+    }
+
+    // CHECK IF "Additional Store" CATEGORY IS SELECTED (requires client_name)
+    private function checkIfRequiresClientName(): bool
+    {
+        $categories = $this->input('categories', []);
+
+        if (empty($categories)) {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim($name)))
+            ->toArray();
+
+        return in_array('additional store', $selectedCategories);
     }
 
     // NORMALIZE SYSTEM NAME FOR CONSISTENCY

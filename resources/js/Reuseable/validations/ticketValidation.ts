@@ -31,6 +31,7 @@ export const formSchema = z
         attachment: z.instanceof(File).nullable().optional(),
         store_code: z.string().optional(),
         store_name: z.string().optional(),
+        client_name:z.string().optional(),
         store_address: z.string().optional(),
         fsr_no: z.string().optional(),
         system_name: z.string().optional(),
@@ -287,7 +288,7 @@ export const formSchema = z
 
         const requiresPowerFormAdditionalNewStoreFields =
             normalizeSystemName(data.system_name) === "power form" &&
-            data.category_labels?.some((label) => normalize(label) === "additional new store");
+            data.category_labels?.some((label) => normalize(label) === "Additional store");
 
         if (requiresPowerFormAdditionalNewStoreFields) {
             if (!data.powerform_store_code || data.powerform_store_code.trim() === "") {

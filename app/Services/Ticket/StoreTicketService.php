@@ -22,6 +22,8 @@ class StoreTicketService
 
             // REMOVE ATTACHMENT FIELD FROM TICKET DATA SINCE WE'LL HANDLE IT SEPARATELY
             unset($ticketData['attachment']);
+            unset($ticketData['category_labels']);
+            unset($ticketData['system_name']);
 
             // CREATE THE TICKET
             $ticket = Ticket::create($ticketData);

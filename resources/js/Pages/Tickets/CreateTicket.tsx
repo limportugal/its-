@@ -20,7 +20,7 @@ import { toCapitalizeName } from "@/Reuseable/utils/capitalize";
 import { formSchema, FormValues } from "@/Reuseable/validations/ticketValidation";
 import { useDynamicMutation } from "@/Reuseable/hooks/useDynamicMutation";
 import { Ticket } from "@/Reuseable/types/ticketTypes";
-
+ 
 // CREATE TICKET DIALOG
 import CreateTicketDialog from "@/Pages/Tickets/TicketComponents/CreateTicketDialog";
 
@@ -45,13 +45,16 @@ const requiresStoreFields = (systemName?: string | null, labels?: string[]) =>
     systemName === "Customer Not Found" ||
     (systemName === "FSR Online" && !!labels?.includes("Customer Not Found"));
 
+const requireClientNameField = (labels?: string[]) => 
+    !!labels?.some((label) => label.toLowerCase().trim() === "additional store");
+
 const requiresKnoxChangeOwnershipFields = (systemName?: string | null, labels?: string[]) =>
     normalizeSystemName(systemName) === "knox" &&
     !!labels?.some((label) => label.toLowerCase().includes("change ownership"));
 
 const requiresPowerFormAdditionalNewStoreFields = (systemName?: string | null, labels?: string[]) =>
     normalizeSystemName(systemName) === "power form" &&
-    !!labels?.some((label) => label.toLowerCase().trim() === "additional new store");
+    !!labels?.some((label) => label.toLowerCase().trim() === "additional store");
 
 // CREATE TICKET COMPONENT
 const CreateTicket = forwardRef<
@@ -101,6 +104,7 @@ const CreateTicket = forwardRef<
         priority_id: ticket?.priority_id ? String(ticket.priority_id) : "",
         store_code: "",
         store_name: "",
+        client_name: "",
         store_address: "",
         fsr_no: "",
         system_name: "",
@@ -190,6 +194,7 @@ const CreateTicket = forwardRef<
             priority_id: "",
             store_code: "",
             store_name: "",
+            client_name:"",
             store_address: "",
             fsr_no: "",
             system_name: "",
@@ -217,6 +222,7 @@ const CreateTicket = forwardRef<
         setValue('priority_id', "");
         setValue('store_code', "");
         setValue('store_name', "");
+        setValue('client_name', "");
         setValue('store_address', "");
         setValue('fsr_no', "");
         setValue('system_name', "");
@@ -374,6 +380,10 @@ const CreateTicket = forwardRef<
                 submitData.append('knox_email', data.knox_email || "");
                 submitData.append('knox_company_mobile_number', data.knox_company_mobile_number || "");
                 submitData.append('knox_mobile_imei', data.knox_mobile_imei || "");
+            }
+
+            if (requireClientNameField(data.category_labels)) {
+                submitData.append('client_name', data.client_name || "")
             }
 
             // HANDLE FILE ATTACHMENT

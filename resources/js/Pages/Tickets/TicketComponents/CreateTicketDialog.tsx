@@ -66,10 +66,16 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 }) => {
     const showSkeleton = isPendingPriorities || isPendingServiceCenters || isPendingSystems;
 
+    // const normalizeText = (value?: string | number | null) => {
+    //     if (value === undefined || value === null) return "";
+    //     return String(value).trim().toLowerCase();
+    // };
+
     const normalizeText = (value?: string | number | null) => {
-        if (value === undefined || value === null) return "";
-        return String(value).trim().toLowerCase();
+    if (value === undefined || value === null) return "";
+    return String(value).toLowerCase().replace(/\s+/g, " ").trim();
     };
+
 
     // WATCH system_name TO CONDITIONALLY SHOW STORE FIELDS
     const systemName = useWatch({
@@ -104,6 +110,14 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
         return false;
     }, [systemName, selectedCategories, categoryOptions]);
+
+    const showClientNameField = useMemo(() => {
+        return selectedCategories?.some((categoryId) => {
+            const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === (categoryId));
+            return normalizeText(category?.label) === "additional store";
+        }) || false;
+    }, [selectedCategories, categoryOptions]);
+
     
     // DETERMINE IF FSR NO FIELD SHOULD BE SHOWN
     // Show when FSR Online is selected AND one of the specific categories is selected
@@ -151,7 +165,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
         return selectedCategories?.some((categoryId) => {
             const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === normalizeText(categoryId));
-            return category && normalizeText(category.label) === "additional new store";
+            return normalizeText(category?.label) === "Additional store";
         }) || false;
     }, [systemName, selectedCategories, categoryOptions]);
 
@@ -199,6 +213,10 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
             return category && normalizeText(category.label).includes("change ownership");
         }) || false;
     }, [systemName, selectedCategories, categoryOptions]);
+
+    console.log("selectedCategories", selectedCategories);
+console.log("categoryOptions", categoryOptions);
+console.log("showClientNameField", showClientNameField);
 
     return (
         <Dialog
@@ -498,6 +516,21 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
                                         />
                                     </Grid>
                                 </>
+                            )}
+                            {/* CONDITIONAL CLIENT NAME FIELD - ONLY SHOW IF "additional store" IS SELECTED in Category */}
+                            {showClientNameField && (
+                                <Grid size={{ xs: 12, sm: 12, md: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                    <MuiTextField
+                                        name="client_name"
+                                        label="CLIENT NAME"
+                                        placeholder="Enter client name"
+                                        control={control}
+                                        errors={errors}
+                                        disabled={ticketIsPending}
+                                        fullWidth
+                                        icon={<PersonIcon />}
+                                    />
+                                </Grid>
                             )}
 
                             {/* CONDITIONAL FSR NO FIELD - ONLY SHOW IF "FSR Online" IS SELECTED */}

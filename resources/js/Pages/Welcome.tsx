@@ -21,7 +21,7 @@ export default function Welcome() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // TRIGGER ANIMATION AFTER MOUNT
+        // TRIGGER ANIMATION AFTER MOUNT 
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 50);
