@@ -41,7 +41,7 @@ const UserInfoTooltip: React.FC<UserInfoTooltipProps> = ({
     );
     const open = Boolean(anchorEl);
     const containerRef = useRef<HTMLDivElement>(null);
-    const positionTimeoutRef = useRef<number | null>(null);
+    const positionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const handlePopoverOpen = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
