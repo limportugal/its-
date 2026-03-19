@@ -288,7 +288,7 @@ export const formSchema = z
 
         const requiresPowerFormAdditionalNewStoreFields =
             normalizeSystemName(data.system_name) === "power form" &&
-            data.category_labels?.some((label) => normalize(label) === "Additional store");
+            data.category_labels?.some((label) => normalize(label) === "additional store");
 
         if (requiresPowerFormAdditionalNewStoreFields) {
             if (!data.powerform_store_code || data.powerform_store_code.trim() === "") {

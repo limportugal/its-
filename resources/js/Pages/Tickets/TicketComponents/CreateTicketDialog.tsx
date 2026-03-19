@@ -165,7 +165,7 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
 
         return selectedCategories?.some((categoryId) => {
             const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === normalizeText(categoryId));
-            return normalizeText(category?.label) === "Additional store";
+            return normalizeText(category?.label) === "additional store";
         }) || false;
     }, [systemName, selectedCategories, categoryOptions]);
 
