@@ -30,7 +30,14 @@ interface CustomTextFieldProps<T extends FieldValues> {
     sx?: any;
 }
 
-const MuiTextField = React.forwardRef<HTMLInputElement, CustomTextFieldProps<any>>((props, ref) => {
+type MuiTextFieldComponent = <T extends FieldValues>(
+    props: CustomTextFieldProps<T> & React.RefAttributes<HTMLInputElement>
+) => React.ReactElement | null;
+
+const MuiTextFieldBase = React.forwardRef(function MuiTextFieldInner<T extends FieldValues>(
+    props: CustomTextFieldProps<T>,
+    ref: React.ForwardedRef<HTMLInputElement>
+) {
     const {
         id,
         name,
@@ -161,6 +168,8 @@ const MuiTextField = React.forwardRef<HTMLInputElement, CustomTextFieldProps<any
     );
 });
 
-MuiTextField.displayName = 'MuiTextField';
+MuiTextFieldBase.displayName = 'MuiTextField';
+
+const MuiTextField = MuiTextFieldBase as MuiTextFieldComponent;
 
 export default MuiTextField;

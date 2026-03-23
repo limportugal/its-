@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Controller, Control } from 'react-hook-form';
+import { Controller, Control, FieldValues, Path } from 'react-hook-form';
 import Swal from 'sweetalert2';
 
 // MUI COMPONENTS
@@ -20,10 +20,10 @@ import AttachmentViewerDialog from '@/Pages/Tickets/TicketComponents/AttachmentV
 import FileSizeAlert from './FileSizeAlert';
 import FileTypeAlert from './FileTypeAlert';
 
-interface FileUploadFieldProps {
-    name: string;
+interface FileUploadFieldProps<T extends FieldValues> {
+    name: Path<T>;
     label: string;
-    control: Control<any>;
+    control: Control<T>;
     errors?: Record<string, any>;
     disabled?: boolean;
     helperText?: React.ReactNode;
@@ -43,7 +43,11 @@ const getFileName = (value: any): string | null => {
     return null;
 };
 
-const FileUploadField: React.FC<FileUploadFieldProps> = ({
+type FileUploadFieldComponent = <T extends FieldValues>(
+    props: FileUploadFieldProps<T>
+) => React.ReactElement;
+
+const FileUploadField = <T extends FieldValues>({
     name,
     label,
     control,
@@ -52,7 +56,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
     helperText,
     sx = {},
     inputRef
-}) => {
+}: FileUploadFieldProps<T>) => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const fileInput = inputRef;
@@ -76,10 +80,10 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
             <Controller
                 name={name}
                 control={control}
-                defaultValue={null}
                 render={({ field: { onChange, onBlur, value } }) => {
-                    const fileName = getFileName(value);
-                    const hasFile = value instanceof File || (typeof value === 'string' && value);
+                    const attachmentValue = value as File | string | null | undefined;
+                    const fileName = getFileName(attachmentValue);
+                    const hasFile = attachmentValue instanceof File || (typeof attachmentValue === 'string' && attachmentValue);
 
                     const handleButtonClick = () => {
                         fileInput.current?.click();
@@ -171,7 +175,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
                                                         variant="outlined"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleViewFile(value);
+                                                            handleViewFile(attachmentValue);
                                                         }}
                                                         disabled={disabled}
                                                         size='small'
@@ -308,4 +312,4 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
     );
 };
 
-export default FileUploadField; 
+export default FileUploadField as FileUploadFieldComponent;

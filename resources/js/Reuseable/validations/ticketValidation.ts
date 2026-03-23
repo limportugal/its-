@@ -314,7 +314,7 @@ export const formSchema = z
             if (!data.powerform_store_name || data.powerform_store_name.trim() === "") {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "Store name is required for Additional New Store requests.",
+                    message: "Store name is required for Additional Store requests.",
                     path: ["powerform_store_name"],
                 });
             } else if (data.powerform_store_name.length < 3) {
@@ -331,10 +331,19 @@ export const formSchema = z
                 });
             }
 
+            if (!data.client_name || data.client_name.trim() == "" ) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Client name is required for Additional Store requests.",
+                    path: ["client_name"],
+                });
+            }
+
+
             if (!data.powerform_store_address || data.powerform_store_address.trim() === "") {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "Store address is required for Additional New Store requests.",
+                    message: "Store address is required for Additional Store requests.",
                     path: ["powerform_store_address"],
                 });
             } else if (data.powerform_store_address.length < 10) {
@@ -354,7 +363,7 @@ export const formSchema = z
             if (!data.powerform_store_ownership || data.powerform_store_ownership.trim() === "") {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "Ownership is required for Additional New Store requests.",
+                    message: "Ownership is required for Additional Store requests.",
                     path: ["powerform_store_ownership"],
                 });
             } else if (data.powerform_store_ownership.length < 2) {
@@ -374,7 +383,7 @@ export const formSchema = z
             if (!data.powerform_store_type || data.powerform_store_type.trim() === "") {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: "Store type is required for Additional New Store requests.",
+                    message: "Store type is required for Additional Store requests.",
                     path: ["powerform_store_type"],
                 });
             } else if (data.powerform_store_type.length < 2) {
