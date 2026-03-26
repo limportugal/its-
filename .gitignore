@@ -25,7 +25,6 @@ yarn-error.log
 /.idea
 /.vscode
 app.txt
-.env
 .env_prod.txt
 .env_local.txt
 env_prod.txt
@@ -39,9 +38,6 @@ dist/
 .next/
 .vite/public/build/
 
-# Exclude vite.config.js
-vite.config.js
-
 # Exclude backup directories
 config_bkup/
 
@@ -53,3 +49,4 @@ config_bkup/
 
 # Exclude .ftl files (PDF.js locale files)
 *.ftl
+.env

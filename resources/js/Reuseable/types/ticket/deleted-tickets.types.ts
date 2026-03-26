@@ -14,6 +14,7 @@ export interface DeletedTicketResponse {
         powerform_email: string | null;
         powerform_company_number: string | null;
         powerform_imei: string | null;
+        powerform_client_name: string | null;
         powerform_store_code: string | null;
         powerform_store_name: string | null;
         powerform_store_address: string | null;

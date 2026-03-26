@@ -41,6 +41,7 @@ export const formSchema = z
         powerform_email: z.string().optional(),
         powerform_company_number: z.string().optional(),
         powerform_imei: z.string().optional(),
+        powerform_client_name: z.string().optional(),
         powerform_store_code: z.string().optional(),
         powerform_store_name: z.string().optional(),
         powerform_store_address: z.string().optional(),
@@ -331,11 +332,11 @@ export const formSchema = z
                 });
             }
 
-            if (!data.client_name || data.client_name.trim() == "" ) {
+            if (!data.powerform_client_name || data.powerform_client_name.trim() == "" ) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
                     message: "Client name is required for Additional Store requests.",
-                    path: ["client_name"],
+                    path: ["powerform_client_name"],
                 });
             }
 

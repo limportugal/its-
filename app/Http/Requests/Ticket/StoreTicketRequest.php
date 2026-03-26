@@ -27,12 +27,7 @@ class StoreTicketRequest extends FormRequest
             'attachment'        => ['nullable', 'file', 'mimes:png,jpg,jpeg,pdf', 'max:10240'], // 10MB max
         ];
 
-        // CHECK IF "Additional Store" CATEGORY IS SELECTED (client_name required)
-        if ($this->checkIfRequiresClientName()) {
-            $rules['client_name'] = ['required', 'string', 'min:2', 'max:100'];
-        } else {
-            $rules['client_name'] = ['nullable', 'string', 'max:100'];
-        }
+        $rules['client_name'] = ['nullable', 'string', 'max:100'];
 
         // CHECK IF SYSTEM IS "Customer Not Found"
         if ($this->has('system_id')) {
@@ -81,11 +76,12 @@ class StoreTicketRequest extends FormRequest
 
                 // CHECK IF ADDITIONAL NEW STORE IS SELECTED (REQUIRES POWERFORM STORE FIELDS)
                 if ($this->checkIfRequiresPowerFormAdditionalNewStoreFields()) {
+                    $rules['powerform_client_name'] = ['required', 'string', 'min:2', 'max:100'];
                     $rules['powerform_store_code'] = ['required', 'string', 'min:3', 'max:50'];
                     $rules['powerform_store_name'] = ['required', 'string', 'min:3', 'max:100'];
                     $rules['powerform_store_address'] = ['required', 'string', 'min:10', 'max:510'];
-                    $rules['powerform_store_ownership'] = ['required', 'string', 'min:2', 'max:100'];
-                    $rules['powerform_store_type'] = ['required', 'string', 'min:2', 'max:100'];
+                    $rules['powerform_store_ownership'] = ['required', 'string', 'min:2', 'max:100', 'exists:ownerships,ownership_name'];
+                    $rules['powerform_store_type'] = ['required', 'string', 'min:2', 'max:100', 'exists:store_types,store_type_name'];
                 }
             }
 
@@ -197,7 +193,7 @@ class StoreTicketRequest extends FormRequest
             ->map(fn ($name) => strtolower(trim($name)))
             ->toArray();
 
-        return in_array('additional new store', $selectedCategories);
+        return in_array('additional new store', $selectedCategories) || in_array('additional store', $selectedCategories);
     }
 
     // CHECK IF ACCOUNT LOCKED FIELDS ARE REQUIRED
@@ -266,23 +262,6 @@ class StoreTicketRequest extends FormRequest
         return collect($selectedCategories)->contains(fn ($name) => str_contains($name, 'change ownership'));
     }
 
-    // CHECK IF "Additional Store" CATEGORY IS SELECTED (requires client_name)
-    private function checkIfRequiresClientName(): bool
-    {
-        $categories = $this->input('categories', []);
-
-        if (empty($categories)) {
-            return false;
-        }
-
-        $selectedCategories = Category::whereIn('id', $categories)
-            ->pluck('category_name')
-            ->map(fn ($name) => strtolower(trim($name)))
-            ->toArray();
-
-        return in_array('additional store', $selectedCategories);
-    }
-
     // NORMALIZE SYSTEM NAME FOR CONSISTENCY
     private function normalizeSystemName(?string $value): string
     {
@@ -324,6 +303,9 @@ class StoreTicketRequest extends FormRequest
             'powerform_imei.required' => 'The IMEI is required for Power Form tickets.',
             'powerform_imei.min' => 'The IMEI must be at least 15 characters long.',
             'powerform_imei.max' => 'The IMEI must not exceed 255 characters.',
+            'powerform_client_name.required' => 'The client name is required for Power Form Additional New Store requests.',
+            'powerform_client_name.min' => 'The client name must be at least 2 characters long.',
+            'powerform_client_name.max' => 'The client name must not exceed 100 characters.',
             'powerform_store_code.required' => 'The store code is required for Power Form Additional New Store requests.',
             'powerform_store_code.min' => 'The store code must be at least 3 characters long.',
             'powerform_store_code.max' => 'The store code must not exceed 50 characters.',

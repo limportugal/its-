@@ -26,6 +26,7 @@ class ViewDeletedTicketNumberService
             'powerform_email',
             'powerform_company_number',
             'powerform_imei',
+            'powerform_client_name',
             'powerform_store_code',
             'powerform_store_name',
             'powerform_store_address',

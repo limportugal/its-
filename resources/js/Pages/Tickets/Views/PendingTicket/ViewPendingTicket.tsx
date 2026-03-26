@@ -304,14 +304,6 @@ const ViewPendingTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
             icon: <ReportGmailerrorredOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
         },
         
-        ...(currentTicket.categories?.some(c =>
-            c.category_name.toLowerCase() === "additional store"
-        ) ? [{
-            label: "CLIENT NAME",
-            value: currentTicket.client_name || "No Client Name Provided",
-            icon: <ReportGmailerrorredOutlinedIcon sx={{ mr: { xs: 0.5, sm: 1 }, fontSize: { xs: 16, sm: 20 }, color: theme.palette.grey[600] }} />
-        }] as DetailField[] : []),
-
         {
             label: "FSR NO.",
             value: currentTicket.fsr_no || "Not specified",
@@ -349,6 +341,8 @@ const ViewPendingTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
                 currentTicket.powerform_email ||
                 currentTicket.powerform_company_number ||
                 currentTicket.powerform_imei ||
+                currentTicket.powerform_client_name ||
+                currentTicket.client_name ||
                 currentTicket.powerform_store_code ||
                 currentTicket.powerform_store_name ||
                 currentTicket.powerform_store_address ||
@@ -378,6 +372,11 @@ const ViewPendingTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ us
                         {currentTicket.powerform_imei && (
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
                                 <strong>IMEI:</strong> {currentTicket.powerform_imei}
+                            </Typography>
+                        )}
+                        {(currentTicket.powerform_client_name || currentTicket.client_name) && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Client Name:</strong> {currentTicket.powerform_client_name || currentTicket.client_name}
                             </Typography>
                         )}
                         {currentTicket.powerform_store_code && (

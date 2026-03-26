@@ -10,8 +10,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 // CREATE TICKET QUERIES & DROPDOWNS
-import { useCategoriesQuery, usePrioritiesQuery, useServiceCentersQuery, useSystemsQuery } from '@/Pages/Tickets/TicketQueries';
-import { useCategoryOptions, usePriorityOptions, useServiceCenterOptions, useSystemOptions } from '@/Pages/Tickets/TicketDropdowns';
+import { useCategoriesQuery, useOwnershipsQuery, usePrioritiesQuery, useServiceCentersQuery, useStoreTypesQuery, useSystemsQuery } from '@/Pages/Tickets/TicketQueries';
+import { useCategoryOptions, useOwnershipOptions, usePriorityOptions, useServiceCenterOptions, useStoreTypeOptions, useSystemOptions } from '@/Pages/Tickets/TicketDropdowns';
 
 // TYPES, API, HELPERS, UTILS & VALIDATION 
 import { createTicketData } from "@/Reuseable/api/ticket/create-ticket.api";
@@ -45,7 +45,8 @@ const requiresStoreFields = (systemName?: string | null, labels?: string[]) =>
     systemName === "Customer Not Found" ||
     (systemName === "FSR Online" && !!labels?.includes("Customer Not Found"));
 
-const requireClientNameField = (labels?: string[]) => 
+const requireClientNameField = (systemName?: string | null, labels?: string[]) =>
+    normalizeSystemName(systemName) === "power form" &&
     !!labels?.some((label) => label.toLowerCase().trim() === "additional store");
 
 const requiresKnoxChangeOwnershipFields = (systemName?: string | null, labels?: string[]) =>
@@ -114,6 +115,7 @@ const CreateTicket = forwardRef<
         powerform_email: "",
         powerform_company_number: "",
         powerform_imei: "",
+        powerform_client_name: "",
         powerform_store_code: "",
         powerform_store_name: "",
         powerform_store_address: "",
@@ -166,11 +168,25 @@ const CreateTicket = forwardRef<
         isPending: isPendingSystems,
     } = useSystemsQuery(open);
 
+    // FETCH OWNERSHIP DATA FOR DROPDOWN - ONLY WHEN DIALOG IS OPEN
+    const {
+        data: ownershipData,
+        isPending: isPendingOwnerships,
+    } = useOwnershipsQuery(open);
+
+    // FETCH STORE TYPE DATA FOR DROPDOWN - ONLY WHEN DIALOG IS OPEN
+    const {
+        data: storeTypeData,
+        isPending: isPendingStoreTypes,
+    } = useStoreTypesQuery(open);
+
     // DROPDOWN OPTIONS
     const priorityOptions = usePriorityOptions(priorityData);
     const serviceCenterOptions = useServiceCenterOptions(serviceCenterData);
     const systemOptions = useSystemOptions(systemData);
     const categoryOptions = useCategoryOptions(categoriesData, system?.value);
+    const ownershipOptions = useOwnershipOptions(ownershipData);
+    const storeTypeOptions = useStoreTypeOptions(storeTypeData);
 
     // FORCE RE-MOUNT OF INPUTS AFTER CLEAR TO RESET INTERNAL AUTOCOMPLETE INPUT STATE
     const [formResetKey, setFormResetKey] = useState<number>(0);
@@ -204,6 +220,7 @@ const CreateTicket = forwardRef<
             powerform_email: "",
             powerform_company_number: "",
             powerform_imei: "",
+            powerform_client_name: "",
             powerform_store_code: "",
             powerform_store_name: "",
             powerform_store_address: "",
@@ -232,6 +249,7 @@ const CreateTicket = forwardRef<
         setValue('powerform_email', "");
         setValue('powerform_company_number', "");
         setValue('powerform_imei', "");
+        setValue('powerform_client_name', "");
         setValue('powerform_store_code', "");
         setValue('powerform_store_name', "");
         setValue('powerform_store_address', "");
@@ -354,6 +372,7 @@ const CreateTicket = forwardRef<
             }
 
             if (requiresPowerFormAdditionalNewStoreFields(data.system_name, data.category_labels)) {
+                submitData.append('powerform_client_name', data.powerform_client_name || "");
                 submitData.append('powerform_store_code', data.powerform_store_code || "");
                 submitData.append('powerform_store_name', data.powerform_store_name || "");
                 submitData.append('powerform_store_address', data.powerform_store_address || "");
@@ -382,8 +401,9 @@ const CreateTicket = forwardRef<
                 submitData.append('knox_mobile_imei', data.knox_mobile_imei || "");
             }
 
-            if (requireClientNameField(data.category_labels)) {
-                submitData.append('client_name', data.client_name || "")
+            if (requireClientNameField(data.system_name, data.category_labels)) {
+                // Keep legacy client_name in payload for backward compatibility.
+                submitData.append('client_name', data.powerform_client_name || data.client_name || "");
             }
 
             // HANDLE FILE ATTACHMENT
@@ -434,6 +454,7 @@ const CreateTicket = forwardRef<
             setValue('powerform_email', "");
             setValue('powerform_company_number', "");
             setValue('powerform_imei', "");
+            setValue('powerform_client_name', "");
             setValue('powerform_store_code', "");
             setValue('powerform_store_name', "");
             setValue('powerform_store_address', "");
@@ -458,7 +479,7 @@ const CreateTicket = forwardRef<
     };
 
     // RENDER TICKET COMPONENTS
-    const isLoading = isPendingCategories || isPendingPriorities || isPendingServiceCenters || isPendingSystems;
+    const isLoading = isPendingCategories || isPendingPriorities || isPendingServiceCenters || isPendingSystems || isPendingOwnerships || isPendingStoreTypes;
 
     // EXPOSE FUNCTIONS TO PARENT COMPONENT
     useImperativeHandle(_ref, () => ({
@@ -490,6 +511,10 @@ const CreateTicket = forwardRef<
             isPendingServiceCenters={isPendingServiceCenters}
             systemOptions={systemOptions}
             isPendingSystems={isPendingSystems}
+            ownershipOptions={ownershipOptions}
+            storeTypeOptions={storeTypeOptions}
+            isPendingOwnerships={isPendingOwnerships}
+            isPendingStoreTypes={isPendingStoreTypes}
             serviceCenter={serviceCenter}
             system={system}
             category={category}

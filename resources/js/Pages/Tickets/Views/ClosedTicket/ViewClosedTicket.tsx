@@ -328,6 +328,8 @@ const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ use
                 currentTicket.powerform_email ||
                 currentTicket.powerform_company_number ||
                 currentTicket.powerform_imei ||
+                currentTicket.powerform_client_name ||
+                currentTicket.client_name ||
                 currentTicket.powerform_store_code ||
                 currentTicket.powerform_store_name ||
                 currentTicket.powerform_store_address ||
@@ -357,6 +359,11 @@ const ViewClosedTicket: React.FC<{ userRoles: string[], uuid: string }> = ({ use
                         {currentTicket.powerform_imei && (
                             <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' } }}>
                                 <strong>IMEI:</strong> {currentTicket.powerform_imei}
+                            </Typography>
+                        )}
+                        {(currentTicket.powerform_client_name || currentTicket.client_name) && (
+                            <Typography variant="body2" sx={{ fontSize: { xs: '0.65rem', sm: '0.875rem' }, mb: 0.5 }}>
+                                <strong>Client Name:</strong> {currentTicket.powerform_client_name || currentTicket.client_name}
                             </Typography>
                         )}
                         {currentTicket.powerform_store_code && (

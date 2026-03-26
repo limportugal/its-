@@ -157,7 +157,7 @@ export default function ResetPasswordLayout({ children, isLoading = false }: Pro
                     </Box>
                     <Box
                         component="a"
-                        href="https://phillogix.site/"
+                        href="https://phillogix.online/"
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{

@@ -14,6 +14,8 @@ export interface CreateTicketDialogProps {
     categoryOptions: any[];
     serviceCenterOptions: any[];
     systemOptions: any[];
+    ownershipOptions: any[];
+    storeTypeOptions: any[];
     resetForm: () => void;
     handleSubmit: (callback: (data: any) => void) => (e?: React.BaseSyntheticEvent) => Promise<void>;
     submitForm: (data: any) => void;
@@ -21,6 +23,8 @@ export interface CreateTicketDialogProps {
     isPendingCategories: boolean;
     isPendingServiceCenters: boolean;
     isPendingSystems: boolean;
+    isPendingOwnerships: boolean;
+    isPendingStoreTypes: boolean;
 
     // STATE AND HANDLERS FOR FORM CONTROLS
     serviceCenter: any;

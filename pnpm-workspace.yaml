@@ -2,4 +2,5 @@ ignoredBuiltDependencies:
   - '@mui/x-telemetry'
   - canvas
   - esbuild
+  - sharp
   - unrs-resolver

@@ -157,7 +157,7 @@ export default function CreatePasswordLayout({ children, isLoading = false }: Pr
                     </Box>
                     <Box
                         component="a"
-                        href="https://phillogix.site/"
+                        href="https://phillogix.online/"
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{

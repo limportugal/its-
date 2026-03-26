@@ -14,6 +14,7 @@ export interface PendingTicketResponse {
         powerform_email: string;
         powerform_company_number: string;
         powerform_imei: string;
+        powerform_client_name: string | null;
         powerform_store_code: string;
         powerform_store_name: string;
         powerform_store_address: string;

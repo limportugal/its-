@@ -193,7 +193,7 @@ export default function ResubmitLayout({ children, isLoading = false, autoHeight
                     </Box>
                     <Box
                         component="a"
-                        href="https://phillogix.site/"
+                        href="https://phillogix.online/"
                         target="_blank"
                         rel="noopener noreferrer"
                         sx={{

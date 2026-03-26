@@ -18,7 +18,10 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import TagIcon from '@mui/icons-material/Tag';
+import NumbersIcon from '@mui/icons-material/Numbers';
 import BadgeIcon from '@mui/icons-material/Badge';
+import CategoryIcon from '@mui/icons-material/Category';
+import BusinessIcon from '@mui/icons-material/Business';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import SendIcon from '@mui/icons-material/Send';
 
@@ -45,8 +48,12 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     isPendingCategories,
     serviceCenterOptions,
     systemOptions,
+    ownershipOptions,
+    storeTypeOptions,
     isPendingServiceCenters,
     isPendingSystems,
+    isPendingOwnerships,
+    isPendingStoreTypes,
     control,
     errors,
     formResetKey,
@@ -112,11 +119,13 @@ const CreateTicketDialog: React.FC<CreateTicketDialogProps> = ({
     }, [systemName, selectedCategories, categoryOptions]);
 
     const showClientNameField = useMemo(() => {
+        if (normalizeText(systemName) !== "power form") return false;
+
         return selectedCategories?.some((categoryId) => {
-            const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === (categoryId));
+            const category = categoryOptions.find((cat: any) => normalizeText(cat.value) === normalizeText(categoryId));
             return normalizeText(category?.label) === "additional store";
         }) || false;
-    }, [selectedCategories, categoryOptions]);
+    }, [systemName, selectedCategories, categoryOptions]);
 
     
     // DETERMINE IF FSR NO FIELD SHOULD BE SHOWN
@@ -480,15 +489,15 @@ console.log("showClientNameField", showClientNameField);
                             {showStoreFields && (
                                 <>
                                     <Grid size={{ xs: 12, sm: 12, md: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
-                                        <MuiTextField
-                                            name="store_code"
-                                            label="STORE CODE"
-                                            placeholder="Enter store code"
-                                            control={control}
-                                            errors={errors}
-                                            disabled={ticketIsPending}
+                                    <MuiTextField
+                                        name="store_code"
+                                        label="STORE CODE"
+                                        placeholder="Example: 1234"
+                                        control={control}
+                                        errors={errors}
+                                        disabled={ticketIsPending}
                                             fullWidth
-                                            icon={<QrCode2Icon />}
+                                            icon={<NumbersIcon />}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 12, md: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
@@ -500,7 +509,7 @@ console.log("showClientNameField", showClientNameField);
                                             errors={errors}
                                             disabled={ticketIsPending}
                                             fullWidth
-                                            icon={<StorefrontIcon />}
+                                            icon={<NumbersIcon />}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12 }} sx={{ mt: isMobile ? 0 : -1 }}>
@@ -519,16 +528,19 @@ console.log("showClientNameField", showClientNameField);
                             )}
                             {/* CONDITIONAL CLIENT NAME FIELD - ONLY SHOW IF "additional store" IS SELECTED in Category */}
                             {showClientNameField && (
-                                <Grid size={{ xs: 12, sm: 12, md: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                <Grid
+                                    size={{ xs: 12, sm: 12, md: showPowerFormAdditionalNewStoreFields ? 3 : 6 }}
+                                    sx={{ mt: isMobile ? 0 : -0.5 }}
+                                >
                                     <MuiTextField
-                                        name="client_name"
+                                        name="powerform_client_name"
                                         label="CLIENT NAME"
                                         placeholder="Enter client name"
                                         control={control}
                                         errors={errors}
                                         disabled={ticketIsPending}
                                         fullWidth
-                                        icon={<PersonIcon />}
+                                        icon={<StorefrontIcon />}
                                     />
                                 </Grid>
                             )}
@@ -573,7 +585,7 @@ console.log("showClientNameField", showClientNameField);
                                             errors={errors}
                                             disabled={ticketIsPending}
                                             fullWidth
-                                            icon={<BadgeIcon />}
+                                            icon={<BusinessIcon />}
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
@@ -618,19 +630,19 @@ console.log("showClientNameField", showClientNameField);
                             {/* CONDITIONAL POWERFORM ADDITIONAL NEW STORE FIELDS */}
                             {showPowerFormAdditionalNewStoreFields && (
                                 <>
-                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                    <Grid size={{ xs: 12, sm: 6, md: 3 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
                                         <MuiTextField
                                             name="powerform_store_code"
                                             label="STORE CODE"
-                                            placeholder="Enter store code"
+                                            placeholder="Example: 1234"
                                             control={control}
                                             errors={errors}
                                             disabled={ticketIsPending}
                                             fullWidth
-                                            icon={<QrCode2Icon />}
+                                            icon={<NumbersIcon />}
                                         />
                                     </Grid>
-                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                    <Grid size={{ xs: 12, sm: 6, md: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
                                         <MuiTextField
                                             name="powerform_store_name"
                                             label="STORE NAME"
@@ -640,6 +652,30 @@ console.log("showClientNameField", showClientNameField);
                                             disabled={ticketIsPending}
                                             fullWidth
                                             icon={<StorefrontIcon />}
+                                        />
+                                    </Grid>                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <Dropdown
+                                            name="powerform_store_ownership"
+                                            label="OWNERSHIP"
+                                            control={control}
+                                            options={ownershipOptions}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            loading={isPendingOwnerships}
+                                            icon={<BadgeIcon />}
+                                            placeholder="Select ownership"
+                                        />
+                                    </Grid>                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
+                                        <Dropdown
+                                            name="powerform_store_type"
+                                            label="STORE TYPE"
+                                            control={control}
+                                            options={storeTypeOptions}
+                                            errors={errors}
+                                            disabled={ticketIsPending}
+                                            loading={isPendingStoreTypes}
+                                            icon={<CategoryIcon />}
+                                            placeholder="Select store type"
                                         />
                                     </Grid>
                                     <Grid size={{ xs: 12 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
@@ -652,30 +688,6 @@ console.log("showClientNameField", showClientNameField);
                                             disabled={ticketIsPending}
                                             fullWidth
                                             icon={<LocationOnIcon />}
-                                        />
-                                    </Grid>
-                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
-                                        <MuiTextField
-                                            name="powerform_store_ownership"
-                                            label="OWNERSHIP"
-                                            placeholder="Enter ownership"
-                                            control={control}
-                                            errors={errors}
-                                            disabled={ticketIsPending}
-                                            fullWidth
-                                            icon={<BadgeIcon />}
-                                        />
-                                    </Grid>
-                                    <Grid size={{ xs: 12, sm: 6 }} sx={{ mt: isMobile ? 0 : -0.5 }}>
-                                        <MuiTextField
-                                            name="powerform_store_type"
-                                            label="STORE TYPE"
-                                            placeholder="Enter store type"
-                                            control={control}
-                                            errors={errors}
-                                            disabled={ticketIsPending}
-                                            fullWidth
-                                            icon={<TagIcon />}
                                         />
                                     </Grid>
                                 </>

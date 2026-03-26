@@ -14,6 +14,8 @@ use App\Models\Company;
 use App\Models\ServiceCenter;
 use App\Models\User;
 use App\Models\System;
+use App\Models\Ownership;
+use App\Models\StoreType;
 
 // POLICIES
 use App\Policies\TicketPolicy;
@@ -25,6 +27,8 @@ use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\ServiceCenterPolicy;
 use App\Policies\SystemPolicy;
+use App\Policies\OwnershipPolicy;
+use App\Policies\StoreTypePolicy;
 class AuthServiceProvider extends ServiceProvider
 {
     protected $policies = [
@@ -37,6 +41,8 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class,
         ServiceCenter::class => ServiceCenterPolicy::class,
         System::class => SystemPolicy::class,
+        Ownership::class => OwnershipPolicy::class,
+        StoreType::class => StoreTypePolicy::class,
     ];
 
     public function boot(): void

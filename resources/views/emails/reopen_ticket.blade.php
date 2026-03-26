@@ -618,7 +618,7 @@
         <!-- FOOTER -->
         <div class="footer">
             <p>Best regards,<br>Research and Development</p>
-            <p><small>&copy; {{ date('Y') }} <a href="https://apsoft.com.ph/" target="_blank">Apsoft Inc.</a> | <a href="https://phillogix.site/" target="_blank">Phillogix Systems</a> | <a href="https://its.ideaserv.online/" target="_blank">ideaserv Systems, Inc.</a><br>
+            <p><small>&copy; {{ date('Y') }} <a href="https://apsoft.com.ph/" target="_blank">Apsoft Inc.</a> | <a href="https://phillogix.online/" target="_blank">Phillogix Systems</a> | <a href="https://its.ideaserv.online/" target="_blank">ideaserv Systems, Inc.</a><br>
                     <a href="{{ $support_portal_link }}" target="_blank">Access Support Portal</a></small></p>
         </div>
     </div>

@@ -15,6 +15,8 @@ import IndexServiceCenter from "@/Pages/Maintenance/ServiceCenter/IndexServiceCe
 import IndexPriorities from "@/Pages/Maintenance/Priorities/IndexPriorities";
 import IndexSystem from "@/Pages/Maintenance/System/IndexSystem";
 import IndexCompanies from "@/Pages/Maintenance/Companies/IndexCompanies";
+import IndexOwnerships from "@/Pages/Maintenance/Ownership/IndexOwnerships";
+import IndexStoreTypes from "@/Pages/Maintenance/StoreType/IndexStoreTypes";
 
 export default function MaintenanceNavTabs() {
     const { url } = usePage();
@@ -41,6 +43,16 @@ export default function MaintenanceNavTabs() {
                 href: route("maintenance.companies.index"),
                 icon: <KeyboardArrowRightIcon />,
             },
+            {
+                label: "Ownerships",
+                href: route("maintenance.ownerships.index"),
+                icon: <KeyboardArrowRightIcon />,
+            },
+            {
+                label: "Store Types",
+                href: route("maintenance.store-types.index"),
+                icon: <KeyboardArrowRightIcon />,
+            },
         ],
         []
     );
@@ -56,6 +68,8 @@ export default function MaintenanceNavTabs() {
                 <IndexPriorities />
                 <IndexSystem />
                 <IndexCompanies />
+                <IndexOwnerships />
+                <IndexStoreTypes />
             </NavTabs>
         </AuthenticatedLayout>
     );

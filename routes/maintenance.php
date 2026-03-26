@@ -7,6 +7,8 @@ use App\Http\Controllers\Maintenance\PriorityController;
 use App\Http\Controllers\Maintenance\SystemController;
 use App\Http\Controllers\Maintenance\CategoryController;
 use App\Http\Controllers\Maintenance\CompanyController;
+use App\Http\Controllers\Maintenance\OwnershipController;
+use App\Http\Controllers\Maintenance\StoreTypeController;
 
 // MAINTENANCE (SUPERADMIN/ADMIN ONLY)
 Route::name('maintenance.')->group(function () {
@@ -70,5 +72,27 @@ Route::name('maintenance.')->group(function () {
         Route::patch('/activate/{id}', 'activate')->name('companies.activate');
         Route::patch('/inactivate/{id}', 'inactivate')->name('companies.inactivate');
         Route::delete('/delete/{id}', 'destroy')->name('companies.delete');
+    });
+
+    // OWNERSHIPS
+    Route::controller(OwnershipController::class)->prefix('maintenance/ownerships')->group(function () {
+        Route::get('', 'index')->name('ownerships.index');
+        Route::get('/data', 'show')->name('ownerships.show');
+        Route::post('/create', 'create')->name('ownerships.create');
+        Route::put('/update/{id}', 'update')->name('ownerships.update');
+        Route::patch('/activate/{id}', 'activate')->name('ownerships.activate');
+        Route::patch('/inactivate/{id}', 'inactivate')->name('ownerships.inactivate');
+        Route::delete('/delete/{id}', 'destroy')->name('ownerships.delete');
+    });
+
+    // STORE TYPES
+    Route::controller(StoreTypeController::class)->prefix('maintenance/store-types')->group(function () {
+        Route::get('', 'index')->name('store-types.index');
+        Route::get('/data', 'show')->name('store-types.show');
+        Route::post('/create', 'create')->name('store-types.create');
+        Route::put('/update/{id}', 'update')->name('store-types.update');
+        Route::patch('/activate/{id}', 'activate')->name('store-types.activate');
+        Route::patch('/inactivate/{id}', 'inactivate')->name('store-types.inactivate');
+        Route::delete('/delete/{id}', 'destroy')->name('store-types.delete');
     });
 });
