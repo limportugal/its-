@@ -1,186 +1,133 @@
-# Internal Ticketing System (ITS) 🎫
+# Internal Ticketing System (ITS)
 
-[![Laravel](https://img.shields.io/badge/Laravel-12.15.0-FF2D20?style=flat-square&logo=laravel)](https://laravel.com)
-[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat-square&logo=react)](https://reactjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org)
-[![PHP](https://img.shields.io/badge/PHP-8.4.7-777BB4?style=flat-square&logo=php)](https://php.net)
-[![Node.js](https://img.shields.io/badge/Node.js-22.15.1-339933?style=flat-square&logo=node.js)](https://nodejs.org)
+[![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![React](https://img.shields.io/badge/React-19.x-149ECA?style=for-the-badge&logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Vite](https://img.shields.io/badge/Vite-7.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev)
+[![License](https://img.shields.io/badge/License-Internal%20Use%20Only-222?style=for-the-badge)](#license)
 
-A modern, efficient internal ticketing system built with React (TypeScript) and Laravel, designed for seamless ticket management and tracking within organizations.
+Internal web platform for managing service tickets across systems, categories, and teams.
 
-## ✨ Key Features
+## Overview
 
-- 🔐 Secure authentication and role-based access control
-- 📊 Interactive dashboard with real-time analytics
-- 🎯 Advanced ticket tracking and management
-- 📱 Responsive design for all devices
-- 🔔 Real-time notifications
-- 📈 Comprehensive reporting system
-- 🔄 Automated workflow management
-- 🌐 RESTful API architecture
+ITS is built for internal operations where fast triage, clear assignment, and consistent ticket lifecycle tracking are critical.
 
-## 🛠️ Tech Stack
+The app covers:
+- Ticket creation, assignment, follow-up, closure, and archival
+- Role-based access flows (Admin, support roles, etc.)
+- Maintenance modules for core dropdown data (systems, categories, priorities, ownerships, store types)
+- Dashboard and reporting views for operations visibility
 
-### Frontend Architecture
-- **Core**: React 18.3.1 with TypeScript 5.8.3
-  - Native TypeScript compiler support coming in 2025 (10x faster)
-- **State Management**: 
-  - Zustand for global state
-  - TanStack Query for server state
-  - React Hook Form for form handling
-- **UI/UX**:
-  - Material UI components
-  - Tailwind CSS for styling
-  - ApexCharts for data visualization
-  - SweetAlert2 for notifications
-- **Data Handling**:
-  - Axios for API communication
-  - Zod for schema validation
-  - Day.js & Date-fns for date manipulation
+## Tech Stack
 
-### Backend Architecture
-- **Framework**: Laravel v12.15.0 (PHP 8.4.7)
-  - Zero-breaking changes upgrade
-  - xxHash for faster caching and unique identifiers
-  - Improved Query Builder with optimized execution
-  - Native MariaDB CLI support
-  - UUID v7 for models with better time-based ordering
-  - Enhanced WebSocket integration with Reverb
-  - AI-powered debugging assistant
-  - Latest security patches and performance improvements
-  - Enhanced route caching mechanism
-  - Improved validation system
-  - PHP 8.4.7 features support
-    - Enhanced type system
-    - Improved performance with JIT 2.0
-    - Advanced memory management
-    - Native fiber support
-- **Database**: MySQL/MariaDB
-- **Features**:
-  - RESTful API endpoints
-  - Queue system for background tasks
-  - Web Authentication with WorkOS AuthKit support
-  - Database migrations and seeders
+### Backend
+- Laravel 13
+- PHP 8.3+
+- MySQL / MariaDB
+- Spatie Permission
+- Ziggy + Inertia (Laravel adapter)
 
-### DevOps
-- **Package Manager**: PNPM
-- **Version Control**: Git
+### Frontend
+- React 19 + TypeScript
+- Inertia.js (React adapter)
+- Material UI + Tailwind CSS
+- TanStack Query + Zustand
+- React Hook Form + Zod
+- Vite + PNPM
 
-## 📂 Project Structure
+## Project Structure
 
-```
-.
-├── app/  # Application Core
-│   ├── Http/
-│   ├── Models/
-│   ├── Services/
-│   └── ...
-│
-├── resources/  # Frontend Assets
-│   ├── js/
-│   ├── css/
-│   └── views/
-│
-├── routes/  # API Routes
-│
-├── database/  # Migrations & Seeders
-│
-├── public/  # Public Assets
-│
-├── .env
-├── composer.json
-├── package.json
-└── ...
+```text
+app/                    # Laravel application code
+database/               # Migrations, seeders, factories
+resources/js/           # React + TypeScript frontend
+resources/css/          # Global styles
+routes/                 # Web/API route definitions
+public/                 # Public assets
 ```
 
-## 🚀 Getting Started
+## Local Setup
 
 ### Prerequisites
-- Node.js >= 22.15.1
-- PHP >= 8.4.7
-- Composer 2.6+
-- PNPM >= 8.0
-- MySQL 8.0+
+- PHP `>=8.3`
+- Composer `>=2`
+- Node.js `>=20.19`
+- PNPM `>=10`
+- MySQL/MariaDB
 
-### Installation
+### 1) Clone
 
-1. **Clone the Repository**
-
-```sh
-git clone https://github.com/arnelnrose/its.git
-cd its
+```bash
+git clone https://github.com/limportugal/its-.git
+cd its-
 ```
 
-2. **Setup Environment**
+### 2) Install Dependencies
 
-```sh
-cp .env.example .env
-```
-
-3. **Install Dependencies**
-
-```sh
-# INSTALL PHP DEPENDENCIES
+```bash
 composer install
-
-# INSTALL NODE DEPENDENCIES
 pnpm install
 ```
 
-4. **Database Setup**
+### 3) Environment
 
-```sh
+```bash
+cp .env.example .env
 php artisan key:generate
+```
+
+Update your database credentials in `.env`, then run:
+
+```bash
 php artisan migrate --seed
 ```
 
-5. **Run Development Server**
+### 4) Run Dev Servers
 
-```sh
-# START LARAVEL SERVER
+```bash
 php artisan serve
-
-# IN ANOTHER TERMINAL, START VITE DEV SERVER
-pnpm run dev
+pnpm dev
 ```
 
-## 🔧 Development
+## Useful Commands
 
-### Running Queue Workers
+```bash
+# Type safety
+pnpm typecheck
 
-```sh
+# Linting
+pnpm lint
+pnpm lint:fix
+
+# Build
+pnpm build
+pnpm build:strict
+
+# Queue worker
 php artisan queue:work
 ```
 
-### Building for Production
+## Production Notes
 
-```sh
-pnpm run build
-```
+- Keep `.env` out of git history.
+- Use queue workers and process supervisor in production.
+- Build frontend assets with `pnpm build`.
+- Run `php artisan optimize` after deployment.
 
-## 📚 Documentation
+## Security
 
-Detailed documentation is available in the [Wiki](https://github.com/arnelnrose/its/wiki).
+If credentials are exposed in commits:
+- Rotate secrets immediately.
+- Remove leaked files/values from git history.
+- Push only after repository push-protection checks pass.
 
-## 🤝 Contributing
+## Contributing
 
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+1. Create a feature branch
+2. Commit with clear scope (`feat:`, `fix:`, `refactor:`)
+3. Open a pull request with testing notes and screenshots (if UI changes)
 
-## 📧 Support
+## License
 
-For internal support and bug reports, please contact the development team through:
-- Internal ticketing system
-- Development team chat
-
-## 📄 License
-
-**🔒 Internal Use Only** | © 2025 Apsoft, Phillogix & Ideaserv
-
----
-
-*Built with ❤️ by the Apsoft Team Team*
-
+Internal Use Only.  
+Copyright (c) Phillogix / ITS Team.

@@ -1,8 +1,15 @@
 {
     "private": true,
     "type": "module",
+    "packageManager": "pnpm@10.33.0",
+    "engines": {
+        "node": ">=20.19.0",
+        "pnpm": ">=10"
+    },
     "scripts": {
         "dev": "vite",
+        "lint": "eslint . --max-warnings=0",
+        "lint:fix": "eslint . --fix",
         "typecheck": "cross-env NODE_OPTIONS=--max-old-space-size=6144 tsc --pretty false",
         "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 vite build",
         "build:strict": "cross-env NODE_OPTIONS=--max-old-space-size=6144 tsc --pretty false && cross-env NODE_OPTIONS=--max-old-space-size=6144 vite build",
@@ -43,7 +50,6 @@
         "@fontsource/inter": "^5.2.8",
         "@hookform/resolvers": "^5.2.2",
         "@inertiajs/core": "^2.3.18",
-        "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/progress": "^0.2.7",
         "@inertiajs/react": "^2.3.18",
         "@mui/icons-material": "^7.3.9",
