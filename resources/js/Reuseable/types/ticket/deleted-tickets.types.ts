@@ -8,6 +8,7 @@ export interface DeletedTicketResponse {
         fsr_no: string | null;
         store_code: string | null;
         store_name: string | null;
+        client_name: string | null;
         store_address: string | null;
         powerform_full_name: string | null;
         powerform_employee_id: string | null;

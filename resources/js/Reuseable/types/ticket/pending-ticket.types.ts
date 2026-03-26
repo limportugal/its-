@@ -8,6 +8,7 @@ export interface PendingTicketResponse {
         fsr_no: string;
         store_code: string;
         store_name: string;
+        client_name: string | null;
         store_address: string;
         powerform_full_name: string;
         powerform_employee_id: string;

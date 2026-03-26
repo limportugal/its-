@@ -4,6 +4,8 @@ namespace App\Services\Ticket;
 
 use App\Models\Ticket;
 use App\Models\Attachment;
+use App\Models\Category;
+use App\Models\System;
 use App\Jobs\SendTicketCreatedEmail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -24,6 +26,10 @@ class StoreTicketService
             unset($ticketData['attachment']);
             unset($ticketData['category_labels']);
             unset($ticketData['system_name']);
+
+            if ($this->isPowerFormAdditionalStore($ticketData)) {
+                $ticketData['client_name'] = null;
+            }
 
             // CREATE THE TICKET
             $ticket = Ticket::create($ticketData);
@@ -134,5 +140,33 @@ class StoreTicketService
         if (!empty($ticket->email)) {
             SendTicketCreatedEmail::dispatch($ticket);
         }
+    }
+
+    private function isPowerFormAdditionalStore(array $ticketData): bool
+    {
+        $systemId = $ticketData['system_id'] ?? null;
+        $categories = $ticketData['categories'] ?? [];
+
+        if (!$systemId || !is_array($categories) || empty($categories)) {
+            return false;
+        }
+
+        $system = System::find($systemId);
+        if (!$system) {
+            return false;
+        }
+
+        $normalizedSystemName = strtolower(str_replace(' ', '', trim((string) $system->system_name)));
+        if ($normalizedSystemName !== 'powerform') {
+            return false;
+        }
+
+        $selectedCategories = Category::whereIn('id', $categories)
+            ->pluck('category_name')
+            ->map(fn ($name) => strtolower(trim((string) $name)))
+            ->toArray();
+
+        return in_array('additional new store', $selectedCategories, true)
+            || in_array('additional store', $selectedCategories, true);
     }
 }

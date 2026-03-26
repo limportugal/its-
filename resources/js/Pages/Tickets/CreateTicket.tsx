@@ -45,10 +45,6 @@ const requiresStoreFields = (systemName?: string | null, labels?: string[]) =>
     systemName === "Customer Not Found" ||
     (systemName === "FSR Online" && !!labels?.includes("Customer Not Found"));
 
-const requireClientNameField = (systemName?: string | null, labels?: string[]) =>
-    normalizeSystemName(systemName) === "power form" &&
-    !!labels?.some((label) => label.toLowerCase().trim() === "additional store");
-
 const requiresKnoxChangeOwnershipFields = (systemName?: string | null, labels?: string[]) =>
     normalizeSystemName(systemName) === "knox" &&
     !!labels?.some((label) => label.toLowerCase().includes("change ownership"));
@@ -399,11 +395,6 @@ const CreateTicket = forwardRef<
                 submitData.append('knox_email', data.knox_email || "");
                 submitData.append('knox_company_mobile_number', data.knox_company_mobile_number || "");
                 submitData.append('knox_mobile_imei', data.knox_mobile_imei || "");
-            }
-
-            if (requireClientNameField(data.system_name, data.category_labels)) {
-                // Keep legacy client_name in payload for backward compatibility.
-                submitData.append('client_name', data.powerform_client_name || data.client_name || "");
             }
 
             // HANDLE FILE ATTACHMENT
